@@ -1,17 +1,18 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
-namespace Zend\Expressive\Router;
+namespace Mezzio\Router;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Mezzio\Router\RouteResult;
+use Mezzio\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Expressive\Router\RouteResult;
-use Zend\Expressive\Router\RouterInterface;
 use Webimpress\HttpMiddlewareCompatibility\HandlerInterface;
 use Webimpress\HttpMiddlewareCompatibility\MiddlewareInterface;
 
@@ -72,7 +73,7 @@ class RouteMiddleware implements MiddlewareInterface
         }
 
         // Inject the actual route result, as well as individual matched parameters.
-        $request = $request->withAttribute(RouteResult::class, $result);
+        $request = $request->withAttribute(RouteResult::class, $result)->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result);
         foreach ($result->getMatchedParams() as $param => $value) {
             $request = $request->withAttribute($param, $value);
         }
