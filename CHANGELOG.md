@@ -6,5 +6,5 @@ All notable changes to this project will be documented in this file, in reverse 
 
 First stable release.
 
-See the [Expressive CHANGELOG](https://github.com/zendframework/zend-expressive/blob/master/CHANGELOG.md]
+See the [Mezzio CHANGELOG](https://github.com/mezzio/mezzio/blob/master/CHANGELOG.md]
 for a history of changes prior to 1.0.
