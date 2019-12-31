@@ -1,13 +1,14 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace Zend\Expressive\Router;
+namespace Mezzio\Router;
 
 use Psr\Container\ContainerInterface;
 
@@ -16,7 +17,7 @@ use Psr\Container\ContainerInterface;
  *
  * This factory depends on one other service:
  *
- * - Zend\Expressive\Router\RouterInterface, which should resolve to
+ * - Mezzio\Router\RouterInterface, which should resolve to
  *   a class implementing that interface.
  */
 class RouteCollectorFactory
@@ -27,13 +28,15 @@ class RouteCollectorFactory
      */
     public function __invoke(ContainerInterface $container) : RouteCollector
     {
-        if (! $container->has(RouterInterface::class)) {
+        if (! $container->has(RouterInterface::class)
+            && ! $container->has(\Zend\Expressive\Router\RouterInterface::class)
+        ) {
             throw Exception\MissingDependencyException::dependencyForService(
                 RouterInterface::class,
                 PathBasedRoutingMiddleware::class
             );
         }
 
-        return new RouteCollector($container->get(RouterInterface::class));
+        return new RouteCollector($container->has(RouterInterface::class) ? $container->get(RouterInterface::class) : $container->get(\Zend\Expressive\Router\RouterInterface::class));
     }
 }
