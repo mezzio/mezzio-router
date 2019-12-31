@@ -1,22 +1,23 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace Zend\Expressive\Router\Middleware;
+namespace Mezzio\Router\Middleware;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
+use Mezzio\Router\RouteResult;
+use Mezzio\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Expressive\Router\RouteResult;
-use Zend\Expressive\Router\RouterInterface;
 
 /**
  * Handle implicit HEAD requests.
@@ -106,6 +107,7 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
         $response = $handler->handle(
             $request
                 ->withAttribute(RouteResult::class, $routeResult)
+                ->withAttribute(\Zend\Expressive\Router\RouteResult::class, $routeResult)
                 ->withMethod(RequestMethod::METHOD_GET)
                 ->withAttribute(self::FORWARDED_HTTP_METHOD_ATTRIBUTE, RequestMethod::METHOD_HEAD)
         );

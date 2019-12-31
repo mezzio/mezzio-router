@@ -1,13 +1,14 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace Zend\Expressive\Router;
+namespace Mezzio\Router;
 
 class ConfigProvider
 {
@@ -22,6 +23,15 @@ class ConfigProvider
     {
         // @codingStandardsIgnoreStart
         return [
+            // Legacy Zend Framework aliases
+            'aliases' => [
+                \Zend\Expressive\Router\Middleware\DispatchMiddleware::class => Middleware\DispatchMiddleware::class,
+                \Zend\Expressive\Router\Middleware\ImplicitHeadMiddleware::class => Middleware\ImplicitHeadMiddleware::class,
+                \Zend\Expressive\Router\Middleware\ImplicitOptionsMiddleware::class => Middleware\ImplicitOptionsMiddleware::class,
+                \Zend\Expressive\Router\Middleware\MethodNotAllowedMiddleware::class => Middleware\MethodNotAllowedMiddleware::class,
+                \Zend\Expressive\Router\Middleware\RouteMiddleware::class => Middleware\RouteMiddleware::class,
+                \Zend\Expressive\Router\RouteCollector::class => RouteCollector::class,
+            ],
             'factories' => [
                 Middleware\DispatchMiddleware::class         => Middleware\DispatchMiddlewareFactory::class,
                 Middleware\ImplicitHeadMiddleware::class     => Middleware\ImplicitHeadMiddlewareFactory::class,
