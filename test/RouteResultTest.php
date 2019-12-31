@@ -1,18 +1,19 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2015-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
-namespace ZendTest\Expressive\Router;
+namespace MezzioTest\Router;
 
+use Mezzio\Router\Route;
+use Mezzio\Router\RouteResult;
 use PHPUnit_Framework_TestCase as TestCase;
-use Zend\Expressive\Router\Route;
-use Zend\Expressive\Router\RouteResult;
 
 /**
- * @covers Zend\Expressive\Router\RouteResult
+ * @covers Mezzio\Router\RouteResult
  */
 class RouteResultTest extends TestCase
 {
