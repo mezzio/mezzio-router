@@ -1,18 +1,19 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace Zend\Expressive\Router\Middleware;
+namespace Mezzio\Router\Middleware;
 
+use Mezzio\Router\Exception\MissingDependencyException;
 use Psr\Container\ContainerInterface;
-use Zend\Expressive\Router\Exception\MissingDependencyException;
 
-use const Zend\Expressive\Router\METHOD_NOT_ALLOWED_MIDDLEWARE_RESPONSE;
+use const Mezzio\Router\METHOD_NOT_ALLOWED_MIDDLEWARE_RESPONSE;
 
 /**
  * Create and return a MethodNotAllowedMiddleware instance.
@@ -30,7 +31,9 @@ class MethodNotAllowedMiddlewareFactory
      */
     public function __invoke(ContainerInterface $container) : MethodNotAllowedMiddleware
     {
-        if (! $container->has(METHOD_NOT_ALLOWED_MIDDLEWARE_RESPONSE)) {
+        if (! $container->has(METHOD_NOT_ALLOWED_MIDDLEWARE_RESPONSE)
+            && ! $container->has(\const Zend\Expressive\Router\METHOD_NOT_ALLOWED_MIDDLEWARE_RESPONSE::class)
+        ) {
             throw MissingDependencyException::dependencyForService(
                 METHOD_NOT_ALLOWED_MIDDLEWARE_RESPONSE,
                 MethodNotAllowedMiddleware::class
@@ -38,7 +41,7 @@ class MethodNotAllowedMiddlewareFactory
         }
 
         return new MethodNotAllowedMiddleware(
-            $container->get(METHOD_NOT_ALLOWED_MIDDLEWARE_RESPONSE)
+            $container->has(METHOD_NOT_ALLOWED_MIDDLEWARE_RESPONSE) ? $container->get(METHOD_NOT_ALLOWED_MIDDLEWARE_RESPONSE) : $container->get(\const Zend\Expressive\Router\METHOD_NOT_ALLOWED_MIDDLEWARE_RESPONSE::class)
         );
     }
 }

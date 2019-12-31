@@ -1,9 +1,9 @@
-# zend-expressive-router
+# mezzio-router
 
-[![Build Status](https://secure.travis-ci.org/zendframework/zend-expressive-router.svg?branch=master)](https://secure.travis-ci.org/zendframework/zend-expressive-router)
-[![Coverage Status](https://coveralls.io/repos/github/zendframework/zend-expressive-router/badge.svg?branch=master)](https://coveralls.io/github/zendframework/zend-expressive-router?branch=master)
+[![Build Status](https://travis-ci.org/mezzio/mezzio-router.svg?branch=master)](https://travis-ci.org/mezzio/mezzio-router)
+[![Coverage Status](https://coveralls.io/repos/github/mezzio/mezzio-router/badge.svg?branch=master)](https://coveralls.io/github/mezzio/mezzio-router?branch=master)
 
-Router subcomponent for [Expressive](https://github.com/zendframework/zend-expressive).
+Router subcomponent for [Mezzio](https://github.com/mezzio/mezzio).
 
 This package provides the following classes and interfaces:
 
@@ -15,23 +15,23 @@ This package provides the following classes and interfaces:
 
 ## Installation
 
-Typically, you will install this when installing Expressive. However, it can be
+Typically, you will install this when installing Mezzio. However, it can be
 used standalone to provide a generic way to provide routed PSR-7 middleware. To
 do this, use:
 
 ```bash
-$ composer require zendframework/zend-expressive-router
+$ composer require mezzio/mezzio-router
 ```
 
 We currently support and provide the following routing integrations:
 
 - [Aura.Router](https://github.com/auraphp/Aura.Router):
-  `composer require zendframework/zend-expressive-aurarouter`
+  `composer require mezzio/mezzio-aurarouter`
 - [FastRoute](https://github.com/nikic/FastRoute):
-  `composer require zendframework/zend-expressive-fastroute`
-- [zend-router](https://github.com/zendframework/zend-router):
-  `composer require zendframework/zend-expressive-zendrouter`
+  `composer require mezzio/mezzio-fastroute`
+- [laminas-router](https://github.com/laminas/laminas-router):
+  `composer require mezzio/mezzio-laminasrouter`
 
 ## Documentation
 
-Expressive provides [routing documentation](https://docs.zendframework.com/zend-expressive/features/router/intro/).
+Mezzio provides [routing documentation](https://docs.mezzio.dev/mezzio/features/router/intro/).

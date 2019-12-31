@@ -1,19 +1,20 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace Zend\Expressive\Router\Middleware;
+namespace Mezzio\Router\Middleware;
 
+use Mezzio\Router\Exception\MissingDependencyException;
 use Psr\Container\ContainerInterface;
-use Zend\Expressive\Router\Exception\MissingDependencyException;
 
-use const Zend\Expressive\Router\IMPLICIT_HEAD_MIDDLEWARE_RESPONSE;
-use const Zend\Expressive\Router\IMPLICIT_HEAD_MIDDLEWARE_STREAM_FACTORY;
+use const Mezzio\Router\IMPLICIT_HEAD_MIDDLEWARE_RESPONSE;
+use const Mezzio\Router\IMPLICIT_HEAD_MIDDLEWARE_STREAM_FACTORY;
 
 /**
  * Create and return an ImplicitHeadMiddleware instance.
@@ -34,14 +35,18 @@ class ImplicitHeadMiddlewareFactory
      */
     public function __invoke(ContainerInterface $container) : ImplicitHeadMiddleware
     {
-        if (! $container->has(IMPLICIT_HEAD_MIDDLEWARE_RESPONSE)) {
+        if (! $container->has(IMPLICIT_HEAD_MIDDLEWARE_RESPONSE)
+            && ! $container->has(\const Zend\Expressive\Router\IMPLICIT_HEAD_MIDDLEWARE_RESPONSE::class)
+        ) {
             throw MissingDependencyException::dependencyForService(
                 IMPLICIT_HEAD_MIDDLEWARE_RESPONSE,
                 ImplicitHeadMiddleware::class
             );
         }
 
-        if (! $container->has(IMPLICIT_HEAD_MIDDLEWARE_STREAM_FACTORY)) {
+        if (! $container->has(IMPLICIT_HEAD_MIDDLEWARE_STREAM_FACTORY)
+            && ! $container->has(\const Zend\Expressive\Router\IMPLICIT_HEAD_MIDDLEWARE_STREAM_FACTORY::class)
+        ) {
             throw MissingDependencyException::dependencyForService(
                 IMPLICIT_HEAD_MIDDLEWARE_STREAM_FACTORY,
                 ImplicitHeadMiddleware::class
@@ -49,8 +54,8 @@ class ImplicitHeadMiddlewareFactory
         }
 
         return new ImplicitHeadMiddleware(
-            $container->get(IMPLICIT_HEAD_MIDDLEWARE_RESPONSE),
-            $container->get(IMPLICIT_HEAD_MIDDLEWARE_STREAM_FACTORY)
+            $container->has(IMPLICIT_HEAD_MIDDLEWARE_RESPONSE) ? $container->get(IMPLICIT_HEAD_MIDDLEWARE_RESPONSE) : $container->get(\const Zend\Expressive\Router\IMPLICIT_HEAD_MIDDLEWARE_RESPONSE::class),
+            $container->has(IMPLICIT_HEAD_MIDDLEWARE_STREAM_FACTORY) ? $container->get(IMPLICIT_HEAD_MIDDLEWARE_STREAM_FACTORY) : $container->get(\const Zend\Expressive\Router\IMPLICIT_HEAD_MIDDLEWARE_STREAM_FACTORY::class)
         );
     }
 }
