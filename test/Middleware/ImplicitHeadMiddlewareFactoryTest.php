@@ -1,22 +1,23 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace ZendTest\Expressive\Router\Middleware;
+namespace MezzioTest\Router\Middleware;
 
+use Mezzio\Router\Exception\MissingDependencyException;
+use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
+use Mezzio\Router\Middleware\ImplicitHeadMiddlewareFactory;
+use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\StreamInterface;
-use Zend\Expressive\Router\Exception\MissingDependencyException;
-use Zend\Expressive\Router\Middleware\ImplicitHeadMiddleware;
-use Zend\Expressive\Router\Middleware\ImplicitHeadMiddlewareFactory;
-use Zend\Expressive\Router\RouterInterface;
 
 class ImplicitHeadMiddlewareFactoryTest extends TestCase
 {
@@ -35,6 +36,7 @@ class ImplicitHeadMiddlewareFactoryTest extends TestCase
     public function testFactoryRaisesExceptionIfRouterInterfaceServiceIsMissing()
     {
         $this->container->has(RouterInterface::class)->willReturn(false);
+        $this->container->has(\Zend\Expressive\Router\RouterInterface::class)->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);
         ($this->factory)($this->container->reveal());

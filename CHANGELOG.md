@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#80](https://github.com/zendframework/zend-expressive-router/pull/80) adds support for PHP 7.3.
+- [zendframework/zend-expressive-router#80](https://github.com/zendframework/zend-expressive-router/pull/80) adds support for PHP 7.3.
 
 ### Changed
 
@@ -32,7 +32,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Changed
 
-- [#76](https://github.com/zendframework/zend-expressive-router/pull/76) modifies the `RouteMiddlewareFactory` to allow specifying a string
+- [zendframework/zend-expressive-router#76](https://github.com/zendframework/zend-expressive-router/pull/76) modifies the `RouteMiddlewareFactory` to allow specifying a string
   `$routererviceName` to its constructor. This change allows having discrete
   factory instances for generating route middleware that use different router
   instances.
@@ -91,7 +91,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#74](https://github.com/zendframework/zend-expressive-router/pull/74) fixes
+- [zendframework/zend-expressive-router#74](https://github.com/zendframework/zend-expressive-router/pull/74) fixes
   an issue with the `ImplicitHeadMiddleware` where matched route parameters
   were not copied into the request and would cause exceptions that would
   normally not happen for GET requests.
@@ -116,7 +116,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#73](https://github.com/zendframework/zend-expressive-router/pull/73) fixes
+- [zendframework/zend-expressive-router#73](https://github.com/zendframework/zend-expressive-router/pull/73) fixes
   an issue with the `ImplicitOptionsMiddleware` whereby a path match failure was
   incorrectly being identified as a method match failure, triggering the
   `ImplicitOptionsMiddleware` to attempt to return a response.
@@ -141,7 +141,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#69](https://github.com/zendframework/zend-expressive-router/pull/69) fixes
+- [zendframework/zend-expressive-router#69](https://github.com/zendframework/zend-expressive-router/pull/69) fixes
   the exception message emitted for missing dependencies when creating a
   `RouteCollector` instance to refer that class.
 
@@ -149,21 +149,21 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#50](https://github.com/zendframework/zend-expressive-router/pull/50) adds
-  `Zend\Expressive\Router\ConfigProvider`, and registers it with the package.
+- [zendframework/zend-expressive-router#50](https://github.com/zendframework/zend-expressive-router/pull/50) adds
+  `Mezzio\Router\ConfigProvider`, and registers it with the package.
   The class defines and returns the initial dependencies for the package.
 
-- [#50](https://github.com/zendframework/zend-expressive-router/pull/50) adds
+- [zendframework/zend-expressive-router#50](https://github.com/zendframework/zend-expressive-router/pull/50) adds
   factory classes for all shipped middleware. In some cases
   (`ImplicitHeadMiddleware`, `ImplicitOptionsMiddleware`, and
   `MethodNotAllowedMiddleware`), these rely on additional services that you will
   need to configure within your application in order to work properly. See each
   factory for details.
 
-- [#47](https://github.com/zendframework/zend-expressive-router/pull/47),
-  [#50](https://github.com/zendframework/zend-expressive-router/pull/50), and
-  [#64](https://github.com/zendframework/zend-expressive-router/pull/64) add
-  the `Zend\Expressive\Router\RouteCollector` class,
+- [zendframework/zend-expressive-router#47](https://github.com/zendframework/zend-expressive-router/pull/47),
+  [zendframework/zend-expressive-router#50](https://github.com/zendframework/zend-expressive-router/pull/50), and
+  [zendframework/zend-expressive-router#64](https://github.com/zendframework/zend-expressive-router/pull/64) add
+  the `Mezzio\Router\RouteCollector` class,
   which composes a `RouterInterface`, and provides methods for defining and
   creating path+method based routes. It exposes the following methods:
 
@@ -175,18 +175,18 @@ All notable changes to this project will be documented in this file, in reverse 
   - `delete(string $path, MiddlewareInterface $middleware, string $name = null) : Route`
   - `any(string $path, MiddlewareInterface $middleware, string $name = null) : Route`
 
-- [#48](https://github.com/zendframework/zend-expressive-router/pull/48) and
-  [#50](https://github.com/zendframework/zend-expressive-router/pull/50) adds
-  `Zend\Expressive\Router\Middleware\MethodNotAllowedMiddleware`. This middleware checks if
+- [zendframework/zend-expressive-router#48](https://github.com/zendframework/zend-expressive-router/pull/48) and
+  [zendframework/zend-expressive-router#50](https://github.com/zendframework/zend-expressive-router/pull/50) adds
+  `Mezzio\Router\Middleware\MethodNotAllowedMiddleware`. This middleware checks if
   the request composes a `RouteResult`, and, if so, if it is due to a method
   failure. If neither of those conditions is true, it delegates processing of
   the request to the handler. Otherwise, it uses a composed response prototype
   in order to create a "405 Method Not Allowed" response, with an `Allow` header
   containing the list of allowed request methods.
 
-- [#49](https://github.com/zendframework/zend-expressive-router/pull/49) and
-  [#50](https://github.com/zendframework/zend-expressive-router/pull/50) add
-  the class `Zend\Expressive\Router\Middleware\ImplicitHeadMiddleware`. This
+- [zendframework/zend-expressive-router#49](https://github.com/zendframework/zend-expressive-router/pull/49) and
+  [zendframework/zend-expressive-router#50](https://github.com/zendframework/zend-expressive-router/pull/50) add
+  the class `Mezzio\Router\Middleware\ImplicitHeadMiddleware`. This
   middleware will answer a `HEAD` request for a given route. If no route was
   matched, or the route allows `HEAD` requests, it delegates to the handler. If
   the route does not allow a `GET` request, it returns an empty response, as
@@ -194,21 +194,21 @@ All notable changes to this project will be documented in this file, in reverse 
   handler, indicating the method was forwarded for a `HEAD` request, and then
   returns the response with an empty body.
 
-- [#49](https://github.com/zendframework/zend-expressive-router/pull/49) and
-  [#50](https://github.com/zendframework/zend-expressive-router/pull/50) add
-  the class `Zend\Expressive\Router\Middleware\ImplicitOptionsMiddleware`. This
+- [zendframework/zend-expressive-router#49](https://github.com/zendframework/zend-expressive-router/pull/49) and
+  [zendframework/zend-expressive-router#50](https://github.com/zendframework/zend-expressive-router/pull/50) add
+  the class `Mezzio\Router\Middleware\ImplicitOptionsMiddleware`. This
   middleware handles `OPTIONS` requests when a route result is present and the
   route does not explicitly support `OPTIONS` (and otherwise delegates to the
   handler). In those conditions, it returns the response composed in the
   middleware, with an `Allow` header indicating the allowed methods.
 
-- [#39](https://github.com/zendframework/zend-expressive-router/pull/39) and
-  [#45](https://github.com/zendframework/zend-expressive-router/pull/45) add
+- [zendframework/zend-expressive-router#39](https://github.com/zendframework/zend-expressive-router/pull/39) and
+  [zendframework/zend-expressive-router#45](https://github.com/zendframework/zend-expressive-router/pull/45) add
   PSR-15 `psr/http-server-middleware` support.
 
-- [#53](https://github.com/zendframework/zend-expressive-router/pull/53) and
-  [#58](https://github.com/zendframework/zend-expressive-router/pull/58) add an
-  abstract test case, `Zend\Expressive\Router\Test\ImplicitMethodsIntegrationTest`.
+- [zendframework/zend-expressive-router#53](https://github.com/zendframework/zend-expressive-router/pull/53) and
+  [zendframework/zend-expressive-router#58](https://github.com/zendframework/zend-expressive-router/pull/58) add an
+  abstract test case, `Mezzio\Router\Test\ImplicitMethodsIntegrationTest`.
   Implementors of `RouterInterface` should extend this class in their own test
   suite to ensure that they create appropriate `RouteResult` instances for each
   of the following cases:
@@ -224,7 +224,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Changed
 
-- [#41](https://github.com/zendframework/zend-expressive-router/pull/41) updates
+- [zendframework/zend-expressive-router#41](https://github.com/zendframework/zend-expressive-router/pull/41) updates
   the `Route` class to provide typehints for all arguments and return values.
   Typehints were generally derived from the existing annotations, with the
   following items of particular note:
@@ -234,8 +234,8 @@ All notable changes to this project will be documented in this file, in reverse 
     `MiddlewareInterface` instance.
   - `getAllowedMethods()` now returns a nullable `array`.
 
-- [#41](https://github.com/zendframework/zend-expressive-router/pull/41) and
-  [#43](https://github.com/zendframework/zend-expressive-router/pull/43) update
+- [zendframework/zend-expressive-router#41](https://github.com/zendframework/zend-expressive-router/pull/41) and
+  [zendframework/zend-expressive-router#43](https://github.com/zendframework/zend-expressive-router/pull/43) update
   the `RouteResult` class to add typehints for all arguments and return values,
   where possible. Typehints were generally derived from the existing
   annotations, with the following items of particular note:
@@ -247,72 +247,72 @@ All notable changes to this project will be documented in this file, in reverse 
     allowed; this will evaluate to a valid `Allows` header value, and is the
     recommended value when any HTTP method is allowed.
 
-- [#41](https://github.com/zendframework/zend-expressive-router/pull/41) updates
+- [zendframework/zend-expressive-router#41](https://github.com/zendframework/zend-expressive-router/pull/41) updates
   the `RouteInterface` to add typehints for all arguments and return values. In
   particular, thse are now:
   - `addRoute(Route $route) : void`
   - `match(Psr\Http\Message\ServerRequestInterface $request) : RouteResult`
   - `generateUri(string $name, array $substitutions = [], array $options = []) : string`
 
-- [#47](https://github.com/zendframework/zend-expressive-router/pull/47)
+- [zendframework/zend-expressive-router#47](https://github.com/zendframework/zend-expressive-router/pull/47)
   modifies the `RouteMiddleware::$router` property to make it `protected`
   visibility, allowing extensions to work with it.
 
-- [#48](https://github.com/zendframework/zend-expressive-router/pull/48)
-  modifies `Zend\Expressive\Router\Route` to implement the PSR-15
+- [zendframework/zend-expressive-router#48](https://github.com/zendframework/zend-expressive-router/pull/48)
+  modifies `Mezzio\Router\Route` to implement the PSR-15
   `MiddlewareInterface`. The new `process()` method proxies to the composed
   middleware.
 
-- [#48](https://github.com/zendframework/zend-expressive-router/pull/48)
-  modifies `Zend\Expressive\Router\RouteResult` to implement the PSR-15
+- [zendframework/zend-expressive-router#48](https://github.com/zendframework/zend-expressive-router/pull/48)
+  modifies `Mezzio\Router\RouteResult` to implement the PSR-15
   `MiddlewareInterface`. The new `process()` method proxies to the composed
   `Route` instance in the case of a success, and otherwise delegates to the
   passed handler instance.
 
-- [#48](https://github.com/zendframework/zend-expressive-router/pull/48)
-  modifies `Zend\Expressive\Router\DispatchMiddleware` to process the
+- [zendframework/zend-expressive-router#48](https://github.com/zendframework/zend-expressive-router/pull/48)
+  modifies `Mezzio\Router\DispatchMiddleware` to process the
   `RouteResult` directly, instead of pulling middleware from it.
 
-- [#50](https://github.com/zendframework/zend-expressive-router/pull/50) renames
-  `Zend\Expressive\Router\RouteMiddleware` to
-  `Zend\Expressive\Router\Middleware\RouteMiddleware`.
+- [zendframework/zend-expressive-router#50](https://github.com/zendframework/zend-expressive-router/pull/50) renames
+  `Mezzio\Router\RouteMiddleware` to
+  `Mezzio\Router\Middleware\RouteMiddleware`.
 
-- [#50](https://github.com/zendframework/zend-expressive-router/pull/50) renames
-  `Zend\Expressive\Router\DispatchMiddleware` to
-  `Zend\Expressive\Router\Middleware\DispatchMiddleware`.
+- [zendframework/zend-expressive-router#50](https://github.com/zendframework/zend-expressive-router/pull/50) renames
+  `Mezzio\Router\DispatchMiddleware` to
+  `Mezzio\Router\Middleware\DispatchMiddleware`.
 
-- [#58](https://github.com/zendframework/zend-expressive-router/pull/58) changes
+- [zendframework/zend-expressive-router#58](https://github.com/zendframework/zend-expressive-router/pull/58) changes
   the constructor of `ImplicitHeadMiddleware` to accept a `RouterInterface`
   instead of a response factory. Internally, this allows it to re-match the
   current request using the `GET` method; the middleware never generates its own
   response any longer.
 
-- [#58](https://github.com/zendframework/zend-expressive-router/pull/58) changes
+- [zendframework/zend-expressive-router#58](https://github.com/zendframework/zend-expressive-router/pull/58) changes
   the logic of `Route::allowsMethod()`; it no longer returns `true` for `HEAD`
   or `OPTIONS` requests if they are not explicitly in the list of allowed
   methods.
 
-- [#59](https://github.com/zendframework/zend-expressive-router/pull/59) changes
+- [zendframework/zend-expressive-router#59](https://github.com/zendframework/zend-expressive-router/pull/59) changes
   the behavior of the `Route` constructor: it now raises an exception if the
   list of HTTP methods provided to it is empty. Routes MUST have one or more
   HTTP methods associated.
 
-- [#60](https://github.com/zendframework/zend-expressive-router/pull/60) changes
+- [zendframework/zend-expressive-router#60](https://github.com/zendframework/zend-expressive-router/pull/60) changes
   the behavior of the `RouteResult::getAllowedMethods()` to allow a nullable
   return value; this will return `null` if all methods are allowed.
 
 ### Removed
 
-- [#39](https://github.com/zendframework/zend-expressive-router/pull/39) and
-  [#41](https://github.com/zendframework/zend-expressive-router/pull/41) remove
+- [zendframework/zend-expressive-router#39](https://github.com/zendframework/zend-expressive-router/pull/39) and
+  [zendframework/zend-expressive-router#41](https://github.com/zendframework/zend-expressive-router/pull/41) remove
   PHP 5.6 and PHP 7.0 support.
 
-- [#48](https://github.com/zendframework/zend-expressive-router/pull/48)
-  removes the method `Zend\Expressive\Router\RouteResult::getMatchedMiddleware()`;
+- [zendframework/zend-expressive-router#48](https://github.com/zendframework/zend-expressive-router/pull/48)
+  removes the method `Mezzio\Router\RouteResult::getMatchedMiddleware()`;
   the method is no longer necessary, as the class now implements
   `MiddlewareInterface` and proxies to the underlying route.
 
-- [#58](https://github.com/zendframework/zend-expressive-router/pull/58) removes
+- [zendframework/zend-expressive-router#58](https://github.com/zendframework/zend-expressive-router/pull/58) removes
   the following methods from `Route`, as they are no longer used:
 
   - `implicitHead()`
@@ -320,12 +320,12 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#53](https://github.com/zendframework/zend-expressive-router/pull/53) fixes
+- [zendframework/zend-expressive-router#53](https://github.com/zendframework/zend-expressive-router/pull/53) fixes
   logic in the `ImplicitHeadMiddleware` and `ImplicitOptionsMiddleware` classes
   with regards to how they determine that an implicit `HEAD` or `OPTIONS`
   request (respectively) has occurred.
 
-- [#66](https://github.com/zendframework/zend-expressive-router/pull/66)
+- [zendframework/zend-expressive-router#66](https://github.com/zendframework/zend-expressive-router/pull/66)
   improves the exception message raised when a route conflict is detected to
   include the path, HTTP methods, and name (if available).
 
@@ -337,8 +337,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Changed
 
-- [#63](https://github.com/zendframework/zend-expressive-router/pull/63)
-  improves the deprecation notice raised by the `Zend\Expressive\Router\Route`
+- [zendframework/zend-expressive-router#63](https://github.com/zendframework/zend-expressive-router/pull/63)
+  improves the deprecation notice raised by the `Mezzio\Router\Route`
   constructor when non-middleware interface implementations are passed for the
   `$middleware` argument. The message not contains the path, HTTP methods, and
   middleware type that were used to create the `Route` instance.
@@ -359,30 +359,30 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#54](https://github.com/zendframework/zend-expressive-router/pull/54) adds
-  the middleware `Zend\Expressive\Router\Middleware\DispatchMiddleware` and
-  `Zend\Expressive\Router\Middleware\RouteMiddleware`. These are the same as the
+- [zendframework/zend-expressive-router#54](https://github.com/zendframework/zend-expressive-router/pull/54) adds
+  the middleware `Mezzio\Router\Middleware\DispatchMiddleware` and
+  `Mezzio\Router\Middleware\RouteMiddleware`. These are the same as the
   versions shipped in 2.3.0, but under a new namespace.
 
-- [#55](https://github.com/zendframework/zend-expressive-router/pull/55) adds
-  `Zend\Expressive\Router\Middleware\ImplicitHeadMiddleware`. It is imported
-  from zend-expressive, and implements the same functionality.
+- [zendframework/zend-expressive-router#55](https://github.com/zendframework/zend-expressive-router/pull/55) adds
+  `Mezzio\Router\Middleware\ImplicitHeadMiddleware`. It is imported
+  from mezzio, and implements the same functionality.
 
-- [#55](https://github.com/zendframework/zend-expressive-router/pull/55) adds
-  `Zend\Expressive\Router\Middleware\ImplicitOptionsMiddleware`. It is imported
-  from zend-expressive, and implements the same functionality.
+- [zendframework/zend-expressive-router#55](https://github.com/zendframework/zend-expressive-router/pull/55) adds
+  `Mezzio\Router\Middleware\ImplicitOptionsMiddleware`. It is imported
+  from mezzio, and implements the same functionality.
 
-- [#57](https://github.com/zendframework/zend-expressive-router/pull/57) adds
+- [zendframework/zend-expressive-router#57](https://github.com/zendframework/zend-expressive-router/pull/57) adds
   the following factories for use with PSR-11 containers:
 
-  - Zend\Expressive\Router\Middleware\DispatchMiddlewareFactory`
-  - Zend\Expressive\Router\Middleware\ImplicitHeadMiddlewareFactory`
-  - Zend\Expressive\Router\Middleware\ImplicitOptionsMiddlewareFactory`
-  - Zend\Expressive\Router\Middleware\RouteMiddlewareFactory`
+  - Mezzio\Router\Middleware\DispatchMiddlewareFactory`
+  - Mezzio\Router\Middleware\ImplicitHeadMiddlewareFactory`
+  - Mezzio\Router\Middleware\ImplicitOptionsMiddlewareFactory`
+  - Mezzio\Router\Middleware\RouteMiddlewareFactory`
 
-- [#57](https://github.com/zendframework/zend-expressive-router/pull/57) adds
-  `Zend\Expressive\Router\ConfigProvider`, mapping the above factories to their
-  respective middleware, and exposing it to zend-component-installer via the
+- [zendframework/zend-expressive-router#57](https://github.com/zendframework/zend-expressive-router/pull/57) adds
+  `Mezzio\Router\ConfigProvider`, mapping the above factories to their
+  respective middleware, and exposing it to laminas-component-installer via the
   package definition.
 
 ### Changed
@@ -391,25 +391,25 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Deprecated
 
-- [#56](https://github.com/zendframework/zend-expressive-router/pull/56)
-  deprecates the method `Zend\Expressive\RouteResult::getMatchedMiddleware()`,
+- [zendframework/zend-expressive-router#56](https://github.com/zendframework/zend-expressive-router/pull/56)
+  deprecates the method `Mezzio\RouteResult::getMatchedMiddleware()`,
   as it will be removed in version 3. If you need access to the middleware,
   use `getMatchedRoute()->getMiddleware()`. (In version 3, the `RouteResult`
   _is_ middleware, and will proxy to it.)
 
-- [#56](https://github.com/zendframework/zend-expressive-router/pull/56)
+- [zendframework/zend-expressive-router#56](https://github.com/zendframework/zend-expressive-router/pull/56)
   deprecates passing non-MiddlewareInterface instances to the constructor of
-  `Zend\Expressive\Route`. The class now triggers a deprecation notice when this
+  `Mezzio\Route`. The class now triggers a deprecation notice when this
   occurs, indicating the changes the developer needs to make.
 
-- [#54](https://github.com/zendframework/zend-expressive-router/pull/54)
-  deprecates the middleware `Zend\Expressive\Router\DispatchMiddleware` and
-  `Zend\Expressive\Router\RouteMiddleware`. The final versions in the v3 release
-  will be under the `Zend\Expressive\Router\Middleware` namespace; please use
+- [zendframework/zend-expressive-router#54](https://github.com/zendframework/zend-expressive-router/pull/54)
+  deprecates the middleware `Mezzio\Router\DispatchMiddleware` and
+  `Mezzio\Router\RouteMiddleware`. The final versions in the v3 release
+  will be under the `Mezzio\Router\Middleware` namespace; please use
   those instead.
 
-- [#55](https://github.com/zendframework/zend-expressive-router/pull/55)
-  deprecates two methods in `Zend\Expressive\Router\Route`:
+- [zendframework/zend-expressive-router#55](https://github.com/zendframework/zend-expressive-router/pull/55)
+  deprecates two methods in `Mezzio\Router\Route`:
 
   - `implicitHead()`
   - `implicitOptions()`
@@ -429,11 +429,11 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#46](https://github.com/zendframework/zend-expressive-router/pull/46) adds
-  two new middleware, imported from zend-expressive and re-worked for general
+- [zendframework/zend-expressive-router#46](https://github.com/zendframework/zend-expressive-router/pull/46) adds
+  two new middleware, imported from mezzio and re-worked for general
   purpose usage:
 
-  - `Zend\Expressive\Router\RouteMiddleware` composes a router and a response
+  - `Mezzio\Router\RouteMiddleware` composes a router and a response
     prototype. When processed, if no match is found due to an un-matched HTTP
     method, it uses the response prototype to create a 405 response with an
     `Allow` header listing allowed methods; otherwise, it dispatches to the next
@@ -442,7 +442,7 @@ All notable changes to this project will be documented in this file, in reverse 
     matched parameter is also added as a request attribute before delegating
     request handling.
 
-  - `Zend\Expressive\Router\DispatchMiddleware` checks for a `RouteResult`
+  - `Mezzio\Router\DispatchMiddleware` checks for a `RouteResult`
     attribute in the request. If none is found, it delegates handling of the
     request to the handler. If one is found, it pulls the matched middleware and
     processes it. If the middleware is not http-interop middleware, it raises an
@@ -468,7 +468,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#36](https://github.com/zendframework/zend-expressive-router/pull/36) adds
+- [zendframework/zend-expressive-router#36](https://github.com/zendframework/zend-expressive-router/pull/36) adds
   support for http-interop/http-middleware 0.5.0 via a polyfill provided by the
   package webimpress/http-middleware-compatibility. Essentially, this means you
   can drop this package into an application targeting either the 0.4.1 or 0.5.0
@@ -490,7 +490,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#32](https://github.com/zendframework/zend-expressive-router/pull/32) adds
+- [zendframework/zend-expressive-router#32](https://github.com/zendframework/zend-expressive-router/pull/32) adds
   support for [http-interop/http-middleware](https://github.com/http-interop/http-middleware)
   server middleware in `Route` instances.
 
@@ -510,9 +510,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#6](https://github.com/zendframework/zend-expressive-router/pull/6) modifies `RouterInterface::generateUri` to
+- [zendframework/zend-expressive-router#6](https://github.com/zendframework/zend-expressive-router/pull/6) modifies `RouterInterface::generateUri` to
   support an `$options` parameter, which may pass additional configuration options to the actual router.
-- [#21](https://github.com/zendframework/zend-expressive-router/pull/21) makes the configured path definition
+- [zendframework/zend-expressive-router#21](https://github.com/zendframework/zend-expressive-router/pull/21) makes the configured path definition
   accessible in the `RouteResult`.
 
 ### Deprecated
@@ -543,9 +543,9 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#29](https://github.com/zendframework/zend-expressive-router/pull/29) removes
-  the patch introduced with [#27](https://github.com/zendframework/zend-expressive-router/pull/27)
-  and 1.3.1, as it causes `Zend\Expressive\Application` to raise exceptions
+- [zendframework/zend-expressive-router#29](https://github.com/zendframework/zend-expressive-router/pull/29) removes
+  the patch introduced with [zendframework/zend-expressive-router#27](https://github.com/zendframework/zend-expressive-router/pull/27)
+  and 1.3.1, as it causes `Mezzio\Application` to raise exceptions
   regarding duplicate routes, and because some implementations, including
   FastRoute, also raise errors on duplication. It will be up to individual
   routers to determine how to handle implicit HEAD and OPTIONS support.
@@ -566,22 +566,22 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#27](https://github.com/zendframework/zend-expressive-router/pull/27) fixes
+- [zendframework/zend-expressive-router#27](https://github.com/zendframework/zend-expressive-router/pull/27) fixes
   the behavior of `Route` to _always_ register `HEAD` and `OPTIONS` as allowed
-  methods; this was the original intent of [#24](https://github.com/zendframework/zend-expressive-router/pull/24).
+  methods; this was the original intent of [zendframework/zend-expressive-router#24](https://github.com/zendframework/zend-expressive-router/pull/24).
 
 ## 1.3.0 - 2016-12-13
 
 ### Added
 
-- [#23](https://github.com/zendframework/zend-expressive-router/pull/23) adds a
+- [zendframework/zend-expressive-router#23](https://github.com/zendframework/zend-expressive-router/pull/23) adds a
   new static method on the `RouteResult` class, `fromRoute(Route $route, array
   $params = [])`, for creating a new `RouteResult` instance. It also adds
   `getMatchedRoute()` for retrieving the `Route` instance provided to that
   method. Doing so allows retrieving the list of supported HTTP methods, path,
   and route options from the matched route.
 
-- [#24](https://github.com/zendframework/zend-expressive-router/pull/24) adds
+- [zendframework/zend-expressive-router#24](https://github.com/zendframework/zend-expressive-router/pull/24) adds
   two new methods to the `Route` class, `implicitHead()` and
   `implicitOptions()`. These can be used by routers or dispatchers to determine
   if a match based on `HEAD` or `OPTIONS` requests was due to the developer
@@ -590,7 +590,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Deprecated
 
-- [#23](https://github.com/zendframework/zend-expressive-router/pull/23)
+- [zendframework/zend-expressive-router#23](https://github.com/zendframework/zend-expressive-router/pull/23)
   deprecates `RouteResult::fromRouteMatch()` in favor of the new `fromRoute()`
   method.
 
@@ -610,10 +610,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Deprecated
 
-- [#5](https://github.com/zendframework/zend-expressive-router/pull/5)
+- [zendframework/zend-expressive-router#5](https://github.com/zendframework/zend-expressive-router/pull/5)
   deprecates both `RouteResultObserverInterface` and
   `RouteResultSubjectInterface`. The changes introduced in
-  [zend-expressive #270](https://github.com/zendframework/zend-expressive/pull/270)
+  [mezzio zendframework/zend-expressive-router#270](https://github.com/zendframework/zend-expressive/pull/270)
   make the system obsolete. The interfaces will be removed in 2.0.0.
 
 ### Removed
@@ -628,7 +628,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#4](https://github.com/zendframework/zend-expressive-router/pull/4) adds
+- [zendframework/zend-expressive-router#4](https://github.com/zendframework/zend-expressive-router/pull/4) adds
   `RouteResultSubjectInterface`, a complement to `RouteResultObserverInterface`,
   defining the following methods:
   - `attachRouteResultObserver(RouteResultObserverInterface $observer)`
@@ -641,7 +641,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Removed
 
-- [#4](https://github.com/zendframework/zend-expressive-router/pull/4) removes
+- [zendframework/zend-expressive-router#4](https://github.com/zendframework/zend-expressive-router/pull/4) removes
   the deprecation notice from `RouteResultObserverInterface`.
 
 ### Fixed
@@ -656,8 +656,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Deprecated
 
-- [#3](https://github.com/zendframework/zend-expressive-router/pull/3) deprecates `RouteResultObserverInterface`, which
-  [has been moved to the `Zend\Expressive` namespace and package](https://github.com/zendframework/zend-expressive/pull/206).
+- [zendframework/zend-expressive-router#3](https://github.com/zendframework/zend-expressive-router/pull/3) deprecates `RouteResultObserverInterface`, which
+  [has been moved to the `Mezzio` namespace and package](https://github.com/zendframework/zend-expressive/pull/206).
 
 ### Removed
 
@@ -665,7 +665,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#1](https://github.com/zendframework/zend-expressive-router/pull/1) fixes the
+- [zendframework/zend-expressive-router#1](https://github.com/zendframework/zend-expressive-router/pull/1) fixes the
   coveralls support to trigger after scripts, so the status of the check does
   not make the tests fail. Additionally, ensured that coveralls can receive
   the coverage report!
@@ -674,5 +674,5 @@ All notable changes to this project will be documented in this file, in reverse 
 
 First stable release.
 
-See the [Expressive CHANGELOG](https://github.com/zendframework/zend-expressive/blob/master/CHANGELOG.md]
+See the [Mezzio CHANGELOG](https://github.com/mezzio/mezzio/blob/master/CHANGELOG.md]
 for a history of changes prior to 1.0.
