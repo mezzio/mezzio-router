@@ -1,13 +1,14 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2015-2017 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace Zend\Expressive\Router;
+namespace Mezzio\Router;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -56,7 +57,7 @@ interface RouterInterface
      * to league/uri to encode it.
      *
      * @see https://github.com/auraphp/Aura.Router/blob/3.x/docs/generating-paths.md
-     * @see https://docs.zendframework.com/zend-router/routing/
+     * @see https://docs.laminas.dev/laminas-router/routing/
      * @throws Exception\RuntimeException if unable to generate the given URI.
      */
     public function generateUri(string $name, array $substitutions = [], array $options = []) : string;
