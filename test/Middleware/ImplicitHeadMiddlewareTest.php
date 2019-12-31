@@ -1,15 +1,20 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace ZendTest\Expressive\Router\Middleware;
+namespace MezzioTest\Router\Middleware;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
+use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
+use Mezzio\Router\Route;
+use Mezzio\Router\RouteResult;
+use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -17,10 +22,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Expressive\Router\Middleware\ImplicitHeadMiddleware;
-use Zend\Expressive\Router\Route;
-use Zend\Expressive\Router\RouteResult;
-use Zend\Expressive\Router\RouterInterface;
 
 class ImplicitHeadMiddlewareTest extends TestCase
 {
@@ -110,6 +111,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
 
         $this->router->match($request)->will([$result, 'reveal']);
         $request->withAttribute(RouteResult::class, $result)->will([$request, 'reveal']);
+        $request->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result)->will([$request, 'reveal']);
 
         $handler = $this->prophesize(RequestHandlerInterface::class);
         $handler->handle($request->reveal())->will([$this->response, 'reveal']);
@@ -145,6 +147,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
         $result->getMatchedRoute()->will([$route, 'reveal']);
 
         $request->withAttribute(RouteResult::class, $result->reveal())->will([$request, 'reveal']);
+        $request->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result->reveal())->will([$request, 'reveal']);
 
         $this->router->match($request)->will([$result, 'reveal']);
 
