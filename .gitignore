@@ -1,4 +1,4 @@
-vendor/
-clover.xml
-composer.lock
-coveralls-upload.json
+/clover.xml
+/composer.lock
+/coveralls-upload.json
+/vendor/
