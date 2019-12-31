@@ -1,11 +1,12 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2015-2016 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
-namespace Zend\Expressive\Router;
+namespace Mezzio\Router;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -58,7 +59,7 @@ interface RouterInterface
      * to league/uri to encode it.
      *
      * @see https://github.com/auraphp/Aura.Router#generating-a-route-path
-     * @see http://framework.zend.com/manual/current/en/modules/zend.mvc.routing.html
+     * @see https://docs.laminas.dev/laminas.mvc.routing.html
      * @param string $name
      * @param array $substitutions
      * @param array $options
