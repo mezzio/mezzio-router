@@ -1,28 +1,29 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2015-2017 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace ZendTest\Expressive\Router;
+namespace MezzioTest\Router;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
+use Mezzio\Router\Exception\InvalidArgumentException;
+use Mezzio\Router\Route;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TypeError;
-use Zend\Expressive\Router\Exception\InvalidArgumentException;
-use Zend\Expressive\Router\Route;
 
 use function sprintf;
 
 /**
- * @covers \Zend\Expressive\Router\Route
+ * @covers \Mezzio\Router\Route
  */
 class RouteTest extends TestCase
 {

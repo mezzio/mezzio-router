@@ -1,25 +1,26 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace Zend\Expressive\Router\Middleware;
+namespace Mezzio\Router\Middleware;
 
+use Mezzio\Router\Exception\MissingDependencyException;
+use Mezzio\Router\RouterInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\StreamInterface;
-use Zend\Expressive\Router\Exception\MissingDependencyException;
-use Zend\Expressive\Router\RouterInterface;
 
 /**
  * Create and return an ImplicitHeadMiddleware instance.
  *
  * This factory depends on two other services:
  *
- * - Zend\Expressive\Router\RouterInterface, which should resolve to an
+ * - Mezzio\Router\RouterInterface, which should resolve to an
  *   instance of that interface.
  * - Psr\Http\Message\StreamInterface, which should resolve to a callable
  *   that will produce an empty Psr\Http\Message\StreamInterface instance.
@@ -27,12 +28,14 @@ use Zend\Expressive\Router\RouterInterface;
 class ImplicitHeadMiddlewareFactory
 {
     /**
-     * @throws MissingDependencyException if either the Zend\Expressive\Router\RouterInterface
+     * @throws MissingDependencyException if either the Mezzio\Router\RouterInterface
      *     or Psr\Http\Message\StreamInterface services are missing.
      */
     public function __invoke(ContainerInterface $container) : ImplicitHeadMiddleware
     {
-        if (! $container->has(RouterInterface::class)) {
+        if (! $container->has(RouterInterface::class)
+            && ! $container->has(\Zend\Expressive\Router\RouterInterface::class)
+        ) {
             throw MissingDependencyException::dependencyForService(
                 RouterInterface::class,
                 ImplicitHeadMiddleware::class
@@ -47,7 +50,7 @@ class ImplicitHeadMiddlewareFactory
         }
 
         return new ImplicitHeadMiddleware(
-            $container->get(RouterInterface::class),
+            $container->has(RouterInterface::class) ? $container->get(RouterInterface::class) : $container->get(\Zend\Expressive\Router\RouterInterface::class),
             $container->get(StreamInterface::class)
         );
     }
