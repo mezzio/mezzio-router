@@ -1,15 +1,27 @@
 {
-    "name": "zendframework/zend-expressive-router",
-    "description": "Router subcomponent for Expressive",
-    "type": "library",
+    "name": "mezzio/mezzio-router",
+    "description": "Router subcomponent for Mezzio",
     "license": "BSD-3-Clause",
     "keywords": [
-        "expressive",
+        "laminas",
+        "mezzio",
         "http",
         "middleware",
         "psr",
         "psr-7"
     ],
+    "homepage": "https://mezzio.dev",
+    "support": {
+        "docs": "https://docs.mezzio.dev/mezzio-router/",
+        "issues": "https://github.com/mezzio/mezzio-router/issues",
+        "source": "https://github.com/mezzio/mezzio-router",
+        "rss": "https://github.com/mezzio/mezzio-router/releases.atom",
+        "chat": "https://laminas.dev/chat",
+        "forum": "https://discourse.laminas.dev"
+    },
+    "config": {
+        "sort-packages": true
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "1.2-dev",
@@ -18,26 +30,27 @@
     },
     "require": {
         "php": "^5.5 || ^7.0",
+        "laminas/laminas-zendframework-bridge": "^1.0",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.7",
         "squizlabs/php_codesniffer": "^2.3"
     },
+    "suggest": {
+        "mezzio/mezzio-aurarouter": "^0.1 to use the Aura.Router routing adapter",
+        "mezzio/mezzio-fastroute": "^0.1 to use the FastRoute routing adapter",
+        "mezzio/mezzio-laminasrouter": "^0.1 to use the laminas-mvc routing adapter"
+    },
     "autoload": {
-      "psr-4": {
-        "Zend\\Expressive\\Router\\": "src/"
-      }
+        "psr-4": {
+            "Mezzio\\Router\\": "src/"
+        }
     },
     "autoload-dev": {
-      "psr-4": {
-        "ZendTest\\Expressive\\Router\\": "test/"
-      }
-    },
-    "suggest": {
-        "zendframework/zend-expressive-aurarouter": "^0.1 to use the Aura.Router routing adapter",
-        "zendframework/zend-expressive-fastroute": "^0.1 to use the FastRoute routing adapter",
-        "zendframework/zend-expressive-zendrouter": "^0.1 to use the zend-mvc routing adapter"
+        "psr-4": {
+            "MezzioTest\\Router\\": "test/"
+        }
     },
     "scripts": {
         "check": [
@@ -49,5 +62,8 @@
         "cs-fix": "phpcbf",
         "test": "phpunit",
         "test-coverage": "phpunit --coverage-clover clover.xml"
+    },
+    "replace": {
+        "zendframework/zend-expressive-router": "self.version"
     }
 }
