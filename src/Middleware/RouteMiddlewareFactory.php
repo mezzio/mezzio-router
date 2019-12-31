@@ -1,23 +1,24 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
-namespace Zend\Expressive\Router\Middleware;
+namespace Mezzio\Router\Middleware;
 
+use Mezzio\Router\Exception\MissingDependencyException;
+use Mezzio\Router\RouterInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
-use Zend\Expressive\Router\Exception\MissingDependencyException;
-use Zend\Expressive\Router\RouterInterface;
 
 /**
  * Create and return a RouteMiddleware instance.
  *
  * This factory depends on one other service:
  *
- * - Zend\Expressive\Router\RouterInterface, which should resolve to
+ * - Mezzio\Router\RouterInterface, which should resolve to
  *   a class implementing that interface.
  * - Psr\Http\Message\ResponseInterface, which should resolve to an instance
  *   implementing that interface. NOTE: in version 3, this should resolve to a
@@ -32,7 +33,9 @@ class RouteMiddlewareFactory
      */
     public function __invoke(ContainerInterface $container)
     {
-        if (! $container->has(RouterInterface::class)) {
+        if (! $container->has(RouterInterface::class)
+            && ! $container->has(\Zend\Expressive\Router\RouterInterface::class)
+        ) {
             throw MissingDependencyException::dependencyForService(
                 RouterInterface::class,
                 RouteMiddleware::class
@@ -53,6 +56,6 @@ class RouteMiddlewareFactory
             $response = $response();
         }
 
-        return new RouteMiddleware($container->get(RouterInterface::class), $response);
+        return new RouteMiddleware($container->has(RouterInterface::class) ? $container->get(RouterInterface::class) : $container->get(\Zend\Expressive\Router\RouterInterface::class), $response);
     }
 }

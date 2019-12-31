@@ -1,24 +1,25 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2015-2017 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
-namespace ZendTest\Expressive\Router;
+namespace MezzioTest\Router;
 
-use Interop\Http\Middleware\ServerMiddlewareInterface as LegacyPre041MiddlewareInterface;
-use Interop\Http\ServerMiddleware\MiddlewareInterface as Legacy041MiddlewareInterface;
-use Interop\Http\Server\MiddlewareInterface as Legacy050MiddlewareInterface;
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
+use Interop\Http\Middleware\ServerMiddlewareInterface as LegacyPre041MiddlewareInterface;
+use Interop\Http\Server\MiddlewareInterface as Legacy050MiddlewareInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface as Legacy041MiddlewareInterface;
+use Mezzio\Router\Exception\InvalidArgumentException;
+use Mezzio\Router\Route;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Webimpress\HttpMiddlewareCompatibility\MiddlewareInterface;
-use Zend\Expressive\Router\Exception\InvalidArgumentException;
-use Zend\Expressive\Router\Route;
 
 /**
- * @covers \Zend\Expressive\Router\Route
+ * @covers \Mezzio\Router\Route
  */
 class RouteTest extends TestCase
 {

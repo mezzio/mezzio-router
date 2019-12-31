@@ -1,20 +1,21 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-router/blob/master/LICENSE.md New BSD License
  */
 
-namespace Zend\Expressive\Router\Middleware;
+namespace Mezzio\Router\Middleware;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
+use Mezzio\Router\RouteResult;
+use Mezzio\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Webimpress\HttpMiddlewareCompatibility\HandlerInterface as RequestHandlerInterface;
 use Webimpress\HttpMiddlewareCompatibility\MiddlewareInterface;
-use Zend\Expressive\Router\RouteResult;
-use Zend\Expressive\Router\RouterInterface;
 
 use const Webimpress\HttpMiddlewareCompatibility\HANDLER_METHOD;
 
