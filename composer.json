@@ -12,7 +12,7 @@
     ],
     "homepage": "https://mezzio.dev",
     "support": {
-        "docs": "https://docs.mezzio.dev/mezzio-router/",
+        "docs": "https://docs.mezzio.dev/mezzio/features/router/intro/",
         "issues": "https://github.com/mezzio/mezzio-router/issues",
         "source": "https://github.com/mezzio/mezzio-router",
         "rss": "https://github.com/mezzio/mezzio-router/releases.atom",
