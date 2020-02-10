@@ -130,14 +130,15 @@ class Route implements MiddlewareInterface
     public function allowsMethod(string $method): bool
     {
         $method = strtoupper($method);
-        if (
-            $this->methods === self::HTTP_METHOD_ANY
-            || in_array($method, $this->methods, true)
-        ) {
-            return true;
-        }
+        return $this->allowsAnyMethod() || in_array($method, $this->methods, true);
+    }
 
-        return false;
+    /**
+     * Indicate whether any method is allowed by the route.
+     */
+    public function allowsAnyMethod(): bool
+    {
+        return $this->methods === self::HTTP_METHOD_ANY;
     }
 
     public function setOptions(array $options): void
