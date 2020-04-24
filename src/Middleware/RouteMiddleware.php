@@ -44,7 +44,9 @@ class RouteMiddleware implements MiddlewareInterface
         $result = $this->router->match($request);
 
         // Inject the actual route result, as well as individual matched parameters.
-        $request = $request->withAttribute(RouteResult::class, $result)->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result);
+        $request = $request
+            ->withAttribute(RouteResult::class, $result)
+            ->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result);
 
         if ($result->isSuccess()) {
             foreach ($result->getMatchedParams() as $param => $value) {

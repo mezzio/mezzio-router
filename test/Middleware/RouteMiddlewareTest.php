@@ -56,7 +56,9 @@ class RouteMiddlewareTest extends TestCase
         $this->handler->handle($this->request->reveal())->will([$this->response, 'reveal']);
 
         $this->request->withAttribute(RouteResult::class, $result)->will([$this->request, 'reveal']);
-        $this->request->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result)->will([$this->request, 'reveal']);
+        $this->request
+            ->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result)
+            ->will([$this->request, 'reveal']);
 
         $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
         $this->assertSame($this->response->reveal(), $response);
@@ -70,7 +72,9 @@ class RouteMiddlewareTest extends TestCase
         $this->handler->handle($this->request->reveal())->will([$this->response, 'reveal']);
 
         $this->request->withAttribute(RouteResult::class, $result)->will([$this->request, 'reveal']);
-        $this->request->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result)->will([$this->request, 'reveal']);
+        $this->request
+            ->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result)
+            ->will([$this->request, 'reveal']);
 
         $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
         $this->assertSame($this->response->reveal(), $response);

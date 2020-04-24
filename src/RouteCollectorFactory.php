@@ -37,6 +37,10 @@ class RouteCollectorFactory
             );
         }
 
-        return new RouteCollector($container->has(RouterInterface::class) ? $container->get(RouterInterface::class) : $container->get(\Zend\Expressive\Router\RouterInterface::class));
+        return new RouteCollector(
+            $container->has(RouterInterface::class)
+                ? $container->get(RouterInterface::class)
+                : $container->get(\Zend\Expressive\Router\RouterInterface::class)
+        );
     }
 }
