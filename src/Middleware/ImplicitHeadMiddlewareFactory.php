@@ -50,7 +50,9 @@ class ImplicitHeadMiddlewareFactory
         }
 
         return new ImplicitHeadMiddleware(
-            $container->has(RouterInterface::class) ? $container->get(RouterInterface::class) : $container->get(\Zend\Expressive\Router\RouterInterface::class),
+            $container->has(RouterInterface::class)
+                ? $container->get(RouterInterface::class)
+                : $container->get(\Zend\Expressive\Router\RouterInterface::class),
             $container->get(StreamInterface::class)
         );
     }
