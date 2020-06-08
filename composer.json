@@ -35,6 +35,7 @@
         "php": "^7.1",
         "fig/http-message-util": "^1.1.2",
         "laminas/laminas-zendframework-bridge": "^1.0",
+        "phpspec/prophecy": "^1.9",
         "psr/container": "^1.0",
         "psr/http-message": "^1.0.1",
         "psr/http-server-middleware": "^1.0"
