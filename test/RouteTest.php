@@ -158,7 +158,7 @@ class RouteTest extends TestCase
     public function testThrowsExceptionDuringConstructionOnInvalidHttpMethod()
     {
         $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('must be of the type array, string given');
+        $this->expectExceptionMessage('must be of the type array or null, string given');
 
         new Route('/foo', $this->noopMiddleware, 'FOO');
     }

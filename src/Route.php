@@ -78,8 +78,8 @@ class Route implements MiddlewareInterface
     public function __construct(
         string $path,
         MiddlewareInterface $middleware,
-        array $methods = self::HTTP_METHOD_ANY,
-        string $name = null
+        ?array $methods = self::HTTP_METHOD_ANY,
+        ?string $name = null
     ) {
         $this->path       = $path;
         $this->middleware = $middleware;
