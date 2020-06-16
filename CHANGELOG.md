@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Changed
 
-- Nothing.
+- [#5](https://github.com/mezzio/mezzio-router/pull/5) removes verbiage in `RouterInterface::addRoute()` around when to raise exceptions within implementations. No current implementations have a need to, and the verbiage could almost be construed as proscribing implementation details.
 
 ### Deprecated
 
