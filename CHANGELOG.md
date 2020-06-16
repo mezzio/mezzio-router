@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- [#4](https://github.com/mezzio/mezzio-router/pull/4) updates the `$methods` and `$name` arguments to the `Route` constructor to make them nullable. Both already allowed `null` values internally, but the constructor did not reflect that.
 
 ## 3.1.1 - 2019-10-16
 
