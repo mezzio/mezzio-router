@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
+## 3.1.3 - 2020-06-22
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- [#6](https://github.com/mezzio/mezzio-router/pull/6) moves the phpspec/prophecy requirement to the require-dev section, as it is unnedeed in production.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
 ## 3.1.2 - 2020-06-16
 
 ### Added
@@ -58,28 +80,6 @@ All notable changes to this project will be documented in this file, in reverse 
   `$routererviceName` to its constructor. This change allows having discrete
   factory instances for generating route middleware that use different router
   instances.
-
-### Deprecated
-
-- Nothing.
-
-### Removed
-
-- Nothing.
-
-### Fixed
-
-- Nothing.
-
-## 3.0.4 - TBD
-
-### Added
-
-- Nothing.
-
-### Changed
-
-- Nothing.
 
 ### Deprecated
 
