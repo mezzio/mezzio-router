@@ -12,31 +12,27 @@ env:
 matrix:
   fast_finish: true
   include:
-    - php: 7.1
+    - php: 7.3
       env:
         - DEPS=lowest
-    - php: 7.1
+    - php: 7.3
       env:
         - DEPS=latest
         - CS_CHECK=true
         - TEST_COVERAGE=true
-    - php: 7.2
-      env:
-        - DEPS=lowest
-    - php: 7.2
-      env:
-        - DEPS=latest
-    - php: 7.3
-      env:
-        - DEPS=lowest
-    - php: 7.3
-      env:
-        - DEPS=latest
     - php: 7.4
       env:
         - DEPS=lowest
     - php: 7.4
       env:
+        - DEPS=latest
+    - php: nightly
+      env:
+        - COMPOSER_ARGS="--no-interaction --ignore-platform-reqs"
+        - DEPS=lowest
+    - php: nightly
+      env:
+        - COMPOSER_ARGS="--no-interaction --ignore-platform-reqs"
         - DEPS=latest
 
 before_install:

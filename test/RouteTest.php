@@ -135,6 +135,7 @@ class RouteTest extends TestCase
 
     /**
      * @requires PHP 7.3
+     * @requires PHP < 8.0
      */
     public function testThrowsExceptionDuringConstructionIfPathIsNotString()
     {
@@ -144,6 +145,9 @@ class RouteTest extends TestCase
         new Route(12345, $this->noopMiddleware);
     }
 
+    /**
+     * @requires PHP < 8.0
+     */
     public function testThrowsExceptionDuringConstructionOnInvalidMiddleware()
     {
         $this->expectException(TypeError::class);
@@ -155,6 +159,9 @@ class RouteTest extends TestCase
         new Route('/foo', 12345);
     }
 
+    /**
+     * @requires PHP < 8.0
+     */
     public function testThrowsExceptionDuringConstructionOnInvalidHttpMethod()
     {
         $this->expectException(TypeError::class);
@@ -221,6 +228,7 @@ class RouteTest extends TestCase
     }
 
     /**
+     * @requires PHP < 8.0
      * @dataProvider invalidMiddleware
      *
      * @param mixed $middleware

@@ -63,7 +63,11 @@ class RouteMiddlewareFactoryTest extends TestCase
         $middleware = $factory($this->container->reveal());
 
         $this->assertInstanceOf(RouteMiddleware::class, $middleware);
-        $this->assertAttributeSame($router, 'router', $middleware);
+
+        $middlewareRouter = \Closure::bind(function () {
+            return $this->router;
+        }, $middleware, RouteMiddleware::class)();
+        $this->assertSame($router, $middlewareRouter);
     }
 
     public function testFactoryIsSerializable()
@@ -72,6 +76,10 @@ class RouteMiddlewareFactoryTest extends TestCase
             'routerServiceName' => Router::class,
         ]);
 
-        $this->assertAttributeSame(Router::class, 'routerServiceName', $factory);
+        $factoryRouterServiceName = \Closure::bind(function () {
+            return $this->routerServiceName;
+        }, $factory, RouteMiddlewareFactory::class)();
+
+        $this->assertSame(Router::class, $factoryRouterServiceName);
     }
 }
