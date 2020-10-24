@@ -24,11 +24,33 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - Nothing.
 
-## 3.1.3 - 2020-06-22
+## 3.2.0 - 2020-10-24
 
 ### Added
 
 - [#9](https://github.com/mezzio/mezzio-router/pull/9) Add PHP 8.0 support
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
+## 3.1.3 - 2020-06-22
+
+### Added
+
+- Nothing.
 
 ### Changed
 
