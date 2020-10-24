@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\StreamInterface;
+use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 class ImplicitHeadMiddlewareFactoryTest extends TestCase
 {
@@ -27,16 +28,16 @@ class ImplicitHeadMiddlewareFactoryTest extends TestCase
     /** @var ImplicitHeadMiddlewareFactory */
     private $factory;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->container = $this->prophesize(ContainerInterface::class);
-        $this->factory = new ImplicitHeadMiddlewareFactory();
+        $this->factory   = new ImplicitHeadMiddlewareFactory();
     }
 
     public function testFactoryRaisesExceptionIfRouterInterfaceServiceIsMissing()
     {
         $this->container->has(RouterInterface::class)->willReturn(false);
-        $this->container->has(\Zend\Expressive\Router\RouterInterface::class)->willReturn(false);
+        $this->container->has(ZendExpressiveRouterInterface::class)->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);
         ($this->factory)($this->container->reveal());
@@ -53,7 +54,7 @@ class ImplicitHeadMiddlewareFactoryTest extends TestCase
 
     public function testFactoryProducesImplicitHeadMiddlewareWhenAllDependenciesPresent()
     {
-        $router = $this->prophesize(RouterInterface::class);
+        $router        = $this->prophesize(RouterInterface::class);
         $streamFactory = function () {
         };
 

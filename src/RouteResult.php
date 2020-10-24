@@ -37,32 +37,24 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class RouteResult implements MiddlewareInterface
 {
-    /**
-     * @var null|string[]
-     */
+    /** @var null|string[] */
     private $allowedMethods = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $matchedParams = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $matchedRouteName;
 
     /**
      * Route matched during routing
      *
      * @since 1.3.0
-     * @var Route $route
+     * @var Route
      */
     private $route;
 
-    /**
-     * @var bool Success state of routing.
-     */
+    /** @var bool Success state of routing. */
     private $success;
 
     /**
@@ -70,7 +62,7 @@ class RouteResult implements MiddlewareInterface
      *
      * @param array $params Parameters associated with the matched route, if any.
      */
-    public static function fromRoute(Route $route, array $params = []) : self
+    public static function fromRoute(Route $route, array $params = []): self
     {
         $result                = new self();
         $result->success       = true;
@@ -85,10 +77,10 @@ class RouteResult implements MiddlewareInterface
      * @param null|array $methods HTTP methods allowed for the current URI, if any.
      *     null is equivalent to allowing any HTTP method; empty array means none.
      */
-    public static function fromRouteFailure(?array $methods) : self
+    public static function fromRouteFailure(?array $methods): self
     {
-        $result = new self();
-        $result->success = false;
+        $result                 = new self();
+        $result->success        = false;
         $result->allowedMethods = $methods;
 
         return $result;
@@ -102,7 +94,7 @@ class RouteResult implements MiddlewareInterface
      * Otherwise, it processes the composed middleware using the provide request
      * and handler.
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->isFailure()) {
             return $handler->handle($request);
@@ -114,7 +106,7 @@ class RouteResult implements MiddlewareInterface
     /**
      * Does the result represent successful routing?
      */
-    public function isSuccess() : bool
+    public function isSuccess(): bool
     {
         return $this->success;
     }
@@ -156,7 +148,7 @@ class RouteResult implements MiddlewareInterface
      *
      * Guaranted to return an array, even if it is simply empty.
      */
-    public function getMatchedParams() : array
+    public function getMatchedParams(): array
     {
         return $this->matchedParams;
     }
@@ -164,15 +156,15 @@ class RouteResult implements MiddlewareInterface
     /**
      * Is this a routing failure result?
      */
-    public function isFailure() : bool
+    public function isFailure(): bool
     {
-        return (! $this->success);
+        return ! $this->success;
     }
 
     /**
      * Does the result represent failure to route due to HTTP method?
      */
-    public function isMethodFailure() : bool
+    public function isMethodFailure(): bool
     {
         if ($this->isSuccess() || $this->allowedMethods === Route::HTTP_METHOD_ANY) {
             return false;
@@ -186,7 +178,7 @@ class RouteResult implements MiddlewareInterface
      *
      * @return null|string[] HTTP methods allowed
      */
-    public function getAllowedMethods() : ?array
+    public function getAllowedMethods(): ?array
     {
         if ($this->isSuccess()) {
             return $this->route

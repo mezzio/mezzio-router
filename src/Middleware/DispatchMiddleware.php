@@ -26,7 +26,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class DispatchMiddleware implements MiddlewareInterface
 {
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $routeResult = $request->getAttribute(RouteResult::class, false);
         if (! $routeResult) {

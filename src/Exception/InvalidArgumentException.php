@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Mezzio\Router\Exception;
 
-class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
+use InvalidArgumentException as PhpInvalidArgumentException;
+
+class InvalidArgumentException extends PhpInvalidArgumentException implements ExceptionInterface
 {
 }

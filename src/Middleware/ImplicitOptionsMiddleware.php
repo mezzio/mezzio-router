@@ -44,9 +44,7 @@ use function implode;
  */
 class ImplicitOptionsMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var callable
-     */
+    /** @var callable */
     private $responseFactory;
 
     /**
@@ -57,7 +55,7 @@ class ImplicitOptionsMiddleware implements MiddlewareInterface
     public function __construct(callable $responseFactory)
     {
         // Factories is wrapped in a closure in order to enforce return type safety.
-        $this->responseFactory = function () use ($responseFactory) : ResponseInterface {
+        $this->responseFactory = function () use ($responseFactory): ResponseInterface {
             return $responseFactory();
         };
     }
@@ -65,7 +63,7 @@ class ImplicitOptionsMiddleware implements MiddlewareInterface
     /**
      * Handle an implicit OPTIONS request.
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($request->getMethod() !== RequestMethod::METHOD_OPTIONS) {
             return $handler->handle($request);

@@ -18,6 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 /**
  * Handle implicit HEAD requests.
@@ -48,14 +49,10 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
 {
     public const FORWARDED_HTTP_METHOD_ATTRIBUTE = 'forwarded_http_method';
 
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     private $router;
 
-    /**
-     * @var callable
-     */
+    /** @var callable */
     private $streamFactory;
 
     /**
@@ -67,7 +64,7 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
         $this->router = $router;
 
         // Factory is wrapped in closur in order to enforce return type safety.
-        $this->streamFactory = function () use ($streamFactory) : StreamInterface {
+        $this->streamFactory = function () use ($streamFactory): StreamInterface {
             return $streamFactory();
         };
     }
@@ -79,7 +76,7 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
      * resets the response body to be empty; otherwise, creates a new empty
      * response.
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($request->getMethod() !== RequestMethod::METHOD_HEAD) {
             return $handler->handle($request);
@@ -107,7 +104,7 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
         $response = $handler->handle(
             $request
                 ->withAttribute(RouteResult::class, $routeResult)
-                ->withAttribute(\Zend\Expressive\Router\RouteResult::class, $routeResult)
+                ->withAttribute(ZendExpressiveRouteResult::class, $routeResult)
                 ->withMethod(RequestMethod::METHOD_GET)
                 ->withAttribute(self::FORWARDED_HTTP_METHOD_ATTRIBUTE, RequestMethod::METHOD_HEAD)
         );

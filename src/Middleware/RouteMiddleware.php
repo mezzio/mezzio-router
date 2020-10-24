@@ -16,6 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 /**
  * Default routing middleware.
@@ -29,9 +30,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class RouteMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     protected $router;
 
     public function __construct(RouterInterface $router)
@@ -39,14 +38,14 @@ class RouteMiddleware implements MiddlewareInterface
         $this->router = $router;
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $result = $this->router->match($request);
 
         // Inject the actual route result, as well as individual matched parameters.
         $request = $request
             ->withAttribute(RouteResult::class, $result)
-            ->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result);
+            ->withAttribute(ZendExpressiveRouteResult::class, $result);
 
         if ($result->isSuccess()) {
             foreach ($result->getMatchedParams() as $param => $value) {

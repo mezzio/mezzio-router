@@ -19,8 +19,8 @@ class DispatchMiddlewareFactoryTest extends TestCase
 {
     public function testFactoryProducesDispatchMiddleware()
     {
-        $container = $this->prophesize(ContainerInterface::class)->reveal();
-        $factory = new DispatchMiddlewareFactory();
+        $container  = $this->prophesize(ContainerInterface::class)->reveal();
+        $factory    = new DispatchMiddlewareFactory();
         $middleware = $factory($container);
         $this->assertInstanceOf(DispatchMiddleware::class, $middleware);
     }

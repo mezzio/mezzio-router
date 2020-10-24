@@ -20,6 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 class RouteMiddlewareTest extends TestCase
 {
@@ -38,12 +39,12 @@ class RouteMiddlewareTest extends TestCase
     /** @var RequestHandlerInterface|ObjectProphecy */
     private $handler;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        $this->router     = $this->prophesize(RouterInterface::class);
-        $this->request = $this->prophesize(ServerRequestInterface::class);
-        $this->response   = $this->prophesize(ResponseInterface::class);
-        $this->handler = $this->prophesize(RequestHandlerInterface::class);
+        $this->router   = $this->prophesize(RouterInterface::class);
+        $this->request  = $this->prophesize(ServerRequestInterface::class);
+        $this->response = $this->prophesize(ResponseInterface::class);
+        $this->handler  = $this->prophesize(RequestHandlerInterface::class);
 
         $this->middleware = new RouteMiddleware($this->router->reveal());
     }
@@ -57,7 +58,7 @@ class RouteMiddlewareTest extends TestCase
 
         $this->request->withAttribute(RouteResult::class, $result)->will([$this->request, 'reveal']);
         $this->request
-            ->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result)
+            ->withAttribute(ZendExpressiveRouteResult::class, $result)
             ->will([$this->request, 'reveal']);
 
         $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
@@ -73,7 +74,7 @@ class RouteMiddlewareTest extends TestCase
 
         $this->request->withAttribute(RouteResult::class, $result)->will([$this->request, 'reveal']);
         $this->request
-            ->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result)
+            ->withAttribute(ZendExpressiveRouteResult::class, $result)
             ->will([$this->request, 'reveal']);
 
         $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
@@ -84,7 +85,7 @@ class RouteMiddlewareTest extends TestCase
     {
         $middleware = $this->prophesize(MiddlewareInterface::class)->reveal();
         $parameters = ['foo' => 'bar', 'baz' => 'bat'];
-        $result = RouteResult::fromRoute(
+        $result     = RouteResult::fromRoute(
             new Route('/foo', $middleware),
             $parameters
         );
@@ -95,7 +96,7 @@ class RouteMiddlewareTest extends TestCase
             ->withAttribute(RouteResult::class, $result)
             ->will([$this->request, 'reveal']);
         $this->request
-            ->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result)
+            ->withAttribute(ZendExpressiveRouteResult::class, $result)
             ->will([$this->request, 'reveal']);
         foreach ($parameters as $key => $value) {
             $this->request

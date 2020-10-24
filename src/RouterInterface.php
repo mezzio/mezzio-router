@@ -27,7 +27,7 @@ interface RouterInterface
      * modify route instances before matching (e.g., to provide route options,
      * inject a name, etc.).
      */
-    public function addRoute(Route $route) : void;
+    public function addRoute(Route $route): void;
 
     /**
      * Match a request against the known routes.
@@ -37,7 +37,7 @@ interface RouterInterface
      * when done, they will then marshal a `RouteResult` instance indicating
      * the results of the matching operation and return it to the caller.
      */
-    public function match(Request $request) : RouteResult;
+    public function match(Request $request): RouteResult;
 
     /**
      * Generate a URI from the named route.
@@ -51,7 +51,8 @@ interface RouterInterface
      *
      * @see https://github.com/auraphp/Aura.Router/blob/3.x/docs/generating-paths.md
      * @see https://docs.laminas.dev/laminas-router/routing/
-     * @throws Exception\RuntimeException if unable to generate the given URI.
+     *
+     * @throws Exception\RuntimeException If unable to generate the given URI.
      */
-    public function generateUri(string $name, array $substitutions = [], array $options = []) : string;
+    public function generateUri(string $name, array $substitutions = [], array $options = []): string;
 }

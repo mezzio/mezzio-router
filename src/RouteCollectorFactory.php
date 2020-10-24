@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Mezzio\Router;
 
 use Psr\Container\ContainerInterface;
+use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 /**
  * Create and return a RouteCollector instance.
@@ -23,13 +24,14 @@ use Psr\Container\ContainerInterface;
 class RouteCollectorFactory
 {
     /**
-     * @throws Exception\MissingDependencyException if the RouterInterface service is
+     * @throws Exception\MissingDependencyException If the RouterInterface service is
      *     missing.
      */
-    public function __invoke(ContainerInterface $container) : RouteCollector
+    public function __invoke(ContainerInterface $container): RouteCollector
     {
-        if (! $container->has(RouterInterface::class)
-            && ! $container->has(\Zend\Expressive\Router\RouterInterface::class)
+        if (
+            ! $container->has(RouterInterface::class)
+            && ! $container->has(ZendExpressiveRouterInterface::class)
         ) {
             throw Exception\MissingDependencyException::dependencyForService(
                 RouterInterface::class,
@@ -40,7 +42,7 @@ class RouteCollectorFactory
         return new RouteCollector(
             $container->has(RouterInterface::class)
                 ? $container->get(RouterInterface::class)
-                : $container->get(\Zend\Expressive\Router\RouterInterface::class)
+                : $container->get(ZendExpressiveRouterInterface::class)
         );
     }
 }
