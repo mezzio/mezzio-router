@@ -14,7 +14,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Deprecated
 
-- Nothing.
+- [#11](https://github.com/mezzio/mezzio-router/pull/11)
+  deprecates the class `\Mezzio\Router\Test\ImplicitMethodsIntegrationTest`,
+  as it will be removed in the next versions. Use new renamed class
+  `\Mezzio\Router\Test\AbstractImplicitMethodsIntegrationTest` instead.
 
 ### Removed
 
