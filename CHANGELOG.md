@@ -24,7 +24,29 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - Nothing.
 
-## 3.2.0 - 2020-10-24
+## 3.2.1 - TBD
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
+## 3.1.3 - 2020-06-22
 
 ### Added
 
