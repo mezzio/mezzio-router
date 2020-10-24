@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#9](https://github.com/mezzio/mezzio-router/pull/9) Add PHP 8.0 support
 
 ### Changed
 

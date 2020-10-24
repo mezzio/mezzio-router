@@ -40,15 +40,15 @@ class RouteCollectorTest extends TestCase
     /** @var MiddlewareInterface */
     private $noopMiddleware;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        $this->router    = $this->prophesize(RouterInterface::class);
-        $this->response  = $this->prophesize(ResponseInterface::class);
-        $this->collector = new RouteCollector($this->router->reveal());
+        $this->router         = $this->prophesize(RouterInterface::class);
+        $this->response       = $this->prophesize(ResponseInterface::class);
+        $this->collector      = new RouteCollector($this->router->reveal());
         $this->noopMiddleware = $this->createNoopMiddleware();
     }
 
-    public function createNoopMiddleware()
+    public function createNoopMiddleware(): MiddlewareInterface
     {
         return new class ($this->response->reveal()) implements MiddlewareInterface {
             private $response;
@@ -61,13 +61,16 @@ class RouteCollectorTest extends TestCase
             public function process(
                 ServerRequestInterface $request,
                 RequestHandlerInterface $handler
-            ) : ResponseInterface {
+            ): ResponseInterface {
                 return $this->response;
             }
         };
     }
 
-    public function commonHttpMethods()
+    /**
+     * @return string[]
+     */
+    public function commonHttpMethods(): array
     {
         return [
             RequestMethod::METHOD_GET    => [RequestMethod::METHOD_GET],
@@ -99,7 +102,6 @@ class RouteCollectorTest extends TestCase
 
     /**
      * @dataProvider commonHttpMethods
-     *
      * @param string $method
      */
     public function testCanCallRouteWithHttpMethods($method)
@@ -117,7 +119,7 @@ class RouteCollectorTest extends TestCase
     {
         $this->router->addRoute(Argument::type(Route::class))->shouldBeCalled();
         $methods = array_keys($this->commonHttpMethods());
-        $route = $this->collector->route('/foo', $this->noopMiddleware, $methods);
+        $route   = $this->collector->route('/foo', $this->noopMiddleware, $methods);
         $this->assertInstanceOf(Route::class, $route);
         $this->assertEquals('/foo', $route->getPath());
         $this->assertSame($this->noopMiddleware, $route->getMiddleware());
@@ -133,7 +135,10 @@ class RouteCollectorTest extends TestCase
         $this->collector->route('/foo', $this->createNoopMiddleware());
     }
 
-    public function invalidPathTypes()
+    /**
+     * @return mixed[]
+     */
+    public function invalidPathTypes(): array
     {
         return [
             'null'       => [null],
@@ -150,7 +155,6 @@ class RouteCollectorTest extends TestCase
 
     /**
      * @dataProvider invalidPathTypes
-     *
      * @param mixed $path
      */
     public function testCallingRouteWithAnInvalidPathTypeRaisesAnException($path)
@@ -161,7 +165,6 @@ class RouteCollectorTest extends TestCase
 
     /**
      * @dataProvider commonHttpMethods
-     *
      * @param mixed $method
      */
     public function testCommonHttpMethodsAreExposedAsClassMethodsAndReturnRoutes($method)
@@ -179,7 +182,7 @@ class RouteCollectorTest extends TestCase
         $route = $this->collector->route('/foo', $this->noopMiddleware, [RequestMethod::METHOD_POST]);
 
         $middleware = $this->createNoopMiddleware();
-        $test = $this->collector->get('/foo', $middleware);
+        $test       = $this->collector->get('/foo', $middleware);
         $this->assertNotSame($route, $test);
         $this->assertSame($route->getPath(), $test->getPath());
         $this->assertSame(['GET'], $test->getAllowedMethods());

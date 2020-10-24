@@ -14,7 +14,7 @@ use Psr\Container\ContainerInterface;
 
 class DispatchMiddlewareFactory
 {
-    public function __invoke(ContainerInterface $container) : DispatchMiddleware
+    public function __invoke(ContainerInterface $container): DispatchMiddleware
     {
         return new DispatchMiddleware();
     }

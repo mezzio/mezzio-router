@@ -26,10 +26,10 @@ class MethodNotAllowedMiddlewareFactoryTest extends TestCase
     /** @var MethodNotAllowedMiddlewareFactory */
     private $factory;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->container = $this->prophesize(ContainerInterface::class);
-        $this->factory = new MethodNotAllowedMiddlewareFactory();
+        $this->factory   = new MethodNotAllowedMiddlewareFactory();
     }
 
     public function testFactoryRaisesExceptionIfResponseFactoryServiceIsMissing()

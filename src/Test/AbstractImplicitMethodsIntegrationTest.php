@@ -44,11 +44,11 @@ use function implode;
  * This test class tests that the router correctly marshals the allowed methods
  * for a match that matches the path, but not the request method.
  */
-abstract class ImplicitMethodsIntegrationTest extends TestCase
+abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 {
-    abstract public function getRouter() : RouterInterface;
+    abstract public function getRouter(): RouterInterface;
 
-    public function getImplicitOptionsMiddleware(ResponseInterface $response = null) : ImplicitOptionsMiddleware
+    public function getImplicitOptionsMiddleware(?ResponseInterface $response = null): ImplicitOptionsMiddleware
     {
         return new ImplicitOptionsMiddleware(
             function () use ($response) {
@@ -57,7 +57,7 @@ abstract class ImplicitMethodsIntegrationTest extends TestCase
         );
     }
 
-    public function getImplicitHeadMiddleware(RouterInterface $router) : ImplicitHeadMiddleware
+    public function getImplicitHeadMiddleware(RouterInterface $router): ImplicitHeadMiddleware
     {
         return new ImplicitHeadMiddleware(
             $router,
@@ -67,14 +67,14 @@ abstract class ImplicitMethodsIntegrationTest extends TestCase
         );
     }
 
-    public function createInvalidResponseFactory() : callable
+    public function createInvalidResponseFactory(): callable
     {
         return function () {
             Assert::fail('Response generated when it should not have been');
         };
     }
 
-    public function method() : Generator
+    public function method(): Generator
     {
         yield 'HEAD: head, post' => [
             RequestMethod::METHOD_HEAD,
@@ -123,7 +123,7 @@ abstract class ImplicitMethodsIntegrationTest extends TestCase
     public function testExplicitRequest(string $method, array $routes)
     {
         $implicitRoute = null;
-        $router = $this->getRouter();
+        $router        = $this->getRouter();
         foreach ($routes as $routeMethod) {
             $route = new Route(
                 '/api/v1/me',
@@ -241,7 +241,7 @@ abstract class ImplicitMethodsIntegrationTest extends TestCase
      * - string request path (the path in the ServerRequest instance)
      * - array params (expected route parameters matched)
      */
-    abstract public function implicitRoutesAndRequests() : Generator;
+    abstract public function implicitRoutesAndRequests(): Generator;
 
     /**
      * @dataProvider implicitRoutesAndRequests
@@ -333,7 +333,7 @@ abstract class ImplicitMethodsIntegrationTest extends TestCase
     ) {
         $middleware1 = $this->prophesize(MiddlewareInterface::class)->reveal();
         $middleware2 = $this->prophesize(MiddlewareInterface::class)->reveal();
-        $route1 = new Route($routePath, $middleware1, [RequestMethod::METHOD_GET]);
+        $route1      = new Route($routePath, $middleware1, [RequestMethod::METHOD_GET]);
         $route1->setOptions($routeOptions);
         $route2 = new Route($routePath, $middleware2, [RequestMethod::METHOD_POST]);
         $route2->setOptions($routeOptions);

@@ -30,9 +30,9 @@ class ImplicitOptionsMiddlewareTest extends TestCase
     /** @var ResponseInterface|ObjectProphecy */
     private $response;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        $this->response = $this->prophesize(ResponseInterface::class);
+        $this->response  = $this->prophesize(ResponseInterface::class);
         $responseFactory = function () {
             return $this->response->reveal();
         };

@@ -30,7 +30,7 @@ class RouteMiddlewareFactory
     /**
      * Allow serialization
      */
-    public static function __set_state(array $data) : self
+    public static function __set_state(array $data): self
     {
         return new self(
             $data['routerServiceName'] ?? RouterInterface::class
@@ -47,10 +47,10 @@ class RouteMiddlewareFactory
     }
 
     /**
-     * @throws MissingDependencyException if the RouterInterface service is
+     * @throws MissingDependencyException If the RouterInterface service is
      *     missing.
      */
-    public function __invoke(ContainerInterface $container) : RouteMiddleware
+    public function __invoke(ContainerInterface $container): RouteMiddleware
     {
         if (! $container->has($this->routerServiceName)) {
             throw MissingDependencyException::dependencyForService(

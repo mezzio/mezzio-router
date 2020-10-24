@@ -32,20 +32,18 @@ use function implode;
  */
 class MethodNotAllowedMiddleware implements MiddlewareInterface
 {
-    /**
-     * @var callable
-     */
+    /** @var callable */
     private $responseFactory;
 
     public function __construct(callable $responseFactory)
     {
         // Factories is wrapped in a closure in order to enforce return type safety.
-        $this->responseFactory = function () use ($responseFactory) : ResponseInterface {
+        $this->responseFactory = function () use ($responseFactory): ResponseInterface {
             return $responseFactory();
         };
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $routeResult = $request->getAttribute(RouteResult::class);
         if (! $routeResult || ! $routeResult->isMethodFailure()) {

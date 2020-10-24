@@ -27,12 +27,10 @@ use function sprintf;
  */
 class RouteTest extends TestCase
 {
-    /**
-     * @var callable
-     */
+    /** @var callable */
     private $noopMiddleware;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->noopMiddleware = $this->prophesize(MiddlewareInterface::class)->reveal();
     }
@@ -58,14 +56,14 @@ class RouteTest extends TestCase
     public function testRouteAllowsSpecifyingHttpMethods()
     {
         $methods = [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST];
-        $route = new Route('/foo', $this->noopMiddleware, $methods);
+        $route   = new Route('/foo', $this->noopMiddleware, $methods);
         $this->assertSame($methods, $route->getAllowedMethods());
     }
 
     public function testRouteCanMatchMethod()
     {
         $methods = [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST];
-        $route = new Route('/foo', $this->noopMiddleware, $methods);
+        $route   = new Route('/foo', $this->noopMiddleware, $methods);
         $this->assertTrue($route->allowsMethod(RequestMethod::METHOD_GET));
         $this->assertTrue($route->allowsMethod(RequestMethod::METHOD_POST));
         $this->assertFalse($route->allowsMethod(RequestMethod::METHOD_PATCH));
@@ -87,7 +85,7 @@ class RouteTest extends TestCase
     public function testRouteAllowsSpecifyingOptions()
     {
         $options = ['foo' => 'bar'];
-        $route = new Route('/foo', $this->noopMiddleware);
+        $route   = new Route('/foo', $this->noopMiddleware);
         $route->setOptions($options);
         $this->assertSame($options, $route->getOptions());
     }
@@ -135,6 +133,7 @@ class RouteTest extends TestCase
 
     /**
      * @requires PHP 7.3
+     * @requires PHP < 8.0
      */
     public function testThrowsExceptionDuringConstructionIfPathIsNotString()
     {
@@ -144,6 +143,9 @@ class RouteTest extends TestCase
         new Route(12345, $this->noopMiddleware);
     }
 
+    /**
+     * @requires PHP < 8.0
+     */
     public function testThrowsExceptionDuringConstructionOnInvalidMiddleware()
     {
         $this->expectException(TypeError::class);
@@ -155,6 +157,9 @@ class RouteTest extends TestCase
         new Route('/foo', 12345);
     }
 
+    /**
+     * @requires PHP < 8.0
+     */
     public function testThrowsExceptionDuringConstructionOnInvalidHttpMethod()
     {
         $this->expectException(TypeError::class);
@@ -171,7 +176,10 @@ class RouteTest extends TestCase
         $this->assertSame('bar', $route->getName());
     }
 
-    public function invalidHttpMethodsProvider()
+    /**
+     * @return mixed[][]
+     */
+    public function invalidHttpMethodsProvider(): array
     {
         return [
             [[123]],
@@ -183,8 +191,6 @@ class RouteTest extends TestCase
 
     /**
      * @dataProvider invalidHttpMethodsProvider
-     *
-     * @param array $invalidHttpMethods
      */
     public function testThrowsExceptionIfInvalidHttpMethodsAreProvided(array $invalidHttpMethods)
     {
@@ -197,11 +203,14 @@ class RouteTest extends TestCase
     public function testAllowsHttpInteropMiddleware()
     {
         $middleware = $this->prophesize(MiddlewareInterface::class)->reveal();
-        $route = new Route('/test', $middleware, Route::HTTP_METHOD_ANY);
+        $route      = new Route('/test', $middleware, Route::HTTP_METHOD_ANY);
         $this->assertSame($middleware, $route->getMiddleware());
     }
 
-    public function invalidMiddleware()
+    /**
+     * @return mixed[]
+     */
+    public function invalidMiddleware(): array
     {
         // Strings are allowed, because they could be service names.
         return [
@@ -213,7 +222,7 @@ class RouteTest extends TestCase
             'non-callable-object' => [(object) ['handler' => 'foo']],
             'callback'            => [
                 function () {
-                }
+                },
             ],
             'array'               => [['Class', 'method']],
             'string'              => ['Application\Middleware\HelloWorld'],
@@ -221,8 +230,8 @@ class RouteTest extends TestCase
     }
 
     /**
+     * @requires PHP < 8.0
      * @dataProvider invalidMiddleware
-     *
      * @param mixed $middleware
      */
     public function testConstructorRaisesExceptionForInvalidMiddleware($middleware)
@@ -238,9 +247,9 @@ class RouteTest extends TestCase
 
     public function testRouteIsMiddlewareAndProxiesToComposedMiddleware()
     {
-        $request = $this->prophesize(ServerRequestInterface::class)->reveal();
-        $handler = $this->prophesize(RequestHandlerInterface::class)->reveal();
-        $response = $this->prophesize(ResponseInterface::class)->reveal();
+        $request    = $this->prophesize(ServerRequestInterface::class)->reveal();
+        $handler    = $this->prophesize(RequestHandlerInterface::class)->reveal();
+        $response   = $this->prophesize(ResponseInterface::class)->reveal();
         $middleware = $this->prophesize(MiddlewareInterface::class);
         $middleware->process($request, $handler)->willReturn($response);
 

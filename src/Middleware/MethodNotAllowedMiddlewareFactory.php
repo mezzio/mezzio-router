@@ -25,10 +25,10 @@ use Psr\Http\Message\ResponseInterface;
 class MethodNotAllowedMiddlewareFactory
 {
     /**
-     * @throws MissingDependencyException if the Psr\Http\Message\ResponseInterface
+     * @throws MissingDependencyException If the Psr\Http\Message\ResponseInterface
      *     service is missing.
      */
-    public function __invoke(ContainerInterface $container) : MethodNotAllowedMiddleware
+    public function __invoke(ContainerInterface $container): MethodNotAllowedMiddleware
     {
         if (! $container->has(ResponseInterface::class)) {
             throw MissingDependencyException::dependencyForService(

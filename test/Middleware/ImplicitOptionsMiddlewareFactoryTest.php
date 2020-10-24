@@ -26,10 +26,10 @@ class ImplicitOptionsMiddlewareFactoryTest extends TestCase
     /** @var ImplicitOptionsMiddlewareFactory */
     private $factory;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->container = $this->prophesize(ContainerInterface::class);
-        $this->factory = new ImplicitOptionsMiddlewareFactory();
+        $this->factory   = new ImplicitOptionsMiddlewareFactory();
     }
 
     public function testFactoryRaisesExceptionIfResponseFactoryServiceIsMissing()

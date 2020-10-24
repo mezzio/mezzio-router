@@ -33,7 +33,7 @@ class DispatchMiddlewareTest extends TestCase
     /** @var ResponseInterface|ObjectProphecy */
     private $response;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->response   = $this->prophesize(ResponseInterface::class)->reveal();
         $this->request    = $this->prophesize(ServerRequestInterface::class);

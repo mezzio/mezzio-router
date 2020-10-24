@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace MezzioTest\Router\Middleware;
 
+use Closure;
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\Middleware\RouteMiddleware;
 use Mezzio\Router\Middleware\RouteMiddlewareFactory;
@@ -17,6 +18,7 @@ use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
+use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 class RouteMiddlewareFactoryTest extends TestCase
 {
@@ -26,16 +28,16 @@ class RouteMiddlewareFactoryTest extends TestCase
     /** @var RouteMiddlewareFactory */
     private $factory;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->container = $this->prophesize(ContainerInterface::class);
-        $this->factory = new RouteMiddlewareFactory();
+        $this->factory   = new RouteMiddlewareFactory();
     }
 
     public function testFactoryRaisesExceptionIfRouterServiceIsMissing()
     {
         $this->container->has(RouterInterface::class)->willReturn(false);
-        $this->container->has(\Zend\Expressive\Router\RouterInterface::class)->willReturn(false);
+        $this->container->has(ZendExpressiveRouterInterface::class)->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);
         ($this->factory)($this->container->reveal());
@@ -63,7 +65,11 @@ class RouteMiddlewareFactoryTest extends TestCase
         $middleware = $factory($this->container->reveal());
 
         $this->assertInstanceOf(RouteMiddleware::class, $middleware);
-        $this->assertAttributeSame($router, 'router', $middleware);
+
+        $middlewareRouter = Closure::bind(function () {
+            return $this->router;
+        }, $middleware, RouteMiddleware::class)();
+        $this->assertSame($router, $middlewareRouter);
     }
 
     public function testFactoryIsSerializable()
@@ -72,6 +78,10 @@ class RouteMiddlewareFactoryTest extends TestCase
             'routerServiceName' => Router::class,
         ]);
 
-        $this->assertAttributeSame(Router::class, 'routerServiceName', $factory);
+        $factoryRouterServiceName = Closure::bind(function () {
+            return $this->routerServiceName;
+        }, $factory, RouteMiddlewareFactory::class)();
+
+        $this->assertSame(Router::class, $factoryRouterServiceName);
     }
 }

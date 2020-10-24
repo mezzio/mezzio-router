@@ -14,6 +14,9 @@ use Psr\Http\Server\MiddlewareInterface;
 
 use function array_filter;
 use function array_reduce;
+use function implode;
+use function reset;
+use function sprintf;
 
 /**
  * Aggregate routes for the router.
@@ -37,9 +40,7 @@ use function array_reduce;
  */
 class RouteCollector
 {
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     protected $router;
 
     /**
@@ -59,19 +60,19 @@ class RouteCollector
      *
      * Accepts a combination of a path and middleware, and optionally the HTTP methods allowed.
      *
-     * @param null|array $methods HTTP method to accept; null indicates any.
+     * @param null|array  $methods HTTP method to accept; null indicates any.
      * @param null|string $name The name of the route.
-     * @throws Exception\DuplicateRouteException if specification represents an existing route.
+     * @throws Exception\DuplicateRouteException If specification represents an existing route.
      */
     public function route(
         string $path,
         MiddlewareInterface $middleware,
-        array $methods = null,
-        string $name = null
-    ) : Route {
+        ?array $methods = null,
+        ?string $name = null
+    ): Route {
         $this->checkForDuplicateRoute($path, $methods);
 
-        $methods = null === $methods ? Route::HTTP_METHOD_ANY : $methods;
+        $methods = $methods ?? Route::HTTP_METHOD_ANY;
         $route   = new Route($path, $middleware, $methods, $name);
 
         $this->routes[] = $route;
@@ -83,7 +84,7 @@ class RouteCollector
     /**
      * @param null|string $name The name of the route.
      */
-    public function get(string $path, MiddlewareInterface $middleware, string $name = null) : Route
+    public function get(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, ['GET'], $name);
     }
@@ -91,7 +92,7 @@ class RouteCollector
     /**
      * @param null|string $name The name of the route.
      */
-    public function post(string $path, MiddlewareInterface $middleware, string $name = null) : Route
+    public function post(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, ['POST'], $name);
     }
@@ -99,7 +100,7 @@ class RouteCollector
     /**
      * @param null|string $name The name of the route.
      */
-    public function put(string $path, MiddlewareInterface $middleware, string $name = null) : Route
+    public function put(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, ['PUT'], $name);
     }
@@ -107,7 +108,7 @@ class RouteCollector
     /**
      * @param null|string $name The name of the route.
      */
-    public function patch(string $path, MiddlewareInterface $middleware, string $name = null) : Route
+    public function patch(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, ['PATCH'], $name);
     }
@@ -115,7 +116,7 @@ class RouteCollector
     /**
      * @param null|string $name The name of the route.
      */
-    public function delete(string $path, MiddlewareInterface $middleware, string $name = null) : Route
+    public function delete(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, ['DELETE'], $name);
     }
@@ -123,7 +124,7 @@ class RouteCollector
     /**
      * @param null|string $name The name of the route.
      */
-    public function any(string $path, MiddlewareInterface $middleware, string $name = null) : Route
+    public function any(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, null, $name);
     }
@@ -133,7 +134,7 @@ class RouteCollector
      *
      * @return Route[]
      */
-    public function getRoutes() : array
+    public function getRoutes(): array
     {
         return $this->routes;
     }
@@ -145,9 +146,9 @@ class RouteCollector
      * if so, and it responds to any of the $methods indicated, raises
      * a DuplicateRouteException indicating a duplicate route.
      *
-     * @throws Exception\DuplicateRouteException on duplicate route detection.
+     * @throws Exception\DuplicateRouteException On duplicate route detection.
      */
-    private function checkForDuplicateRoute(string $path, array $methods = null) : void
+    private function checkForDuplicateRoute(string $path, ?array $methods = null): void
     {
         if (null === $methods) {
             $methods = Route::HTTP_METHOD_ANY;
@@ -163,14 +164,14 @@ class RouteCollector
             }
 
             return array_reduce($methods, function ($carry, $method) use ($route) {
-                return ($carry || $route->allowsMethod($method));
+                return $carry || $route->allowsMethod($method);
             }, false);
         });
 
         if (! empty($matches)) {
-            $match = reset($matches);
+            $match          = reset($matches);
             $allowedMethods = $match->getAllowedMethods() ?: ['(any)'];
-            $name = $match->getName();
+            $name           = $match->getName();
             throw new Exception\DuplicateRouteException(sprintf(
                 'Duplicate route detected; path "%s" answering to methods [%s]%s',
                 $match->getPath(),

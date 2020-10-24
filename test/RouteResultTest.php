@@ -22,14 +22,6 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class RouteResultTest extends TestCase
 {
-    private $middleware;
-
-    protected function setUp() : void
-    {
-        $this->middleware = function ($req, $res, $next) {
-        };
-    }
-
     public function testRouteNameIsNotRetrievable()
     {
         $result = RouteResult::fromRouteFailure([]);
@@ -51,7 +43,7 @@ class RouteResultTest extends TestCase
     public function testRouteMatchedParams()
     {
         $params = ['foo' => 'bar'];
-        $route = $this->prophesize(Route::class);
+        $route  = $this->prophesize(Route::class);
         $result = RouteResult::fromRoute($route->reveal(), $params);
 
         $this->assertSame($params, $result->getMatchedParams());
@@ -66,13 +58,16 @@ class RouteResultTest extends TestCase
     public function testRouteSuccessMethodFailure()
     {
         $params = ['foo' => 'bar'];
-        $route = $this->prophesize(Route::class);
+        $route  = $this->prophesize(Route::class);
         $result = RouteResult::fromRoute($route->reveal(), $params);
 
         $this->assertFalse($result->isMethodFailure());
     }
 
-    public function testFromRouteShouldComposeRouteInResult()
+    /**
+     * @return Route[]|RouteResult[]
+     */
+    public function testFromRouteShouldComposeRouteInResult(): array
     {
         $route = $this->prophesize(Route::class);
 
@@ -86,13 +81,11 @@ class RouteResultTest extends TestCase
 
     /**
      * @depends testFromRouteShouldComposeRouteInResult
-     *
-     * @param array $data
      */
     public function testAllAccessorsShouldReturnExpectedDataWhenResultCreatedViaFromRoute(array $data)
     {
         $result = $data['result'];
-        $route = $data['route'];
+        $route  = $data['route'];
 
         $route->getName()->willReturn('route');
         $route->getAllowedMethods()->willReturn(['HEAD', 'OPTIONS', 'GET']);
@@ -107,7 +100,7 @@ class RouteResultTest extends TestCase
         $this->assertTrue($result->isMethodFailure());
     }
 
-    public function testFailureResultDoesNotIndicateAMethodFailureIfAllMethodsAreAllowed()
+    public function testFailureResultDoesNotIndicateAMethodFailureIfAllMethodsAreAllowed(): RouteResult
     {
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
         $this->assertTrue($result->isFailure());
@@ -126,9 +119,9 @@ class RouteResultTest extends TestCase
 
     public function testFailureResultProcessedAsMiddlewareDelegatesToHandler()
     {
-        $request = $this->prophesize(ServerRequestInterface::class)->reveal();
+        $request  = $this->prophesize(ServerRequestInterface::class)->reveal();
         $response = $this->prophesize(ResponseInterface::class)->reveal();
-        $handler = $this->prophesize(RequestHandlerInterface::class);
+        $handler  = $this->prophesize(RequestHandlerInterface::class);
         $handler->handle($request)->willReturn($response);
 
         $result = RouteResult::fromRouteFailure([]);
@@ -138,9 +131,9 @@ class RouteResultTest extends TestCase
 
     public function testSuccessfulResultProcessedAsMiddlewareDelegatesToRoute()
     {
-        $request = $this->prophesize(ServerRequestInterface::class)->reveal();
+        $request  = $this->prophesize(ServerRequestInterface::class)->reveal();
         $response = $this->prophesize(ResponseInterface::class)->reveal();
-        $handler = $this->prophesize(RequestHandlerInterface::class);
+        $handler  = $this->prophesize(RequestHandlerInterface::class);
         $handler->handle($request)->shouldNotBeCalled();
 
         $route = $this->prophesize(Route::class);

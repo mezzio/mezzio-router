@@ -20,7 +20,7 @@ class ConfigProviderTest extends TestCase
     public function testProviderProvidesFactoriesForAllMiddleware()
     {
         $provider = new ConfigProvider();
-        $config = $provider();
+        $config   = $provider();
 
         $this->assertTrue(isset($config['dependencies']['factories']));
         $factories = $config['dependencies']['factories'];

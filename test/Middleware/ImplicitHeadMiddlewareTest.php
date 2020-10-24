@@ -22,6 +22,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 class ImplicitHeadMiddlewareTest extends TestCase
 {
@@ -37,7 +38,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
     /** @var StreamInterface|ObjectProphecy */
     private $stream;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->router = $this->prophesize(RouterInterface::class);
         $this->stream = $this->prophesize(StreamInterface::class);
@@ -47,7 +48,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
         };
 
         $this->middleware = new ImplicitHeadMiddleware($this->router->reveal(), $streamFactory);
-        $this->response = $this->prophesize(ResponseInterface::class);
+        $this->response   = $this->prophesize(ResponseInterface::class);
     }
 
     public function testReturnsResultOfHandlerOnNonHeadRequests()
@@ -79,7 +80,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
 
     public function testReturnsResultOfHandlerWhenRouteSupportsHeadExplicitly()
     {
-        $route = $this->prophesize(Route::class);
+        $route  = $this->prophesize(Route::class);
         $result = RouteResult::fromRoute($route->reveal());
 
         $request = $this->prophesize(ServerRequestInterface::class);
@@ -131,11 +132,11 @@ class ImplicitHeadMiddlewareTest extends TestCase
         $response = $this->prophesize(ResponseInterface::class);
         $response->withBody($this->stream->reveal())->will([$response, 'reveal']);
 
-        $route = $this->prophesize(Route::class);
+        $route  = $this->prophesize(Route::class);
         $result = RouteResult::fromRoute($route->reveal());
 
         $request->withAttribute(RouteResult::class, $result)->will([$request, 'reveal']);
-        $request->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result)->will([$request, 'reveal']);
+        $request->withAttribute(ZendExpressiveRouteResult::class, $result)->will([$request, 'reveal']);
 
         $this->router->match($request)->willReturn($result);
 
@@ -167,11 +168,11 @@ class ImplicitHeadMiddlewareTest extends TestCase
         $response = $this->prophesize(ResponseInterface::class);
         $response->withBody($this->stream->reveal())->will([$response, 'reveal']);
 
-        $route = $this->prophesize(Route::class);
+        $route  = $this->prophesize(Route::class);
         $result = RouteResult::fromRoute($route->reveal(), ['foo' => 'bar', 'baz' => 'bat']);
 
         $request->withAttribute(RouteResult::class, $result)->will([$request, 'reveal']);
-        $request->withAttribute(\Zend\Expressive\Router\RouteResult::class, $result)->will([$request, 'reveal']);
+        $request->withAttribute(ZendExpressiveRouteResult::class, $result)->will([$request, 'reveal']);
         $request->withAttribute('foo', 'bar')->will([$request, 'reveal'])->shouldBeCalled();
         $request->withAttribute('baz', 'bat')->will([$request, 'reveal'])->shouldBeCalled();
 

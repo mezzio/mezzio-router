@@ -41,39 +41,29 @@ use function strtoupper;
  */
 class Route implements MiddlewareInterface
 {
-    public const HTTP_METHOD_ANY = null;
+    public const HTTP_METHOD_ANY       = null;
     public const HTTP_METHOD_SEPARATOR = ':';
 
-    /**
-     * @var null|string[] HTTP methods allowed with this route.
-     */
+    /** @var null|string[] HTTP methods allowed with this route. */
     private $methods;
 
-    /**
-     * @var MiddlewareInterface Middleware associated with route.
-     */
+    /** @var MiddlewareInterface Middleware associated with route. */
     private $middleware;
 
-    /**
-     * @var array Options related to this route to pass to the routing implementation.
-     */
+    /** @var array Options related to this route to pass to the routing implementation. */
     private $options = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $path;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
     /**
-     * @param string $path Path to match.
+     * @param string              $path Path to match.
      * @param MiddlewareInterface $middleware Middleware to use when this route is matched.
-     * @param null|string[] $methods Allowed HTTP methods; defaults to HTTP_METHOD_ANY.
-     * @param null|string $name the route name
+     * @param null|string[]       $methods Allowed HTTP methods; defaults to HTTP_METHOD_ANY.
+     * @param null|string         $name the route name
      */
     public function __construct(
         string $path,
@@ -96,12 +86,12 @@ class Route implements MiddlewareInterface
     /**
      * Proxies to the middleware composed during instantiation.
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return $this->middleware->process($request, $handler);
     }
 
-    public function getPath() : string
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -109,17 +99,17 @@ class Route implements MiddlewareInterface
     /**
      * Set the route name.
      */
-    public function setName(string $name) : void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getMiddleware() : MiddlewareInterface
+    public function getMiddleware(): MiddlewareInterface
     {
         return $this->middleware;
     }
@@ -127,7 +117,7 @@ class Route implements MiddlewareInterface
     /**
      * @return null|string[] Returns HTTP_METHOD_ANY or array of allowed methods.
      */
-    public function getAllowedMethods() : ?array
+    public function getAllowedMethods(): ?array
     {
         return $this->methods;
     }
@@ -137,10 +127,11 @@ class Route implements MiddlewareInterface
      *
      * @param string $method HTTP method to test.
      */
-    public function allowsMethod(string $method) : bool
+    public function allowsMethod(string $method): bool
     {
         $method = strtoupper($method);
-        if ($this->methods === self::HTTP_METHOD_ANY
+        if (
+            $this->methods === self::HTTP_METHOD_ANY
             || in_array($method, $this->methods, true)
         ) {
             return true;
@@ -149,12 +140,12 @@ class Route implements MiddlewareInterface
         return false;
     }
 
-    public function setOptions(array $options) : void
+    public function setOptions(array $options): void
     {
         $this->options = $options;
     }
 
-    public function getOptions() : array
+    public function getOptions(): array
     {
         return $this->options;
     }
@@ -164,11 +155,11 @@ class Route implements MiddlewareInterface
      *
      * Validates, and then normalizes to upper case.
      *
-     * @param string[] An array of HTTP method names.
+     * @param string[] $methods An array of HTTP method names.
      * @return string[]
-     * @throws Exception\InvalidArgumentException for any invalid method names.
+     * @throws Exception\InvalidArgumentException For any invalid method names.
      */
-    private function validateHttpMethods(array $methods) : array
+    private function validateHttpMethods(array $methods): array
     {
         if (empty($methods)) {
             throw new Exception\InvalidArgumentException(
@@ -176,21 +167,23 @@ class Route implements MiddlewareInterface
             );
         }
 
-        if (false === array_reduce($methods, function ($valid, $method) {
-            if (false === $valid) {
-                return false;
-            }
+        if (
+            false === array_reduce($methods, function ($valid, $method) {
+                if (false === $valid) {
+                    return false;
+                }
 
-            if (! is_string($method)) {
-                return false;
-            }
+                if (! is_string($method)) {
+                    return false;
+                }
 
-            if (! preg_match('/^[!#$%&\'*+.^_`\|~0-9a-z-]+$/i', $method)) {
-                return false;
-            }
+                if (! preg_match('/^[!#$%&\'*+.^_`\|~0-9a-z-]+$/i', $method)) {
+                    return false;
+                }
 
-            return $valid;
-        }, true)) {
+                return $valid;
+            }, true)
+        ) {
             throw new Exception\InvalidArgumentException('One or more HTTP methods were invalid');
         }
 
