@@ -24,6 +24,42 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - Nothing.
 
+## 3.2.1 - TBD
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Nothing.
+
+## 3.2.1 - 2020-10-24
+
+### Deprecated
+
+- [#11](https://github.com/mezzio/mezzio-router/pull/11)
+  deprecates the class `\Mezzio\Router\Test\ImplicitMethodsIntegrationTest`,
+  as it will be removed in the next versions. Use new renamed class
+  `\Mezzio\Router\Test\AbstractImplicitMethodsIntegrationTest` instead.
+
+
+-----
+
+### Release Notes for [3.2.1](https://github.com/mezzio/mezzio-router/milestone/4)
+
+3.2.x bugfix release (patch)
+
+### 3.2.1
+
+- Total issues resolved: **0**
+- Total pull requests resolved: **1**
+- Total contributors: **1**
+
+#### Bug
+
+ - [11: Restore renamed abstract ImplicitMethodsIntegrationTest class](https://github.com/mezzio/mezzio-router/pull/11) thanks to @marcelthole
+
 ## 3.2.0 - 2020-10-24
 
 ### Added
