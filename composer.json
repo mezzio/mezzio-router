@@ -39,7 +39,9 @@
         "laminas/laminas-coding-standard": "~2.1.0",
         "malukenho/docheader": "^0.1.6",
         "phpspec/prophecy": "^1.9",
-        "phpunit/phpunit": "^9.4.1"
+        "phpunit/phpunit": "^9.4.1",
+        "psalm/plugin-phpunit": "^0.15.0",
+        "vimeo/psalm": "^4.3"
     },
     "suggest": {
         "mezzio/mezzio-aurarouter": "^3.0 to use the Aura.Router routing adapter",
@@ -64,6 +66,7 @@
         ],
         "cs-check": "phpcs",
         "cs-fix": "phpcbf",
+        "static-analysis": "psalm --shepherd --stats",
         "test": "phpunit --colors=always",
         "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
         "license-check": "docheader check src/ test/"
