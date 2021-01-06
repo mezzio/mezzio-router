@@ -119,8 +119,10 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
     /**
      * @dataProvider method
+     *
+     * @return void
      */
-    public function testExplicitRequest(string $method, array $routes)
+    public function testExplicitRequest(string $method, array $routes): void
     {
         $implicitRoute = null;
         $router        = $this->getRouter();
@@ -200,8 +202,10 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
      * returned response should be 405: Method Not Allowed - handled by MethodNotAllowedMiddleware.
      *
      * @dataProvider withoutImplicitMiddleware
+     *
+     * @return void
      */
-    public function testWithoutImplicitMiddleware(string $requestMethod, array $allowedMethods)
+    public function testWithoutImplicitMiddleware(string $requestMethod, array $allowedMethods): void
     {
         $router = $this->getRouter();
         foreach ($allowedMethods as $routeMethod) {
@@ -248,13 +252,15 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
     /**
      * @dataProvider implicitRoutesAndRequests
+     *
+     * @return void
      */
     public function testImplicitHeadRequest(
         string $routePath,
         array $routeOptions,
         string $requestPath,
         array $expectedParams
-    ) {
+    ): void {
         $finalResponse = (new Response())->withHeader('foo-bar', 'baz');
         $finalResponse->getBody()->write('FOO BAR BODY');
 
@@ -328,12 +334,14 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
     /**
      * @dataProvider implicitRoutesAndRequests
+     *
+     * @return void
      */
     public function testImplicitOptionsRequest(
         string $routePath,
         array $routeOptions,
         string $requestPath
-    ) {
+    ): void {
         $middleware1 = $this->prophesize(MiddlewareInterface::class)->reveal();
         $middleware2 = $this->prophesize(MiddlewareInterface::class)->reveal();
         $route1      = new Route($routePath, $middleware1, [RequestMethod::METHOD_GET]);
@@ -368,7 +376,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         $this->assertSame($finalResponse->reveal(), $response);
     }
 
-    public function testImplicitOptionsRequestRouteNotFound()
+    public function testImplicitOptionsRequestRouteNotFound(): void
     {
         $router = $this->getRouter();
 

@@ -35,32 +35,32 @@ class RouteTest extends TestCase
         $this->noopMiddleware = $this->prophesize(MiddlewareInterface::class)->reveal();
     }
 
-    public function testRoutePathIsRetrievable()
+    public function testRoutePathIsRetrievable(): void
     {
         $route = new Route('/foo', $this->noopMiddleware);
         $this->assertEquals('/foo', $route->getPath());
     }
 
-    public function testRouteMiddlewareIsRetrievable()
+    public function testRouteMiddlewareIsRetrievable(): void
     {
         $route = new Route('/foo', $this->noopMiddleware);
         $this->assertSame($this->noopMiddleware, $route->getMiddleware());
     }
 
-    public function testRouteInstanceAcceptsAllHttpMethodsByDefault()
+    public function testRouteInstanceAcceptsAllHttpMethodsByDefault(): void
     {
         $route = new Route('/foo', $this->noopMiddleware);
         $this->assertSame(Route::HTTP_METHOD_ANY, $route->getAllowedMethods());
     }
 
-    public function testRouteAllowsSpecifyingHttpMethods()
+    public function testRouteAllowsSpecifyingHttpMethods(): void
     {
         $methods = [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST];
         $route   = new Route('/foo', $this->noopMiddleware, $methods);
         $this->assertSame($methods, $route->getAllowedMethods());
     }
 
-    public function testRouteCanMatchMethod()
+    public function testRouteCanMatchMethod(): void
     {
         $methods = [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST];
         $route   = new Route('/foo', $this->noopMiddleware, $methods);
@@ -70,19 +70,19 @@ class RouteTest extends TestCase
         $this->assertFalse($route->allowsMethod(RequestMethod::METHOD_DELETE));
     }
 
-    public function testRouteHeadMethodIsNotAllowedByDefault()
+    public function testRouteHeadMethodIsNotAllowedByDefault(): void
     {
         $route = new Route('/foo', $this->noopMiddleware, [RequestMethod::METHOD_GET]);
         $this->assertFalse($route->allowsMethod(RequestMethod::METHOD_HEAD));
     }
 
-    public function testRouteOptionsMethodIsNotAllowedByDefault()
+    public function testRouteOptionsMethodIsNotAllowedByDefault(): void
     {
         $route = new Route('/foo', $this->noopMiddleware, [RequestMethod::METHOD_GET]);
         $this->assertFalse($route->allowsMethod(RequestMethod::METHOD_OPTIONS));
     }
 
-    public function testRouteAllowsSpecifyingOptions()
+    public function testRouteAllowsSpecifyingOptions(): void
     {
         $options = ['foo' => 'bar'];
         $route   = new Route('/foo', $this->noopMiddleware);
@@ -90,31 +90,31 @@ class RouteTest extends TestCase
         $this->assertSame($options, $route->getOptions());
     }
 
-    public function testRouteOptionsAreEmptyByDefault()
+    public function testRouteOptionsAreEmptyByDefault(): void
     {
         $route = new Route('/foo', $this->noopMiddleware);
         $this->assertSame([], $route->getOptions());
     }
 
-    public function testRouteNameForRouteAcceptingAnyMethodMatchesPathByDefault()
+    public function testRouteNameForRouteAcceptingAnyMethodMatchesPathByDefault(): void
     {
         $route = new Route('/test', $this->noopMiddleware);
         $this->assertSame('/test', $route->getName());
     }
 
-    public function testRouteNameWithConstructor()
+    public function testRouteNameWithConstructor(): void
     {
         $route = new Route('/test', $this->noopMiddleware, [RequestMethod::METHOD_GET], 'test');
         $this->assertSame('test', $route->getName());
     }
 
-    public function testRouteNameWithGET()
+    public function testRouteNameWithGET(): void
     {
         $route = new Route('/test', $this->noopMiddleware, [RequestMethod::METHOD_GET]);
         $this->assertSame('/test^GET', $route->getName());
     }
 
-    public function testRouteNameWithGetAndPost()
+    public function testRouteNameWithGetAndPost(): void
     {
         $route = new Route('/test', $this->noopMiddleware, [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST]);
         $this->assertSame('/test^GET' . Route::HTTP_METHOD_SEPARATOR . RequestMethod::METHOD_POST, $route->getName());
@@ -122,8 +122,10 @@ class RouteTest extends TestCase
 
     /**
      * @requires PHP < 7.3
+     *
+     * @return void
      */
-    public function testThrowsExceptionDuringConstructionIfPathIsNotStringPhpPriorTo73()
+    public function testThrowsExceptionDuringConstructionIfPathIsNotStringPhpPriorTo73(): void
     {
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage('must be of the type string, integer given');
@@ -134,8 +136,10 @@ class RouteTest extends TestCase
     /**
      * @requires PHP 7.3
      * @requires PHP < 8.0
+     *
+     * @return void
      */
-    public function testThrowsExceptionDuringConstructionIfPathIsNotString()
+    public function testThrowsExceptionDuringConstructionIfPathIsNotString(): void
     {
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage('must be of the type string, int given');
@@ -145,8 +149,10 @@ class RouteTest extends TestCase
 
     /**
      * @requires PHP < 8.0
+     *
+     * @return void
      */
-    public function testThrowsExceptionDuringConstructionOnInvalidMiddleware()
+    public function testThrowsExceptionDuringConstructionOnInvalidMiddleware(): void
     {
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage(sprintf(
@@ -159,8 +165,10 @@ class RouteTest extends TestCase
 
     /**
      * @requires PHP < 8.0
+     *
+     * @return void
      */
-    public function testThrowsExceptionDuringConstructionOnInvalidHttpMethod()
+    public function testThrowsExceptionDuringConstructionOnInvalidHttpMethod(): void
     {
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage('must be of the type array or null, string given');
@@ -168,7 +176,7 @@ class RouteTest extends TestCase
         new Route('/foo', $this->noopMiddleware, 'FOO');
     }
 
-    public function testRouteNameIsMutable()
+    public function testRouteNameIsMutable(): void
     {
         $route = new Route('/foo', $this->noopMiddleware, [RequestMethod::METHOD_GET], 'foo');
         $route->setName('bar');
@@ -191,8 +199,10 @@ class RouteTest extends TestCase
 
     /**
      * @dataProvider invalidHttpMethodsProvider
+     *
+     * @return void
      */
-    public function testThrowsExceptionIfInvalidHttpMethodsAreProvided(array $invalidHttpMethods)
+    public function testThrowsExceptionIfInvalidHttpMethodsAreProvided(array $invalidHttpMethods): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('One or more HTTP methods were invalid');
@@ -200,7 +210,7 @@ class RouteTest extends TestCase
         new Route('/test', $this->noopMiddleware, $invalidHttpMethods);
     }
 
-    public function testAllowsHttpInteropMiddleware()
+    public function testAllowsHttpInteropMiddleware(): void
     {
         $middleware = $this->prophesize(MiddlewareInterface::class)->reveal();
         $route      = new Route('/test', $middleware, Route::HTTP_METHOD_ANY);
@@ -231,10 +241,14 @@ class RouteTest extends TestCase
 
     /**
      * @requires PHP < 8.0
+     *
      * @dataProvider invalidMiddleware
+     *
      * @param mixed $middleware
+     *
+     * @return void
      */
-    public function testConstructorRaisesExceptionForInvalidMiddleware($middleware)
+    public function testConstructorRaisesExceptionForInvalidMiddleware($middleware): void
     {
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage(sprintf(
@@ -245,7 +259,7 @@ class RouteTest extends TestCase
         new Route('/test', $middleware);
     }
 
-    public function testRouteIsMiddlewareAndProxiesToComposedMiddleware()
+    public function testRouteIsMiddlewareAndProxiesToComposedMiddleware(): void
     {
         $request    = $this->prophesize(ServerRequestInterface::class)->reveal();
         $handler    = $this->prophesize(RequestHandlerInterface::class)->reveal();
@@ -257,7 +271,7 @@ class RouteTest extends TestCase
         $this->assertSame($response, $route->process($request, $handler));
     }
 
-    public function testConstructorShouldRaiseExceptionIfMethodsArgumentIsAnEmptyArray()
+    public function testConstructorShouldRaiseExceptionIfMethodsArgumentIsAnEmptyArray(): void
     {
         $middleware = $this->prophesize(MiddlewareInterface::class)->reveal();
 

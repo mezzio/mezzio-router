@@ -32,7 +32,7 @@ class MethodNotAllowedMiddlewareFactoryTest extends TestCase
         $this->factory   = new MethodNotAllowedMiddlewareFactory();
     }
 
-    public function testFactoryRaisesExceptionIfResponseFactoryServiceIsMissing()
+    public function testFactoryRaisesExceptionIfResponseFactoryServiceIsMissing(): void
     {
         $this->container->has(ResponseInterface::class)->willReturn(false);
 
@@ -40,9 +40,9 @@ class MethodNotAllowedMiddlewareFactoryTest extends TestCase
         ($this->factory)($this->container->reveal());
     }
 
-    public function testFactoryProducesMethodNotAllowedMiddlewareWhenAllDependenciesPresent()
+    public function testFactoryProducesMethodNotAllowedMiddlewareWhenAllDependenciesPresent(): void
     {
-        $factory = function () {
+        $factory = function (): void {
         };
 
         $this->container->has(ResponseInterface::class)->willReturn(true);

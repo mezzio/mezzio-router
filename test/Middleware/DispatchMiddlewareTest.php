@@ -41,7 +41,7 @@ class DispatchMiddlewareTest extends TestCase
         $this->middleware = new DispatchMiddleware();
     }
 
-    public function testInvokesHandlerIfRequestDoesNotContainRouteResult()
+    public function testInvokesHandlerIfRequestDoesNotContainRouteResult(): void
     {
         $this->request->getAttribute(RouteResult::class, false)->willReturn(false);
         $this->handler->handle($this->request->reveal())->willReturn($this->response);
@@ -51,7 +51,7 @@ class DispatchMiddlewareTest extends TestCase
         $this->assertSame($this->response, $response);
     }
 
-    public function testInvokesRouteResultWhenPresent()
+    public function testInvokesRouteResultWhenPresent(): void
     {
         $this->handler->handle(Argument::any())->shouldNotBeCalled();
 

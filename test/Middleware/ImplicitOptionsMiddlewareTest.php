@@ -40,7 +40,7 @@ class ImplicitOptionsMiddlewareTest extends TestCase
         $this->middleware = new ImplicitOptionsMiddleware($responseFactory);
     }
 
-    public function testNonOptionsRequestInvokesHandler()
+    public function testNonOptionsRequestInvokesHandler(): void
     {
         $request = $this->prophesize(ServerRequestInterface::class);
         $request->getMethod()->willReturn(RequestMethod::METHOD_GET);
@@ -55,7 +55,7 @@ class ImplicitOptionsMiddlewareTest extends TestCase
         $this->assertSame($response, $result);
     }
 
-    public function testMissingRouteResultInvokesHandler()
+    public function testMissingRouteResultInvokesHandler(): void
     {
         $request = $this->prophesize(ServerRequestInterface::class);
         $request->getMethod()->willReturn(RequestMethod::METHOD_OPTIONS);
@@ -70,7 +70,7 @@ class ImplicitOptionsMiddlewareTest extends TestCase
         $this->assertSame($response, $result);
     }
 
-    public function testReturnsResultOfHandlerWhenRouteSupportsOptionsExplicitly()
+    public function testReturnsResultOfHandlerWhenRouteSupportsOptionsExplicitly(): void
     {
         $route = $this->prophesize(Route::class);
 
@@ -89,7 +89,7 @@ class ImplicitOptionsMiddlewareTest extends TestCase
         $this->assertSame($response, $result);
     }
 
-    public function testInjectsAllowHeaderInResponseProvidedToConstructorDuringOptionsRequest()
+    public function testInjectsAllowHeaderInResponseProvidedToConstructorDuringOptionsRequest(): void
     {
         $allowedMethods = [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST];
 
@@ -110,7 +110,7 @@ class ImplicitOptionsMiddlewareTest extends TestCase
         $this->assertSame($this->response->reveal(), $result);
     }
 
-    public function testReturnsResultOfHandlerWhenRouteNotFound()
+    public function testReturnsResultOfHandlerWhenRouteNotFound(): void
     {
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
 

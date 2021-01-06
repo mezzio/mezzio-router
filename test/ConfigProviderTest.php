@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class ConfigProviderTest extends TestCase
 {
-    public function testProviderProvidesFactoriesForAllMiddleware()
+    public function testProviderProvidesFactoriesForAllMiddleware(): void
     {
         $provider = new ConfigProvider();
         $config   = $provider();

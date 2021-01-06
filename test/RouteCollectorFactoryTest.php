@@ -34,7 +34,7 @@ class RouteCollectorFactoryTest extends TestCase
         $this->factory   = new RouteCollectorFactory();
     }
 
-    public function testFactoryRaisesExceptionIfRouterServiceIsMissing()
+    public function testFactoryRaisesExceptionIfRouterServiceIsMissing(): void
     {
         $this->container->has(RouterInterface::class)->willReturn(false);
         $this->container->has(ZendExpressiveRouterInterface::class)->willReturn(false);
@@ -44,7 +44,7 @@ class RouteCollectorFactoryTest extends TestCase
         ($this->factory)($this->container->reveal());
     }
 
-    public function testFactoryProducesRouteCollectorWhenAllDependenciesPresent()
+    public function testFactoryProducesRouteCollectorWhenAllDependenciesPresent(): void
     {
         $router = $this->prophesize(RouterInterface::class)->reveal();
         $this->container->has(RouterInterface::class)->willReturn(true);
@@ -61,7 +61,7 @@ class RouteCollectorFactoryTest extends TestCase
         $this->assertTrue($r->getValue($collector));
     }
 
-    public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig()
+    public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig(): void
     {
         $router = $this->prophesize(RouterInterface::class)->reveal();
         $this->container->has(RouterInterface::class)->willReturn(true);

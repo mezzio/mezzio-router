@@ -47,7 +47,7 @@ class MethodNotAllowedMiddlewareTest extends TestCase
         $this->middleware = new MethodNotAllowedMiddleware($responseFactory);
     }
 
-    public function testDelegatesToHandlerIfNoRouteResultPresentInRequest()
+    public function testDelegatesToHandlerIfNoRouteResultPresentInRequest(): void
     {
         $this->request->getAttribute(RouteResult::class)->willReturn(null);
         $this->handler->handle(Argument::that([$this->request, 'reveal']))->will([$this->response, 'reveal']);
@@ -61,7 +61,7 @@ class MethodNotAllowedMiddlewareTest extends TestCase
         );
     }
 
-    public function testDelegatesToHandlerIfRouteResultNotAMethodFailure()
+    public function testDelegatesToHandlerIfRouteResultNotAMethodFailure(): void
     {
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
 
@@ -77,7 +77,7 @@ class MethodNotAllowedMiddlewareTest extends TestCase
         );
     }
 
-    public function testReturns405ResponseWithAllowHeaderIfResultDueToMethodFailure()
+    public function testReturns405ResponseWithAllowHeaderIfResultDueToMethodFailure(): void
     {
         $result = RouteResult::fromRouteFailure(['GET', 'POST']);
 

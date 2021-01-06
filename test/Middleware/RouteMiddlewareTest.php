@@ -49,7 +49,7 @@ class RouteMiddlewareTest extends TestCase
         $this->middleware = new RouteMiddleware($this->router->reveal());
     }
 
-    public function testRoutingFailureDueToHttpMethodCallsHandlerWithRequestComposingRouteResult()
+    public function testRoutingFailureDueToHttpMethodCallsHandlerWithRequestComposingRouteResult(): void
     {
         $result = RouteResult::fromRouteFailure(['GET', 'POST']);
 
@@ -65,7 +65,7 @@ class RouteMiddlewareTest extends TestCase
         $this->assertSame($this->response->reveal(), $response);
     }
 
-    public function testGeneralRoutingFailureInvokesHandlerWithRequestComposingRouteResult()
+    public function testGeneralRoutingFailureInvokesHandlerWithRequestComposingRouteResult(): void
     {
         $result = RouteResult::fromRouteFailure(null);
 
@@ -81,7 +81,7 @@ class RouteMiddlewareTest extends TestCase
         $this->assertSame($this->response->reveal(), $response);
     }
 
-    public function testRoutingSuccessInvokesHandlerWithRequestComposingRouteResultAndAttributes()
+    public function testRoutingSuccessInvokesHandlerWithRequestComposingRouteResultAndAttributes(): void
     {
         $middleware = $this->prophesize(MiddlewareInterface::class)->reveal();
         $parameters = ['foo' => 'bar', 'baz' => 'bat'];

@@ -22,25 +22,25 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class RouteResultTest extends TestCase
 {
-    public function testRouteNameIsNotRetrievable()
+    public function testRouteNameIsNotRetrievable(): void
     {
         $result = RouteResult::fromRouteFailure([]);
         $this->assertFalse($result->getMatchedRouteName());
     }
 
-    public function testRouteFailureRetrieveAllHttpMethods()
+    public function testRouteFailureRetrieveAllHttpMethods(): void
     {
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
         $this->assertSame(Route::HTTP_METHOD_ANY, $result->getAllowedMethods());
     }
 
-    public function testRouteFailureRetrieveHttpMethods()
+    public function testRouteFailureRetrieveHttpMethods(): void
     {
         $result = RouteResult::fromRouteFailure([]);
         $this->assertSame([], $result->getAllowedMethods());
     }
 
-    public function testRouteMatchedParams()
+    public function testRouteMatchedParams(): void
     {
         $params = ['foo' => 'bar'];
         $route  = $this->prophesize(Route::class);
@@ -49,13 +49,13 @@ class RouteResultTest extends TestCase
         $this->assertSame($params, $result->getMatchedParams());
     }
 
-    public function testRouteMethodFailure()
+    public function testRouteMethodFailure(): void
     {
         $result = RouteResult::fromRouteFailure(['GET']);
         $this->assertTrue($result->isMethodFailure());
     }
 
-    public function testRouteSuccessMethodFailure()
+    public function testRouteSuccessMethodFailure(): void
     {
         $params = ['foo' => 'bar'];
         $route  = $this->prophesize(Route::class);
@@ -65,7 +65,9 @@ class RouteResultTest extends TestCase
     }
 
     /**
-     * @return Route[]|RouteResult[]
+     * @return (RouteResult|\Prophecy\Prophecy\ObjectProphecy)[]
+     *
+     * @psalm-return array{route: \Prophecy\Prophecy\ObjectProphecy<Route>, result: RouteResult}
      */
     public function testFromRouteShouldComposeRouteInResult(): array
     {
@@ -81,8 +83,10 @@ class RouteResultTest extends TestCase
 
     /**
      * @depends testFromRouteShouldComposeRouteInResult
+     *
+     * @return void
      */
-    public function testAllAccessorsShouldReturnExpectedDataWhenResultCreatedViaFromRoute(array $data)
+    public function testAllAccessorsShouldReturnExpectedDataWhenResultCreatedViaFromRoute(array $data): void
     {
         $result = $data['result'];
         $route  = $data['route'];
@@ -94,7 +98,7 @@ class RouteResultTest extends TestCase
         $this->assertEquals(['HEAD', 'OPTIONS', 'GET'], $result->getAllowedMethods());
     }
 
-    public function testRouteFailureWithNoAllowedHttpMethodsShouldReportTrueForIsMethodFailure()
+    public function testRouteFailureWithNoAllowedHttpMethodsShouldReportTrueForIsMethodFailure(): void
     {
         $result = RouteResult::fromRouteFailure([]);
         $this->assertTrue($result->isMethodFailure());
@@ -110,14 +114,16 @@ class RouteResultTest extends TestCase
 
     /**
      * @depends testFailureResultDoesNotIndicateAMethodFailureIfAllMethodsAreAllowed
+     *
+     * @return void
      */
     public function testAllowedMethodsIncludesASingleWildcardEntryWhenAllMethodsAllowedForFailureResult(
         RouteResult $result
-    ) {
+    ): void {
         $this->assertSame(Route::HTTP_METHOD_ANY, $result->getAllowedMethods());
     }
 
-    public function testFailureResultProcessedAsMiddlewareDelegatesToHandler()
+    public function testFailureResultProcessedAsMiddlewareDelegatesToHandler(): void
     {
         $request  = $this->prophesize(ServerRequestInterface::class)->reveal();
         $response = $this->prophesize(ResponseInterface::class)->reveal();
@@ -129,7 +135,7 @@ class RouteResultTest extends TestCase
         $this->assertSame($response, $result->process($request, $handler->reveal()));
     }
 
-    public function testSuccessfulResultProcessedAsMiddlewareDelegatesToRoute()
+    public function testSuccessfulResultProcessedAsMiddlewareDelegatesToRoute(): void
     {
         $request  = $this->prophesize(ServerRequestInterface::class)->reveal();
         $response = $this->prophesize(ResponseInterface::class)->reveal();
