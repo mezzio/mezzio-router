@@ -14,12 +14,15 @@ use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\Middleware\MethodNotAllowedMiddleware;
 use Mezzio\Router\Middleware\MethodNotAllowedMiddlewareFactory;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class MethodNotAllowedMiddlewareFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var ContainerInterface|ObjectProphecy */
     private $container;
 
@@ -32,7 +35,7 @@ class MethodNotAllowedMiddlewareFactoryTest extends TestCase
         $this->factory   = new MethodNotAllowedMiddlewareFactory();
     }
 
-    public function testFactoryRaisesExceptionIfResponseFactoryServiceIsMissing()
+    public function testFactoryRaisesExceptionIfResponseFactoryServiceIsMissing(): void
     {
         $this->container->has(ResponseInterface::class)->willReturn(false);
 
@@ -40,9 +43,9 @@ class MethodNotAllowedMiddlewareFactoryTest extends TestCase
         ($this->factory)($this->container->reveal());
     }
 
-    public function testFactoryProducesMethodNotAllowedMiddlewareWhenAllDependenciesPresent()
+    public function testFactoryProducesMethodNotAllowedMiddlewareWhenAllDependenciesPresent(): void
     {
-        $factory = function () {
+        $factory = function (): void {
         };
 
         $this->container->has(ResponseInterface::class)->willReturn(true);

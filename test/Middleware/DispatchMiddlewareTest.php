@@ -14,6 +14,7 @@ use Mezzio\Router\Middleware\DispatchMiddleware;
 use Mezzio\Router\RouteResult;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,6 +22,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class DispatchMiddlewareTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var RequestHandlerInterface|ObjectProphecy */
     private $handler;
 
@@ -41,7 +44,7 @@ class DispatchMiddlewareTest extends TestCase
         $this->middleware = new DispatchMiddleware();
     }
 
-    public function testInvokesHandlerIfRequestDoesNotContainRouteResult()
+    public function testInvokesHandlerIfRequestDoesNotContainRouteResult(): void
     {
         $this->request->getAttribute(RouteResult::class, false)->willReturn(false);
         $this->handler->handle($this->request->reveal())->willReturn($this->response);
@@ -51,7 +54,7 @@ class DispatchMiddlewareTest extends TestCase
         $this->assertSame($this->response, $response);
     }
 
-    public function testInvokesRouteResultWhenPresent()
+    public function testInvokesRouteResultWhenPresent(): void
     {
         $this->handler->handle(Argument::any())->shouldNotBeCalled();
 

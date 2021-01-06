@@ -16,12 +16,15 @@ use Mezzio\Router\Middleware\RouteMiddleware;
 use Mezzio\Router\Middleware\RouteMiddlewareFactory;
 use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 class RouteMiddlewareFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var ContainerInterface|ObjectProphecy */
     private $container;
 
@@ -34,7 +37,7 @@ class RouteMiddlewareFactoryTest extends TestCase
         $this->factory   = new RouteMiddlewareFactory();
     }
 
-    public function testFactoryRaisesExceptionIfRouterServiceIsMissing()
+    public function testFactoryRaisesExceptionIfRouterServiceIsMissing(): void
     {
         $this->container->has(RouterInterface::class)->willReturn(false);
         $this->container->has(ZendExpressiveRouterInterface::class)->willReturn(false);
@@ -43,7 +46,7 @@ class RouteMiddlewareFactoryTest extends TestCase
         ($this->factory)($this->container->reveal());
     }
 
-    public function testFactoryProducesRouteMiddlewareWhenAllDependenciesPresent()
+    public function testFactoryProducesRouteMiddlewareWhenAllDependenciesPresent(): void
     {
         $router = $this->prophesize(RouterInterface::class)->reveal();
         $this->container->has(RouterInterface::class)->willReturn(true);
@@ -54,7 +57,7 @@ class RouteMiddlewareFactoryTest extends TestCase
         $this->assertInstanceOf(RouteMiddleware::class, $middleware);
     }
 
-    public function testFactoryAllowsSpecifyingRouterServiceViaConstructor()
+    public function testFactoryAllowsSpecifyingRouterServiceViaConstructor(): void
     {
         $router = $this->prophesize(RouterInterface::class)->reveal();
         $this->container->has(Router::class)->willReturn(true);
@@ -72,7 +75,7 @@ class RouteMiddlewareFactoryTest extends TestCase
         $this->assertSame($router, $middlewareRouter);
     }
 
-    public function testFactoryIsSerializable()
+    public function testFactoryIsSerializable(): void
     {
         $factory = RouteMiddlewareFactory::__set_state([
             'routerServiceName' => Router::class,

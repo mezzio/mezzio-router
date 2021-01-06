@@ -15,6 +15,7 @@ use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
 use Mezzio\Router\Middleware\ImplicitHeadMiddlewareFactory;
 use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\StreamInterface;
@@ -22,6 +23,8 @@ use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 class ImplicitHeadMiddlewareFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var ContainerInterface|ObjectProphecy */
     private $container;
 
@@ -34,7 +37,7 @@ class ImplicitHeadMiddlewareFactoryTest extends TestCase
         $this->factory   = new ImplicitHeadMiddlewareFactory();
     }
 
-    public function testFactoryRaisesExceptionIfRouterInterfaceServiceIsMissing()
+    public function testFactoryRaisesExceptionIfRouterInterfaceServiceIsMissing(): void
     {
         $this->container->has(RouterInterface::class)->willReturn(false);
         $this->container->has(ZendExpressiveRouterInterface::class)->willReturn(false);
@@ -43,7 +46,7 @@ class ImplicitHeadMiddlewareFactoryTest extends TestCase
         ($this->factory)($this->container->reveal());
     }
 
-    public function testFactoryRaisesExceptionIfStreamFactoryServiceIsMissing()
+    public function testFactoryRaisesExceptionIfStreamFactoryServiceIsMissing(): void
     {
         $this->container->has(RouterInterface::class)->willReturn(true);
         $this->container->has(StreamInterface::class)->willReturn(false);
@@ -52,10 +55,10 @@ class ImplicitHeadMiddlewareFactoryTest extends TestCase
         ($this->factory)($this->container->reveal());
     }
 
-    public function testFactoryProducesImplicitHeadMiddlewareWhenAllDependenciesPresent()
+    public function testFactoryProducesImplicitHeadMiddlewareWhenAllDependenciesPresent(): void
     {
         $router        = $this->prophesize(RouterInterface::class);
-        $streamFactory = function () {
+        $streamFactory = function (): void {
         };
 
         $this->container->has(RouterInterface::class)->willReturn(true);

@@ -120,7 +120,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     /**
      * @dataProvider method
      */
-    public function testExplicitRequest(string $method, array $routes)
+    public function testExplicitRequest(string $method, array $routes): void
     {
         $implicitRoute = null;
         $router        = $this->getRouter();
@@ -201,7 +201,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
      *
      * @dataProvider withoutImplicitMiddleware
      */
-    public function testWithoutImplicitMiddleware(string $requestMethod, array $allowedMethods)
+    public function testWithoutImplicitMiddleware(string $requestMethod, array $allowedMethods): void
     {
         $router = $this->getRouter();
         foreach ($allowedMethods as $routeMethod) {
@@ -254,7 +254,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         array $routeOptions,
         string $requestPath,
         array $expectedParams
-    ) {
+    ): void {
         $finalResponse = (new Response())->withHeader('foo-bar', 'baz');
         $finalResponse->getBody()->write('FOO BAR BODY');
 
@@ -333,7 +333,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         string $routePath,
         array $routeOptions,
         string $requestPath
-    ) {
+    ): void {
         $middleware1 = $this->prophesize(MiddlewareInterface::class)->reveal();
         $middleware2 = $this->prophesize(MiddlewareInterface::class)->reveal();
         $route1      = new Route($routePath, $middleware1, [RequestMethod::METHOD_GET]);
@@ -368,7 +368,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         $this->assertSame($finalResponse->reveal(), $response);
     }
 
-    public function testImplicitOptionsRequestRouteNotFound()
+    public function testImplicitOptionsRequestRouteNotFound(): void
     {
         $router = $this->getRouter();
 

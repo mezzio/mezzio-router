@@ -16,6 +16,7 @@ use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,6 +24,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class MethodNotAllowedMiddlewareTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var RequestHandlerInterface|ObjectProphecy */
     private $handler;
 
@@ -47,7 +50,7 @@ class MethodNotAllowedMiddlewareTest extends TestCase
         $this->middleware = new MethodNotAllowedMiddleware($responseFactory);
     }
 
-    public function testDelegatesToHandlerIfNoRouteResultPresentInRequest()
+    public function testDelegatesToHandlerIfNoRouteResultPresentInRequest(): void
     {
         $this->request->getAttribute(RouteResult::class)->willReturn(null);
         $this->handler->handle(Argument::that([$this->request, 'reveal']))->will([$this->response, 'reveal']);
@@ -61,7 +64,7 @@ class MethodNotAllowedMiddlewareTest extends TestCase
         );
     }
 
-    public function testDelegatesToHandlerIfRouteResultNotAMethodFailure()
+    public function testDelegatesToHandlerIfRouteResultNotAMethodFailure(): void
     {
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
 
@@ -77,7 +80,7 @@ class MethodNotAllowedMiddlewareTest extends TestCase
         );
     }
 
-    public function testReturns405ResponseWithAllowHeaderIfResultDueToMethodFailure()
+    public function testReturns405ResponseWithAllowHeaderIfResultDueToMethodFailure(): void
     {
         $result = RouteResult::fromRouteFailure(['GET', 'POST']);
 

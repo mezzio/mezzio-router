@@ -17,6 +17,7 @@ use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,6 +27,8 @@ use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 class ImplicitHeadMiddlewareTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var ImplicitHeadMiddleware */
     private $middleware;
 
@@ -51,7 +54,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
         $this->response   = $this->prophesize(ResponseInterface::class);
     }
 
-    public function testReturnsResultOfHandlerOnNonHeadRequests()
+    public function testReturnsResultOfHandlerOnNonHeadRequests(): void
     {
         $request = $this->prophesize(ServerRequestInterface::class);
         $request->getMethod()->willReturn(RequestMethod::METHOD_GET);
@@ -64,7 +67,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
         $this->assertSame($this->response->reveal(), $result);
     }
 
-    public function testReturnsResultOfHandlerWhenNoRouteResultPresentInRequest()
+    public function testReturnsResultOfHandlerWhenNoRouteResultPresentInRequest(): void
     {
         $request = $this->prophesize(ServerRequestInterface::class);
         $request->getMethod()->willReturn(RequestMethod::METHOD_HEAD);
@@ -78,7 +81,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
         $this->assertSame($this->response->reveal(), $result);
     }
 
-    public function testReturnsResultOfHandlerWhenRouteSupportsHeadExplicitly()
+    public function testReturnsResultOfHandlerWhenRouteSupportsHeadExplicitly(): void
     {
         $route  = $this->prophesize(Route::class);
         $result = RouteResult::fromRoute($route->reveal());
@@ -95,7 +98,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
         $this->assertSame($this->response->reveal(), $result);
     }
 
-    public function testReturnsResultOfHandlerWhenRouteDoesNotExplicitlySupportHeadAndDoesNotSupportGet()
+    public function testReturnsResultOfHandlerWhenRouteDoesNotExplicitlySupportHeadAndDoesNotSupportGet(): void
     {
         $result = RouteResult::fromRouteFailure([]);
 
@@ -114,7 +117,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
         $this->assertSame($this->response->reveal(), $response);
     }
 
-    public function testInvokesHandlerWhenRouteImplicitlySupportsHeadAndSupportsGet()
+    public function testInvokesHandlerWhenRouteImplicitlySupportsHeadAndSupportsGet(): void
     {
         $result = RouteResult::fromRouteFailure([]);
 
@@ -150,7 +153,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
         $this->assertSame($response->reveal(), $result);
     }
 
-    public function testInvokesHandlerWithRequestComposingRouteResultAndAttributes()
+    public function testInvokesHandlerWithRequestComposingRouteResultAndAttributes(): void
     {
         $result = RouteResult::fromRouteFailure([]);
 
