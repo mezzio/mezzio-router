@@ -43,6 +43,9 @@ class RouteCollector
     /** @var RouterInterface */
     protected $router;
 
+    /** @var bool */
+    protected $detectDuplicates = true;
+
     /**
      * List of all routes registered directly with the application.
      *
@@ -51,14 +54,14 @@ class RouteCollector
     private $routes = [];
 
     /**
-     * @var DuplicateRouteDetector
+     * @var null|DuplicateRouteDetector
      */
     private $duplicateRouteDetector;
 
-    public function __construct(RouterInterface $router)
+    public function __construct(RouterInterface $router, bool $detectDuplicates = true)
     {
         $this->router = $router;
-        $this->duplicateRouteDetector = new DuplicateRouteDetector();
+        $this->detectDuplicates = $detectDuplicates;
     }
 
     /**
@@ -78,7 +81,7 @@ class RouteCollector
     ): Route {
         $methods = $methods ?? Route::HTTP_METHOD_ANY;
         $route   = new Route($path, $middleware, $methods, $name);
-        $this->duplicateRouteDetector->detectDuplicate($route);
+        $this->detectDuplicate($route);
         $this->routes[] = $route;
         $this->router->addRoute($route);
 
@@ -141,5 +144,17 @@ class RouteCollector
     public function getRoutes(): array
     {
         return $this->routes;
+    }
+
+    private function detectDuplicate(Route $route): void
+    {
+        if ($this->detectDuplicates && ! $this->duplicateRouteDetector) {
+            $this->duplicateRouteDetector = new DuplicateRouteDetector();
+        }
+
+        if ($this->duplicateRouteDetector) {
+            $this->duplicateRouteDetector->detectDuplicate($route);
+            return;
+        }
     }
 }

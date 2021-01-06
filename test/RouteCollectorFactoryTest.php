@@ -17,6 +17,7 @@ use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
+use ReflectionProperty;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 class RouteCollectorFactoryTest extends TestCase
@@ -47,10 +48,38 @@ class RouteCollectorFactoryTest extends TestCase
     {
         $router = $this->prophesize(RouterInterface::class)->reveal();
         $this->container->has(RouterInterface::class)->willReturn(true);
+        $this->container->has('config')->willReturn(false);
         $this->container->get(RouterInterface::class)->willReturn($router);
 
-        $middleware = ($this->factory)($this->container->reveal());
+        $collector = ($this->factory)($this->container->reveal());
 
-        $this->assertInstanceOf(RouteCollector::class, $middleware);
+        $this->assertInstanceOf(RouteCollector::class, $collector);
+
+        $r = new ReflectionProperty($collector, 'detectDuplicates');
+        $r->setAccessible(true);
+
+        $this->assertTrue($r->getValue($collector));
+    }
+
+    public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig()
+    {
+        $router = $this->prophesize(RouterInterface::class)->reveal();
+        $this->container->has(RouterInterface::class)->willReturn(true);
+        $this->container->has('config')->willReturn(true);
+        $this->container->get(RouterInterface::class)->willReturn($router);
+        $this->container->get('config')->willReturn([
+            RouteCollector::class => [
+                'detect_duplicates' => false,
+            ],
+        ]);
+
+        $collector = ($this->factory)($this->container->reveal());
+
+        $this->assertInstanceOf(RouteCollector::class, $collector);
+
+        $r = new ReflectionProperty($collector, 'detectDuplicates');
+        $r->setAccessible(true);
+
+        $this->assertFalse($r->getValue($collector));
     }
 }
