@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace MezzioTest\Router;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
-use Mezzio\Router\DuplicateRouteDetector;
 use Mezzio\Router\Exception;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteCollector;
@@ -55,6 +54,7 @@ class RouteCollectorTest extends TestCase
     public function createNoopMiddleware(): MiddlewareInterface
     {
         return new class ($this->response->reveal()) implements MiddlewareInterface {
+            /** @var ResponseInterface */
             private $response;
 
             public function __construct(ResponseInterface $response)
@@ -223,7 +223,7 @@ class RouteCollectorTest extends TestCase
         foreach (range(1, 10) as $item) {
             $this->collector->get("/bar$item", $this->noopMiddleware);
         }
-        $baseDuration = microtime(true) - $start;
+        $baseDuration    = microtime(true) - $start;
         $this->collector = new RouteCollector($this->router->reveal());
 
         $start = microtime(true);
@@ -231,9 +231,9 @@ class RouteCollectorTest extends TestCase
             $this->collector->get("/foo$item", $this->noopMiddleware);
         }
 
-        $duration = microtime(true) - $start;
+        $duration         = microtime(true) - $start;
         $expectedDuration = $baseDuration * 1000;
-        $error = 30 * $expectedDuration / 100;
+        $error            = 30 * $expectedDuration / 100;
         $this->assertTrue(
             $expectedDuration + $error > $duration,
             sprintf(
@@ -248,7 +248,7 @@ class RouteCollectorTest extends TestCase
 
     public function testCreatingHttpRouteWithExistingPathAndMethodRaisesException()
     {
-        $this->router->addRoute(Argument::type(\Zend\Expressive\Router\Route::class))->shouldBeCalledTimes(1);
+        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalledTimes(1);
         $this->collector->get('/foo', $this->noopMiddleware, 'route1');
 
         $this->expectException(Exception\DuplicateRouteException::class);
@@ -297,7 +297,7 @@ class RouteCollectorTest extends TestCase
     public function testCreatingHttpRouteWithExistingNameDoesNotRaiseExceptionIfDuplicateDetectionDisabled()
     {
         $this->router->addRoute(Argument::type(Route::class))->shouldBeCalledTimes(2);
-        $collector      = new RouteCollector($this->router->reveal(), false);
+        $collector = new RouteCollector($this->router->reveal(), false);
         $collector->get('/foo', $this->noopMiddleware, 'duplicate');
         $collector->get('/foo/baz', $this->createNoopMiddleware(), 'duplicate');
 

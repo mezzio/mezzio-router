@@ -12,12 +12,6 @@ namespace Mezzio\Router;
 
 use Psr\Http\Server\MiddlewareInterface;
 
-use function array_filter;
-use function array_reduce;
-use function implode;
-use function reset;
-use function sprintf;
-
 /**
  * Aggregate routes for the router.
  *
@@ -53,14 +47,12 @@ class RouteCollector
      */
     private $routes = [];
 
-    /**
-     * @var null|DuplicateRouteDetector
-     */
+    /** @var null|DuplicateRouteDetector */
     private $duplicateRouteDetector;
 
     public function __construct(RouterInterface $router, bool $detectDuplicates = true)
     {
-        $this->router = $router;
+        $this->router           = $router;
         $this->detectDuplicates = $detectDuplicates;
     }
 

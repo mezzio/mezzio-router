@@ -13,6 +13,8 @@ namespace Mezzio\Router;
 use Psr\Container\ContainerInterface;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
+use function array_key_exists;
+
 /**
  * Create and return a RouteCollector instance.
  *

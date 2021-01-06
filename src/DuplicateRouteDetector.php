@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @see       https://github.com/mezzio/mezzio-router for the canonical source repository
  * @copyright https://github.com/mezzio/mezzio-router/blob/master/COPYRIGHT.md
@@ -9,9 +10,12 @@ declare(strict_types=1);
 
 namespace Mezzio\Router;
 
+use function implode;
+use function sprintf;
+
 final class DuplicateRouteDetector
 {
-    private const ROUTE_SEARCH_ANY = 'any';
+    private const ROUTE_SEARCH_ANY     = 'any';
     private const ROUTE_SEARCH_METHODS = 'methods';
 
     /**
@@ -45,7 +49,7 @@ final class DuplicateRouteDetector
      * if so, and it responds to any of the $methods indicated, raises
      * a DuplicateRouteException indicating a duplicate route.
      *
-     * @throws Exception\DuplicateRouteException on duplicate route detection.
+     * @throws Exception\DuplicateRouteException On duplicate route detection.
      */
     public function detectDuplicate(Route $route): void
     {
@@ -94,8 +98,8 @@ final class DuplicateRouteDetector
 
     private function duplicateRouteDetected(Route $duplicate): void
     {
-        $allowedMethods = $duplicate->getAllowedMethods() ?: [ '(any)' ];
-        $name = $duplicate->getName();
+        $allowedMethods = $duplicate->getAllowedMethods() ?: ['(any)'];
+        $name           = $duplicate->getName();
         throw new Exception\DuplicateRouteException(
             sprintf(
                 'Duplicate route detected; path "%s" answering to methods [%s]%s',
