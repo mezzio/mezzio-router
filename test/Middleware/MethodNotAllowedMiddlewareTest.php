@@ -16,6 +16,7 @@ use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -23,6 +24,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class MethodNotAllowedMiddlewareTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var RequestHandlerInterface|ObjectProphecy */
     private $handler;
 

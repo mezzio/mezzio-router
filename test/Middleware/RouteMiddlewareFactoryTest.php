@@ -16,12 +16,15 @@ use Mezzio\Router\Middleware\RouteMiddleware;
 use Mezzio\Router\Middleware\RouteMiddlewareFactory;
 use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 class RouteMiddlewareFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var ContainerInterface|ObjectProphecy */
     private $container;
 

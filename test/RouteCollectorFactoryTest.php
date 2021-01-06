@@ -15,6 +15,7 @@ use Mezzio\Router\RouteCollector;
 use Mezzio\Router\RouteCollectorFactory;
 use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use ReflectionProperty;
@@ -22,6 +23,8 @@ use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 class RouteCollectorFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var ContainerInterface|ObjectProphecy */
     private $container;
 

@@ -15,6 +15,7 @@ use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
 use Mezzio\Router\Middleware\ImplicitHeadMiddlewareFactory;
 use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\StreamInterface;
@@ -22,6 +23,8 @@ use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 class ImplicitHeadMiddlewareFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var ContainerInterface|ObjectProphecy */
     private $container;
 

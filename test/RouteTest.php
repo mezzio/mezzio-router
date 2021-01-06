@@ -14,6 +14,7 @@ use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Mezzio\Router\Exception\InvalidArgumentException;
 use Mezzio\Router\Route;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -27,6 +28,8 @@ use function sprintf;
  */
 class RouteTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var callable */
     private $noopMiddleware;
 
@@ -122,8 +125,6 @@ class RouteTest extends TestCase
 
     /**
      * @requires PHP < 7.3
-     *
-     * @return void
      */
     public function testThrowsExceptionDuringConstructionIfPathIsNotStringPhpPriorTo73(): void
     {
@@ -136,8 +137,6 @@ class RouteTest extends TestCase
     /**
      * @requires PHP 7.3
      * @requires PHP < 8.0
-     *
-     * @return void
      */
     public function testThrowsExceptionDuringConstructionIfPathIsNotString(): void
     {
@@ -149,8 +148,6 @@ class RouteTest extends TestCase
 
     /**
      * @requires PHP < 8.0
-     *
-     * @return void
      */
     public function testThrowsExceptionDuringConstructionOnInvalidMiddleware(): void
     {
@@ -165,8 +162,6 @@ class RouteTest extends TestCase
 
     /**
      * @requires PHP < 8.0
-     *
-     * @return void
      */
     public function testThrowsExceptionDuringConstructionOnInvalidHttpMethod(): void
     {
@@ -199,8 +194,6 @@ class RouteTest extends TestCase
 
     /**
      * @dataProvider invalidHttpMethodsProvider
-     *
-     * @return void
      */
     public function testThrowsExceptionIfInvalidHttpMethodsAreProvided(array $invalidHttpMethods): void
     {
@@ -241,12 +234,8 @@ class RouteTest extends TestCase
 
     /**
      * @requires PHP < 8.0
-     *
      * @dataProvider invalidMiddleware
-     *
      * @param mixed $middleware
-     *
-     * @return void
      */
     public function testConstructorRaisesExceptionForInvalidMiddleware($middleware): void
     {

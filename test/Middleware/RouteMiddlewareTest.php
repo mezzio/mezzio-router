@@ -15,6 +15,7 @@ use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,6 +25,8 @@ use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 class RouteMiddlewareTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var RouterInterface|ObjectProphecy */
     private $router;
 

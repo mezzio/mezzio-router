@@ -13,6 +13,8 @@ namespace MezzioTest\Router;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -22,6 +24,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class RouteResultTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testRouteNameIsNotRetrievable(): void
     {
         $result = RouteResult::fromRouteFailure([]);
@@ -65,9 +69,8 @@ class RouteResultTest extends TestCase
     }
 
     /**
-     * @return (RouteResult|\Prophecy\Prophecy\ObjectProphecy)[]
-     *
-     * @psalm-return array{route: \Prophecy\Prophecy\ObjectProphecy<Route>, result: RouteResult}
+     * @return (RouteResult|ObjectProphecy)[]
+     * @psalm-return array{route: ObjectProphecy<Route>, result: RouteResult}
      */
     public function testFromRouteShouldComposeRouteInResult(): array
     {
@@ -83,8 +86,6 @@ class RouteResultTest extends TestCase
 
     /**
      * @depends testFromRouteShouldComposeRouteInResult
-     *
-     * @return void
      */
     public function testAllAccessorsShouldReturnExpectedDataWhenResultCreatedViaFromRoute(array $data): void
     {
@@ -114,8 +115,6 @@ class RouteResultTest extends TestCase
 
     /**
      * @depends testFailureResultDoesNotIndicateAMethodFailureIfAllMethodsAreAllowed
-     *
-     * @return void
      */
     public function testAllowedMethodsIncludesASingleWildcardEntryWhenAllMethodsAllowedForFailureResult(
         RouteResult $result

@@ -119,8 +119,6 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
     /**
      * @dataProvider method
-     *
-     * @return void
      */
     public function testExplicitRequest(string $method, array $routes): void
     {
@@ -202,8 +200,6 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
      * returned response should be 405: Method Not Allowed - handled by MethodNotAllowedMiddleware.
      *
      * @dataProvider withoutImplicitMiddleware
-     *
-     * @return void
      */
     public function testWithoutImplicitMiddleware(string $requestMethod, array $allowedMethods): void
     {
@@ -252,8 +248,6 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
     /**
      * @dataProvider implicitRoutesAndRequests
-     *
-     * @return void
      */
     public function testImplicitHeadRequest(
         string $routePath,
@@ -334,8 +328,6 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
     /**
      * @dataProvider implicitRoutesAndRequests
-     *
-     * @return void
      */
     public function testImplicitOptionsRequest(
         string $routePath,

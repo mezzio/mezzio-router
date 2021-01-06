@@ -17,6 +17,7 @@ use Mezzio\Router\RouteCollector;
 use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -31,6 +32,8 @@ use function sprintf;
 
 class RouteCollectorTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var RouterInterface|ObjectProphecy */
     private $router;
 
@@ -73,8 +76,7 @@ class RouteCollectorTest extends TestCase
 
     /**
      * @return string[][]
-     *
-     * @psalm-return array{GET: array{0: string}, POST: array{0: string}, PUT: array{0: string}, PATCH: array{0: string}, DELETE: array{0: string}}
+     * @psalm-return array<array-key, array{0:string}>
      */
     public function commonHttpMethods(): array
     {
@@ -108,10 +110,7 @@ class RouteCollectorTest extends TestCase
 
     /**
      * @dataProvider commonHttpMethods
-     *
      * @param string $method
-     *
-     * @return void
      */
     public function testCanCallRouteWithHttpMethods($method): void
     {
@@ -164,10 +163,7 @@ class RouteCollectorTest extends TestCase
 
     /**
      * @dataProvider invalidPathTypes
-     *
      * @param mixed $path
-     *
-     * @return void
      */
     public function testCallingRouteWithAnInvalidPathTypeRaisesAnException($path): void
     {
@@ -177,10 +173,7 @@ class RouteCollectorTest extends TestCase
 
     /**
      * @dataProvider commonHttpMethods
-     *
      * @param mixed $method
-     *
-     * @return void
      */
     public function testCommonHttpMethodsAreExposedAsClassMethodsAndReturnRoutes($method): void
     {
