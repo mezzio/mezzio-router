@@ -178,6 +178,9 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         $this->assertSame('baz', $response->getHeaderLine('foo-bar'));
     }
 
+    /**
+     * @return iterable
+     */
     public function withoutImplicitMiddleware()
     {
         // @codingStandardsIgnoreStart

@@ -6,11 +6,13 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- Nothing.
+- [#3](https://github.com/mezzio/mezzio-router/pull/3) adds a new class, `Mezzio\Router\DuplicateRouteDetector`, which improves performance of duplicate route detection dramatically.
 
 ### Changed
 
-- Nothing.
+- [#3](https://github.com/mezzio/mezzio-router/pull/3) changes the constructor of the `Mezzio\Router\RouteCollector` class to allow passing an optional flag (enabled by default) indicating whether or not to perform duplicate route detection. Internally, when the flag is enabled, the collector instantiates and memoizes a `DuplicateRouteDetector` on the addition of the first route.
+
+- [#3](https://github.com/mezzio/mezzio-router/pull/3) changes the `Mezzio\Router\RouteCollectorFactory` behavior to optionally look for a `Mezzio\Router\RouteCollector.detect_duplicates` flag in the `config` service; if found, the value is used when instantiating the `RouteCollector` instance.
 
 ### Deprecated
 
@@ -21,16 +23,6 @@ All notable changes to this project will be documented in this file, in reverse 
 - Nothing.
 
 ### Fixed
-
-- Nothing.
-
-## 3.2.1 - TBD
-
-### Added
-
-- Nothing.
-
-### Changed
 
 - Nothing.
 

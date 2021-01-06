@@ -13,6 +13,8 @@ namespace Mezzio\Router;
 use Psr\Container\ContainerInterface;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
+use function array_key_exists;
+
 /**
  * Create and return a RouteCollector instance.
  *
@@ -42,7 +44,27 @@ class RouteCollectorFactory
         return new RouteCollector(
             $container->has(RouterInterface::class)
                 ? $container->get(RouterInterface::class)
-                : $container->get(ZendExpressiveRouterInterface::class)
+                : $container->get(ZendExpressiveRouterInterface::class),
+            $this->getDetectDuplicatesFlag($container)
         );
+    }
+
+    private function getDetectDuplicatesFlag(ContainerInterface $container): bool
+    {
+        if (! $container->has('config')) {
+            return true;
+        }
+
+        $config = $container->get('config');
+        if (! array_key_exists(RouteCollector::class, $config)) {
+            return true;
+        }
+
+        $config = $config[RouteCollector::class];
+        if (! array_key_exists('detect_duplicates', $config)) {
+            return true;
+        }
+
+        return (bool) $config['detect_duplicates'];
     }
 }
