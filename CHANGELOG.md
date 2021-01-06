@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 3.3.0 - TBD
+## 3.3.0 - 2021-01-06
 
 ### Added
 
@@ -14,17 +14,23 @@ All notable changes to this project will be documented in this file, in reverse 
 
 - [#3](https://github.com/mezzio/mezzio-router/pull/3) changes the `Mezzio\Router\RouteCollectorFactory` behavior to optionally look for a `Mezzio\Router\RouteCollector.detect_duplicates` flag in the `config` service; if found, the value is used when instantiating the `RouteCollector` instance.
 
-### Deprecated
 
-- Nothing.
+-----
 
-### Removed
+### Release Notes for [3.3.0](https://github.com/mezzio/mezzio-router/milestone/5)
 
-- Nothing.
+Feature release (minor)
 
-### Fixed
+### 3.3.0
 
-- Nothing.
+- Total issues resolved: **2**
+- Total pull requests resolved: **2**
+- Total contributors: **3**
+
+#### Enhancement
+
+ - [13: Psalm integration](https://github.com/mezzio/mezzio-router/pull/13) thanks to @weierophinney and @boesing
+ - [3: Optimize route addition](https://github.com/mezzio/mezzio-router/pull/3) thanks to @nightlinus and @weierophinney
 
 ## 3.2.1 - 2020-10-24
 
