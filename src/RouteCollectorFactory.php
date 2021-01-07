@@ -55,7 +55,7 @@ class RouteCollectorFactory
             return true;
         }
 
-        $config = $container->get('config');
+        $config = (array)$container->get('config');
         if (! array_key_exists(RouteCollector::class, $config)) {
             return true;
         }
