@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Mezzio\Router;
 
-use ArrayAccess;
+use ArrayObject;
 use Psr\Container\ContainerInterface;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
@@ -57,11 +57,11 @@ class RouteCollectorFactory
         }
 
         $config = $container->get('config');
-        
-        $config = $config instanceof ArrayAccess
+
+        $config = $config instanceof ArrayObject
             ? $config->getArrayCopy()
             : $config;
-        
+
         if (! array_key_exists(RouteCollector::class, $config)) {
             return true;
         }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace MezzioTest\Router;
 
+use ArrayObject;
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\RouteCollector;
 use Mezzio\Router\RouteCollectorFactory;
@@ -34,7 +35,7 @@ class RouteCollectorFactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->container = $this->prophesize(ContainerInterface::class);
-        $this->factory   = new RouteCollectorFactory();
+        $this->factory = new RouteCollectorFactory();
     }
 
     public function testFactoryRaisesExceptionIfRouterServiceIsMissing(): void
@@ -64,7 +65,7 @@ class RouteCollectorFactoryTest extends TestCase
         $this->assertTrue($r->getValue($collector));
     }
 
-    public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig(): void
+    public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromArrayConfig(): void
     {
         $router = $this->prophesize(RouterInterface::class)->reveal();
         $this->container->has(RouterInterface::class)->willReturn(true);
@@ -75,6 +76,28 @@ class RouteCollectorFactoryTest extends TestCase
                 'detect_duplicates' => false,
             ],
         ]);
+
+        $collector = ($this->factory)($this->container->reveal());
+
+        $this->assertInstanceOf(RouteCollector::class, $collector);
+
+        $r = new ReflectionProperty($collector, 'detectDuplicates');
+        $r->setAccessible(true);
+
+        $this->assertFalse($r->getValue($collector));
+    }
+
+    public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromArrayObjectConfig(): void
+    {
+        $router = $this->prophesize(RouterInterface::class)->reveal();
+        $this->container->has(RouterInterface::class)->willReturn(true);
+        $this->container->has('config')->willReturn(true);
+        $this->container->get(RouterInterface::class)->willReturn($router);
+        $this->container->get('config')->willReturn(new ArrayObject([
+            RouteCollector::class => [
+                'detect_duplicates' => false,
+            ],
+        ]));
 
         $collector = ($this->factory)($this->container->reveal());
 
