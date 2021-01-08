@@ -35,7 +35,7 @@ class RouteCollectorFactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->container = $this->prophesize(ContainerInterface::class);
-        $this->factory = new RouteCollectorFactory();
+        $this->factory   = new RouteCollectorFactory();
     }
 
     public function testFactoryRaisesExceptionIfRouterServiceIsMissing(): void
