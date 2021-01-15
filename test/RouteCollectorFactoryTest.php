@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace MezzioTest\Router;
 
+use ArrayAccess;
+use ArrayIterator;
 use ArrayObject;
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\RouteCollector;
@@ -21,6 +23,8 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use ReflectionProperty;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
+
+use function sprintf;
 
 class RouteCollectorFactoryTest extends TestCase
 {
@@ -67,37 +71,50 @@ class RouteCollectorFactoryTest extends TestCase
 
     public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromArrayConfig(): void
     {
-        $router = $this->prophesize(RouterInterface::class)->reveal();
-        $this->container->has(RouterInterface::class)->willReturn(true);
-        $this->container->has('config')->willReturn(true);
-        $this->container->get(RouterInterface::class)->willReturn($router);
-        $this->container->get('config')->willReturn([
+        $this->testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig([
             RouteCollector::class => [
                 'detect_duplicates' => false,
             ],
         ]);
-
-        $collector = ($this->factory)($this->container->reveal());
-
-        $this->assertInstanceOf(RouteCollector::class, $collector);
-
-        $r = new ReflectionProperty($collector, 'detectDuplicates');
-        $r->setAccessible(true);
-
-        $this->assertFalse($r->getValue($collector));
     }
 
     public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromArrayObjectConfig(): void
+    {
+        $this->testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig(new ArrayObject([
+            RouteCollector::class => [
+                'detect_duplicates' => false,
+            ],
+        ]));
+    }
+
+    public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromArrayIteratorConfig(): void
+    {
+        $this->testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig(new ArrayIterator([
+            RouteCollector::class => [
+                'detect_duplicates' => false,
+            ],
+        ]));
+    }
+
+    public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromAnyObjectConfig(): void
+    {
+        $this->expectExceptionMessage(sprintf('Config must be an array or implement %s.', ArrayAccess::class));
+
+        $this->testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig(new class {
+            // custom properties
+        });
+    }
+
+    /**
+     * @param mixed $config
+     */
+    private function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig($config): void
     {
         $router = $this->prophesize(RouterInterface::class)->reveal();
         $this->container->has(RouterInterface::class)->willReturn(true);
         $this->container->has('config')->willReturn(true);
         $this->container->get(RouterInterface::class)->willReturn($router);
-        $this->container->get('config')->willReturn(new ArrayObject([
-            RouteCollector::class => [
-                'detect_duplicates' => false,
-            ],
-        ]));
+        $this->container->get('config')->willReturn($config);
 
         $collector = ($this->factory)($this->container->reveal());
 

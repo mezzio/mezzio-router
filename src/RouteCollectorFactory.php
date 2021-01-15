@@ -10,11 +10,14 @@ declare(strict_types=1);
 
 namespace Mezzio\Router;
 
+use ArrayAccess;
 use ArrayObject;
+use LogicException;
 use Psr\Container\ContainerInterface;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
-use function array_key_exists;
+use function is_array;
+use function sprintf;
 
 /**
  * Create and return a RouteCollector instance.
@@ -58,16 +61,20 @@ class RouteCollectorFactory
 
         $config = $container->get('config');
 
-        $config = $config instanceof ArrayObject
-            ? $config->getArrayCopy()
-            : $config;
+        $config = is_array($config) ? new ArrayObject($config) : $config;
 
-        if (! array_key_exists(RouteCollector::class, $config)) {
+        if (! $config instanceof ArrayAccess) {
+            throw new LogicException(sprintf('Config must be an array or implement %s.', ArrayAccess::class));
+        }
+
+        if (! $config->offsetExists(RouteCollector::class)) {
             return true;
         }
 
-        $config = $config[RouteCollector::class];
-        if (! array_key_exists('detect_duplicates', $config)) {
+        /** @var array $config */
+        $config = $config->offsetGet(RouteCollector::class);
+
+        if (! isset($config['detect_duplicates'])) {
             return true;
         }
 
