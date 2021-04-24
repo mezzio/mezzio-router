@@ -1,6 +1,6 @@
 # mezzio-router
 
-[![Build Status](https://github.com/mezzio/mezzio-router/workflows/continuous-integration.yml/badge.svg)](https://github.com/mezzio/mezzio-router/actions/workflows/continuous-integration.yml)
+[![Build Status](https://github.com/mezzio/mezzio-router/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/mezzio/mezzio-router/actions/workflows/continuous-integration.yml)
 
 Router subcomponent for [Mezzio](https://github.com/mezzio/mezzio).
 
