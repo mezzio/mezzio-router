@@ -1,7 +1,6 @@
 # mezzio-router
 
-[![Build Status](https://travis-ci.com/mezzio/mezzio-router.svg?branch=master)](https://travis-ci.com/mezzio/mezzio-router)
-[![Coverage Status](https://coveralls.io/repos/github/mezzio/mezzio-router/badge.svg?branch=master)](https://coveralls.io/github/mezzio/mezzio-router?branch=master)
+[![Build Status](https://github.com/mezzio/mezzio-router/workflows/continuous-integration.yml/badge.svg)](https://github.com/mezzio/mezzio-router/actions/workflows/continuous-integration.yml)
 
 Router subcomponent for [Mezzio](https://github.com/mezzio/mezzio).
 
