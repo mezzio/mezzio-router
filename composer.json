@@ -36,8 +36,7 @@
         "psr/http-server-middleware": "^1.0"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "~2.1.0",
-        "malukenho/docheader": "^0.1.6",
+        "laminas/laminas-coding-standard": "~2.2.0",
         "phpspec/prophecy": "^1.9",
         "phpspec/prophecy-phpunit": "^2.0",
         "phpunit/phpunit": "^9.4.1",
@@ -61,7 +60,6 @@
     },
     "scripts": {
         "check": [
-            "@license-check",
             "@cs-check",
             "@test"
         ],
@@ -69,8 +67,7 @@
         "cs-fix": "phpcbf",
         "static-analysis": "psalm --shepherd --stats",
         "test": "phpunit --colors=always",
-        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml",
-        "license-check": "docheader check src/ test/"
+        "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
     },
     "replace": {
         "zendframework/zend-expressive-router": "^3.1.1"
