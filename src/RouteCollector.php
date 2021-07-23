@@ -26,7 +26,7 @@ use Psr\Http\Server\MiddlewareInterface;
  * attaching via one of the exposed methods, and will raise an exception when a
  * collision occurs.
  */
-class RouteCollector
+class RouteCollector implements RouteCollectorInterface
 {
     /** @var RouterInterface */
     protected $router;
