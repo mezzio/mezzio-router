@@ -61,9 +61,12 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         );
     }
 
+    /**
+     * @return callable(): ResponseInterface
+     */
     public function createInvalidResponseFactory(): callable
     {
-        return function () {
+        return static function (): ResponseInterface {
             Assert::fail('Response generated when it should not have been');
         };
     }
