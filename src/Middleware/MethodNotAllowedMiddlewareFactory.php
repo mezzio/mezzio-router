@@ -6,7 +6,6 @@ namespace Mezzio\Router\Middleware;
 
 use Mezzio\Router\Exception\MissingDependencyException;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Create and return a MethodNotAllowedMiddleware instance.
@@ -18,21 +17,16 @@ use Psr\Http\Message\ResponseInterface;
  */
 class MethodNotAllowedMiddlewareFactory
 {
+    use Psr17ResponseFactoryTrait;
+
     /**
      * @throws MissingDependencyException If the Psr\Http\Message\ResponseInterface
      *     service is missing.
      */
     public function __invoke(ContainerInterface $container): MethodNotAllowedMiddleware
     {
-        if (! $container->has(ResponseInterface::class)) {
-            throw MissingDependencyException::dependencyForService(
-                ResponseInterface::class,
-                MethodNotAllowedMiddleware::class
-            );
-        }
-
         return new MethodNotAllowedMiddleware(
-            $container->get(ResponseInterface::class)
+            $this->detectResponseFactory($container)
         );
     }
 }

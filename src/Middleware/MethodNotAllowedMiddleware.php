@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Mezzio\Router\Middleware;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Mezzio\Router\Response\CallableResponseFactoryDecorator;
 use Mezzio\Router\RouteResult;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 use function implode;
+use function is_callable;
 
 /**
  * Emit a 405 Method Not Allowed response
@@ -26,15 +29,24 @@ use function implode;
  */
 class MethodNotAllowedMiddleware implements MiddlewareInterface
 {
-    /** @var callable */
+    /** @var ResponseFactoryInterface */
     private $responseFactory;
 
-    public function __construct(callable $responseFactory)
+    /**
+     * @param (callable():ResponseInterface)|ResponseFactoryInterface $responseFactory
+     */
+    public function __construct($responseFactory)
     {
-        // Factories is wrapped in a closure in order to enforce return type safety.
-        $this->responseFactory = function () use ($responseFactory): ResponseInterface {
-            return $responseFactory();
-        };
+        if (is_callable($responseFactory)) {
+            // Factories is wrapped in a closure in order to enforce return type safety.
+            $responseFactory = new CallableResponseFactoryDecorator(
+                function () use ($responseFactory): ResponseInterface {
+                    return $responseFactory();
+                }
+            );
+        }
+
+        $this->responseFactory = $responseFactory;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -44,8 +56,15 @@ class MethodNotAllowedMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        return ($this->responseFactory)()
-            ->withStatus(StatusCode::STATUS_METHOD_NOT_ALLOWED)
+        return $this->responseFactory->createResponse(StatusCode::STATUS_METHOD_NOT_ALLOWED)
             ->withHeader('Allow', implode(',', $routeResult->getAllowedMethods()));
+    }
+
+    /**
+     * @internal This method is only available for unit tests.
+     */
+    public function getResponseFactory(): ResponseFactoryInterface
+    {
+        return $this->responseFactory;
     }
 }
