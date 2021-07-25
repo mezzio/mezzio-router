@@ -191,11 +191,17 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         // request method, array of allowed methods for a route.
         yield 'HEAD: get'          => [RequestMethod::METHOD_HEAD, [RequestMethod::METHOD_GET]];
         yield 'HEAD: post'         => [RequestMethod::METHOD_HEAD, [RequestMethod::METHOD_POST]];
-        yield 'HEAD: get, post'    => [RequestMethod::METHOD_HEAD, [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST]];
+        yield 'HEAD: get, post'    => [
+            RequestMethod::METHOD_HEAD,
+            [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST],
+        ];
 
         yield 'OPTIONS: get'       => [RequestMethod::METHOD_OPTIONS, [RequestMethod::METHOD_GET]];
         yield 'OPTIONS: post'      => [RequestMethod::METHOD_OPTIONS, [RequestMethod::METHOD_POST]];
-        yield 'OPTIONS: get, post' => [RequestMethod::METHOD_OPTIONS, [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST]];
+        yield 'OPTIONS: get, post' => [
+            RequestMethod::METHOD_OPTIONS,
+            [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST],
+        ];
     }
 
     /**
@@ -260,14 +266,16 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
      *
      * @psalm-return Generator<array-key,array{
      *     0: string,
-     *     1: array,
+     *     1: array<string,mixed>,
      *     2: string,
-     *     3: array
+     *     3: array<string,mixed>
      * }>
      */
     abstract public function implicitRoutesAndRequests(): Generator;
 
     /**
+     * @psalm-param array<string,mixed> $routeOptions
+     * @psalm-param array<string,mixed> $expectedParams
      * @dataProvider implicitRoutesAndRequests
      */
     public function testImplicitHeadRequest(
@@ -354,6 +362,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     }
 
     /**
+     * @psalm-param array<string,mixed> $routeOptions
      * @dataProvider implicitRoutesAndRequests
      */
     public function testImplicitOptionsRequest(
