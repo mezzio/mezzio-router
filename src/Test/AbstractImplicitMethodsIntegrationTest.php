@@ -45,7 +45,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     {
         return new ImplicitOptionsMiddleware(
             function () use ($response): ResponseInterface {
-                return $response ?: new Response();
+                return $response ?? new Response();
             }
         );
     }
@@ -66,7 +66,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     public function createInvalidResponseFactory(): callable
     {
         return static function (): ResponseInterface {
-            Assert::fail('Response generated when it should not have been');
+            self::fail('Response generated when it should not have been');
         };
     }
 
@@ -385,7 +385,10 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         $finalResponse
             ->method('withHeader')
             ->with('Allow', 'GET,POST')
-            ->willReturn($finalResponse);
+            ->willReturnSelf();
+        $finalResponse
+            ->method('withStatus')
+            ->willReturnSelf();
 
         $pipeline = new MiddlewarePipe();
         $pipeline->pipe(new RouteMiddleware($router));
