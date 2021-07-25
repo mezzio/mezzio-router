@@ -21,7 +21,6 @@ use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -71,6 +70,9 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         };
     }
 
+    /**
+     * @psalm-return Generator<non-empty-string,array{0:RequestMethod::*,1:non-empty-list<RequestMethod::*>}>
+     */
     public function method(): Generator
     {
         yield 'HEAD: head, post' => [
@@ -115,6 +117,8 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     }
 
     /**
+     * @psalm-param RequestMethod::* $method
+     * @psalm-param non-empty-list<RequestMethod::*> $routes
      * @dataProvider method
      */
     public function testExplicitRequest(string $method, array $routes): void
@@ -124,7 +128,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         foreach ($routes as $routeMethod) {
             $route = new Route(
                 '/api/v1/me',
-                $this->prophesize(MiddlewareInterface::class)->reveal(),
+                $this->createMock(MiddlewareInterface::class),
                 [$routeMethod]
             );
             $router->addRoute($route);
@@ -146,41 +150,44 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         $finalResponse = (new Response())->withHeader('foo-bar', 'baz');
         $finalResponse->getBody()->write('FOO BAR BODY');
 
-        $finalHandler = $this->prophesize(RequestHandlerInterface::class);
+        $finalHandler = $this->createMock(RequestHandlerInterface::class);
         $finalHandler
-            ->handle(Argument::that(function (ServerRequestInterface $request) use ($method, $implicitRoute) {
-                Assert::assertSame($method, $request->getMethod());
-                Assert::assertNull($request->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE));
+            ->expects(self::once())
+            ->method('handle')
+            ->with(self::callback(
+                static function (ServerRequestInterface $request) use ($method, $implicitRoute): bool {
+                    Assert::assertSame($method, $request->getMethod());
+                    Assert::assertNull($request->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE));
 
-                $routeResult = $request->getAttribute(RouteResult::class);
-                Assert::assertInstanceOf(RouteResult::class, $routeResult);
-                Assert::assertTrue($routeResult->isSuccess());
+                    $routeResult = $request->getAttribute(RouteResult::class);
+                    Assert::assertInstanceOf(RouteResult::class, $routeResult);
+                    Assert::assertTrue($routeResult->isSuccess());
 
-                $matchedRoute = $routeResult->getMatchedRoute();
-                Assert::assertNotNull($matchedRoute);
-                Assert::assertSame($implicitRoute, $matchedRoute);
+                    $matchedRoute = $routeResult->getMatchedRoute();
+                    Assert::assertNotNull($matchedRoute);
+                    Assert::assertSame($implicitRoute, $matchedRoute);
 
-                return true;
-            }))
-            ->willReturn($finalResponse)
-            ->shouldBeCalledTimes(1);
+                    return true;
+                }
+            ))
+            ->willReturn($finalResponse);
 
         $request = new ServerRequest(['REQUEST_METHOD' => $method], [], '/api/v1/me', $method);
 
-        $response = $pipeline->process($request, $finalHandler->reveal());
+        $response = $pipeline->process($request, $finalHandler);
 
-        $this->assertEquals(StatusCode::STATUS_OK, $response->getStatusCode());
-        $this->assertSame('FOO BAR BODY', (string) $response->getBody());
-        $this->assertTrue($response->hasHeader('foo-bar'));
-        $this->assertSame('baz', $response->getHeaderLine('foo-bar'));
+        self::assertEquals(StatusCode::STATUS_OK, $response->getStatusCode());
+        self::assertSame('FOO BAR BODY', (string) $response->getBody());
+        self::assertTrue($response->hasHeader('foo-bar'));
+        self::assertSame('baz', $response->getHeaderLine('foo-bar'));
     }
 
     /**
      * @return iterable
+     * @psalm-return iterable<non-empty-string,array{0:RequestMethod::*,1:non-empty-list<RequestMethod::*>}>
      */
     public function withoutImplicitMiddleware()
     {
-        // @codingStandardsIgnoreStart
         // request method, array of allowed methods for a route.
         yield 'HEAD: get'          => [RequestMethod::METHOD_HEAD, [RequestMethod::METHOD_GET]];
         yield 'HEAD: post'         => [RequestMethod::METHOD_HEAD, [RequestMethod::METHOD_POST]];
@@ -189,13 +196,14 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         yield 'OPTIONS: get'       => [RequestMethod::METHOD_OPTIONS, [RequestMethod::METHOD_GET]];
         yield 'OPTIONS: post'      => [RequestMethod::METHOD_OPTIONS, [RequestMethod::METHOD_POST]];
         yield 'OPTIONS: get, post' => [RequestMethod::METHOD_OPTIONS, [RequestMethod::METHOD_GET, RequestMethod::METHOD_POST]];
-        // @codingStandardsIgnoreEnd
     }
 
     /**
      * In case we are not using Implicit*Middlewares and we don't have any route with explicit method
      * returned response should be 405: Method Not Allowed - handled by MethodNotAllowedMiddleware.
      *
+     * @psalm-param RequestMethod::* $requestMethod
+     * @psalm-param non-empty-list<RequestMethod::*> $allowedMethods
      * @dataProvider withoutImplicitMiddleware
      */
     public function testWithoutImplicitMiddleware(string $requestMethod, array $allowedMethods): void
@@ -204,30 +212,39 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         foreach ($allowedMethods as $routeMethod) {
             $route = new Route(
                 '/api/v1/me',
-                $this->prophesize(MiddlewareInterface::class)->reveal(),
+                $this->createMock(MiddlewareInterface::class),
                 [$routeMethod]
             );
             $router->addRoute($route);
         }
 
-        $finalResponse = $this->prophesize(ResponseInterface::class);
-        $finalResponse->withStatus(StatusCode::STATUS_METHOD_NOT_ALLOWED)->will([$finalResponse, 'reveal']);
-        $finalResponse->withHeader('Allow', implode(',', $allowedMethods))->will([$finalResponse, 'reveal']);
+        $finalResponse = $this->createMock(ResponseInterface::class);
+        $finalResponse
+            ->method('withStatus')
+            ->with(StatusCode::STATUS_METHOD_NOT_ALLOWED)
+            ->willReturnSelf();
+
+        $finalResponse
+            ->method('withHeader')
+            ->with('Allow', implode(',', $allowedMethods))
+            ->willReturnSelf();
 
         $pipeline = new MiddlewarePipe();
         $pipeline->pipe(new RouteMiddleware($router));
-        $pipeline->pipe(new MethodNotAllowedMiddleware(function () use ($finalResponse) {
-            return $finalResponse->reveal();
+        $pipeline->pipe(new MethodNotAllowedMiddleware(static function () use ($finalResponse): ResponseInterface {
+            return $finalResponse;
         }));
 
-        $finalHandler = $this->prophesize(RequestHandlerInterface::class);
-        $finalHandler->handle(Argument::any())->shouldNotBeCalled();
+        $finalHandler = $this->createMock(RequestHandlerInterface::class);
+        $finalHandler
+            ->expects(self::never())
+            ->method('handle');
 
         $request = new ServerRequest(['REQUEST_METHOD' => $requestMethod], [], '/api/v1/me', $requestMethod);
 
-        $response = $pipeline->process($request, $finalHandler->reveal());
+        $response = $pipeline->process($request, $finalHandler);
 
-        $this->assertSame($finalResponse->reveal(), $response);
+        self::assertSame($finalResponse, $response);
     }
 
     /**
@@ -239,7 +256,14 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
      * - string route path (the match string)
      * - array route options (if any/required)
      * - string request path (the path in the ServerRequest instance)
-     * - array params (expected route parameters matched)
+     * - array params (expected route par ameters matched)
+     *
+     * @psalm-return Generator<array-key,array{
+     *     0: string,
+     *     1: array,
+     *     2: string,
+     *     3: array
+     * }>
      */
     abstract public function implicitRoutesAndRequests(): Generator;
 
@@ -255,52 +279,58 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         $finalResponse = (new Response())->withHeader('foo-bar', 'baz');
         $finalResponse->getBody()->write('FOO BAR BODY');
 
-        $middleware1 = $this->prophesize(MiddlewareInterface::class);
-        $middleware2 = $this->prophesize(MiddlewareInterface::class);
-        $middleware2->process(Argument::any(), Argument::any())->shouldNotBeCalled();
+        $middleware1 = $this->createMock(MiddlewareInterface::class);
+        $middleware2 = $this->createMock(MiddlewareInterface::class);
+        $middleware2
+            ->expects(self::never())
+            ->method('process');
 
-        $route1 = new Route($routePath, $middleware1->reveal(), [RequestMethod::METHOD_GET]);
+        $route1 = new Route($routePath, $middleware1, [RequestMethod::METHOD_GET]);
         $route1->setOptions($routeOptions);
         $middleware1
-            ->process(
-                Argument::that(function (ServerRequestInterface $request) use ($route1, $expectedParams) {
-                    Assert::assertSame(RequestMethod::METHOD_GET, $request->getMethod());
-                    Assert::assertSame(
-                        RequestMethod::METHOD_HEAD,
-                        $request->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE)
-                    );
+            ->method('process')
+            ->with(
+                self::callback(
+                    static function (ServerRequestInterface $request) use ($route1, $expectedParams): bool {
+                        Assert::assertSame(RequestMethod::METHOD_GET, $request->getMethod());
+                        Assert::assertSame(
+                            RequestMethod::METHOD_HEAD,
+                            $request->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE)
+                        );
 
-                    $routeResult = $request->getAttribute(RouteResult::class);
-                    Assert::assertInstanceOf(RouteResult::class, $routeResult);
-                    Assert::assertTrue($routeResult->isSuccess());
+                        $routeResult = $request->getAttribute(RouteResult::class);
+                        Assert::assertInstanceOf(RouteResult::class, $routeResult);
+                        Assert::assertTrue($routeResult->isSuccess());
 
                     // Some implementations include more in the matched params than what we expect;
                     // e.g., laminas-router will include the middleware as well.
-                    $matchedParams = $routeResult->getMatchedParams();
-                    foreach ($expectedParams as $key => $value) {
-                        Assert::assertArrayHasKey($key, $matchedParams);
-                        Assert::assertSame($value, $matchedParams[$key]);
+                        $matchedParams = $routeResult->getMatchedParams();
+                        foreach ($expectedParams as $key => $value) {
+                            Assert::assertArrayHasKey($key, $matchedParams);
+                            Assert::assertSame($value, $matchedParams[$key]);
+                        }
+
+                        $matchedRoute = $routeResult->getMatchedRoute();
+                        Assert::assertNotNull($matchedRoute);
+                        Assert::assertSame($route1, $matchedRoute);
+
+                        return true;
                     }
-
-                    $matchedRoute = $routeResult->getMatchedRoute();
-                    Assert::assertNotNull($matchedRoute);
-                    Assert::assertSame($route1, $matchedRoute);
-
-                    return true;
-                }),
-                Argument::type(RequestHandlerInterface::class)
+                )
             )
             ->willReturn($finalResponse);
 
-        $route2 = new Route($routePath, $middleware2->reveal(), [RequestMethod::METHOD_POST]);
+        $route2 = new Route($routePath, $middleware2, [RequestMethod::METHOD_POST]);
         $route2->setOptions($routeOptions);
 
         $router = $this->getRouter();
         $router->addRoute($route1);
         $router->addRoute($route2);
 
-        $finalHandler = $this->prophesize(RequestHandlerInterface::class);
-        $finalHandler->handle(Argument::any())->shouldNotBeCalled();
+        $finalHandler = $this->createMock(RequestHandlerInterface::class);
+        $finalHandler
+            ->expects(self::never())
+            ->method('handle');
 
         $pipeline = new MiddlewarePipe();
         $pipeline->pipe(new RouteMiddleware($router));
@@ -315,12 +345,12 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
             RequestMethod::METHOD_HEAD
         );
 
-        $response = $pipeline->process($request, $finalHandler->reveal());
+        $response = $pipeline->process($request, $finalHandler);
 
-        $this->assertEquals(StatusCode::STATUS_OK, $response->getStatusCode());
-        $this->assertEmpty((string) $response->getBody());
-        $this->assertTrue($response->hasHeader('foo-bar'));
-        $this->assertSame('baz', $response->getHeaderLine('foo-bar'));
+        self::assertEquals(StatusCode::STATUS_OK, $response->getStatusCode());
+        self::assertEmpty((string) $response->getBody());
+        self::assertTrue($response->hasHeader('foo-bar'));
+        self::assertSame('baz', $response->getHeaderLine('foo-bar'));
     }
 
     /**
@@ -331,8 +361,8 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         array $routeOptions,
         string $requestPath
     ): void {
-        $middleware1 = $this->prophesize(MiddlewareInterface::class)->reveal();
-        $middleware2 = $this->prophesize(MiddlewareInterface::class)->reveal();
+        $middleware1 = $this->createMock(MiddlewareInterface::class);
+        $middleware2 = $this->createMock(MiddlewareInterface::class);
         $route1      = new Route($routePath, $middleware1, [RequestMethod::METHOD_GET]);
         $route1->setOptions($routeOptions);
         $route2 = new Route($routePath, $middleware2, [RequestMethod::METHOD_POST]);
@@ -342,12 +372,15 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         $router->addRoute($route1);
         $router->addRoute($route2);
 
-        $finalResponse = $this->prophesize(ResponseInterface::class);
-        $finalResponse->withHeader('Allow', 'GET,POST')->will([$finalResponse, 'reveal']);
+        $finalResponse = $this->createMock(ResponseInterface::class);
+        $finalResponse
+            ->method('withHeader')
+            ->with('Allow', 'GET,POST')
+            ->willReturn($finalResponse);
 
         $pipeline = new MiddlewarePipe();
         $pipeline->pipe(new RouteMiddleware($router));
-        $pipeline->pipe($this->getImplicitOptionsMiddleware($finalResponse->reveal()));
+        $pipeline->pipe($this->getImplicitOptionsMiddleware($finalResponse));
         $pipeline->pipe(new MethodNotAllowedMiddleware($this->createInvalidResponseFactory()));
 
         $request = new ServerRequest(
@@ -357,12 +390,14 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
             RequestMethod::METHOD_OPTIONS
         );
 
-        $finalHandler = $this->prophesize(RequestHandlerInterface::class);
-        $finalHandler->handle()->shouldNotBeCalled();
+        $finalHandler = $this->createMock(RequestHandlerInterface::class);
+        $finalHandler
+            ->expects(self::never())
+            ->method('handle');
 
-        $response = $pipeline->process($request, $finalHandler->reveal());
+        $response = $pipeline->process($request, $finalHandler);
 
-        $this->assertSame($finalResponse->reveal(), $response);
+        self::assertSame($finalResponse, $response);
     }
 
     public function testImplicitOptionsRequestRouteNotFound(): void
@@ -387,9 +422,11 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
             RequestMethod::METHOD_OPTIONS
         );
 
-        $finalHandler = $this->prophesize(RequestHandlerInterface::class);
+        $finalHandler = $this->createMock(RequestHandlerInterface::class);
         $finalHandler
-            ->handle(Argument::that(function (ServerRequestInterface $request) {
+            ->expects(self::once())
+            ->method('handle')
+            ->with(self::callback(static function (ServerRequestInterface $request): bool {
                 Assert::assertSame(RequestMethod::METHOD_OPTIONS, $request->getMethod());
 
                 $routeResult = $request->getAttribute(RouteResult::class);
@@ -401,14 +438,13 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
                 return true;
             }))
-            ->willReturn($finalResponse)
-            ->shouldBeCalledTimes(1);
+            ->willReturn($finalResponse);
 
-        $response = $pipeline->process($request, $finalHandler->reveal());
+        $response = $pipeline->process($request, $finalHandler);
 
-        $this->assertEquals(StatusCode::STATUS_IM_A_TEAPOT, $response->getStatusCode());
-        $this->assertSame('FOO BAR BODY', (string) $response->getBody());
-        $this->assertTrue($response->hasHeader('foo-bar'));
-        $this->assertSame('baz', $response->getHeaderLine('foo-bar'));
+        self::assertEquals(StatusCode::STATUS_IM_A_TEAPOT, $response->getStatusCode());
+        self::assertSame('FOO BAR BODY', (string) $response->getBody());
+        self::assertTrue($response->hasHeader('foo-bar'));
+        self::assertSame('baz', $response->getHeaderLine('foo-bar'));
     }
 }

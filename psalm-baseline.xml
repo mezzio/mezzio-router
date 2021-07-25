@@ -129,20 +129,9 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="src/Test/AbstractImplicitMethodsIntegrationTest.php">
-    <MixedArgumentTypeCoercion occurrences="2">
-      <code>[$routeMethod]</code>
-      <code>[$routeMethod]</code>
-    </MixedArgumentTypeCoercion>
-    <MixedAssignment occurrences="3">
-      <code>$routeMethod</code>
-      <code>$routeMethod</code>
+    <MixedAssignment occurrences="1">
       <code>$value</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="3">
-      <code>Generator</code>
-      <code>Generator</code>
-      <code>iterable</code>
-    </MixedInferredReturnType>
   </file>
   <file src="test/ConfigProviderTest.php">
     <MixedArgument occurrences="6">
