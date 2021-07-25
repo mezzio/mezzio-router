@@ -143,4 +143,12 @@ class RouteCollector implements RouteCollectorInterface
             return;
         }
     }
+
+    /**
+     * @internal This should only be used in unit tests.
+     */
+    public function willDetectDuplicates(): bool
+    {
+        return $this->detectDuplicates;
+    }
 }

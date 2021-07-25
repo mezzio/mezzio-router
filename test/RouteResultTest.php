@@ -6,104 +6,110 @@ namespace MezzioTest\Router;
 
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use function assert;
+
 /**
+ * @see MockObject
+ *
  * @covers \Mezzio\Router\RouteResult
  */
 class RouteResultTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testRouteNameIsNotRetrievable(): void
     {
         $result = RouteResult::fromRouteFailure([]);
-        $this->assertFalse($result->getMatchedRouteName());
+        self::assertFalse($result->getMatchedRouteName());
     }
 
     public function testRouteFailureRetrieveAllHttpMethods(): void
     {
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
-        $this->assertSame(Route::HTTP_METHOD_ANY, $result->getAllowedMethods());
+        self::assertSame(Route::HTTP_METHOD_ANY, $result->getAllowedMethods());
     }
 
     public function testRouteFailureRetrieveHttpMethods(): void
     {
         $result = RouteResult::fromRouteFailure([]);
-        $this->assertSame([], $result->getAllowedMethods());
+        self::assertSame([], $result->getAllowedMethods());
     }
 
     public function testRouteMatchedParams(): void
     {
         $params = ['foo' => 'bar'];
-        $route  = $this->prophesize(Route::class);
-        $result = RouteResult::fromRoute($route->reveal(), $params);
+        $route  = $this->createMock(Route::class);
+        $result = RouteResult::fromRoute($route, $params);
 
-        $this->assertSame($params, $result->getMatchedParams());
+        self::assertSame($params, $result->getMatchedParams());
     }
 
     public function testRouteMethodFailure(): void
     {
         $result = RouteResult::fromRouteFailure(['GET']);
-        $this->assertTrue($result->isMethodFailure());
+        self::assertTrue($result->isMethodFailure());
     }
 
     public function testRouteSuccessMethodFailure(): void
     {
         $params = ['foo' => 'bar'];
-        $route  = $this->prophesize(Route::class);
-        $result = RouteResult::fromRoute($route->reveal(), $params);
+        $route  = $this->createMock(Route::class);
+        $result = RouteResult::fromRoute($route, $params);
 
-        $this->assertFalse($result->isMethodFailure());
+        self::assertFalse($result->isMethodFailure());
     }
 
     /**
-     * @return (RouteResult|ObjectProphecy)[]
-     * @psalm-return array{route: ObjectProphecy<Route>, result: RouteResult}
+     * @psalm-return array{route: Route&MockObject, result: RouteResult}
      */
     public function testFromRouteShouldComposeRouteInResult(): array
     {
-        $route = $this->prophesize(Route::class);
+        $route = $this->createMock(Route::class);
 
-        $result = RouteResult::fromRoute($route->reveal(), ['foo' => 'bar']);
-        $this->assertInstanceOf(RouteResult::class, $result);
-        $this->assertTrue($result->isSuccess());
-        $this->assertSame($route->reveal(), $result->getMatchedRoute());
+        $result = RouteResult::fromRoute($route, ['foo' => 'bar']);
+        self::assertTrue($result->isSuccess());
+        self::assertSame($route, $result->getMatchedRoute());
 
         return ['route' => $route, 'result' => $result];
     }
 
     /**
+     * @psalm-param array{result:RouteResult,route:Route&MockObject} $data
      * @depends testFromRouteShouldComposeRouteInResult
      */
     public function testAllAccessorsShouldReturnExpectedDataWhenResultCreatedViaFromRoute(array $data): void
     {
         $result = $data['result'];
         $route  = $data['route'];
+        assert($route instanceof MockObject);
 
-        $route->getName()->willReturn('route');
-        $route->getAllowedMethods()->willReturn(['HEAD', 'OPTIONS', 'GET']);
+        $route
+            ->method('getName')
+            ->willReturn('route');
 
-        $this->assertEquals('route', $result->getMatchedRouteName());
-        $this->assertEquals(['HEAD', 'OPTIONS', 'GET'], $result->getAllowedMethods());
+        $route
+            ->method('getAllowedMethods')
+            ->willReturn(['HEAD', 'OPTIONS', 'GET']);
+
+        self::assertEquals('route', $result->getMatchedRouteName());
+        self::assertEquals(['HEAD', 'OPTIONS', 'GET'], $result->getAllowedMethods());
     }
 
     public function testRouteFailureWithNoAllowedHttpMethodsShouldReportTrueForIsMethodFailure(): void
     {
         $result = RouteResult::fromRouteFailure([]);
-        $this->assertTrue($result->isMethodFailure());
+        self::assertTrue($result->isMethodFailure());
     }
 
     public function testFailureResultDoesNotIndicateAMethodFailureIfAllMethodsAreAllowed(): RouteResult
     {
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
-        $this->assertTrue($result->isFailure());
-        $this->assertFalse($result->isMethodFailure());
+        self::assertTrue($result->isFailure());
+        self::assertFalse($result->isMethodFailure());
         return $result;
     }
 
@@ -113,33 +119,41 @@ class RouteResultTest extends TestCase
     public function testAllowedMethodsIncludesASingleWildcardEntryWhenAllMethodsAllowedForFailureResult(
         RouteResult $result
     ): void {
-        $this->assertSame(Route::HTTP_METHOD_ANY, $result->getAllowedMethods());
+        self::assertSame(Route::HTTP_METHOD_ANY, $result->getAllowedMethods());
     }
 
     public function testFailureResultProcessedAsMiddlewareDelegatesToHandler(): void
     {
         $request  = $this->createMock(ServerRequestInterface::class);
         $response = $this->createMock(ResponseInterface::class);
-        $handler  = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request)->willReturn($response);
+        $handler  = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->with($request)
+            ->willReturn($response);
 
         $result = RouteResult::fromRouteFailure([]);
 
-        $this->assertSame($response, $result->process($request, $handler->reveal()));
+        self::assertSame($response, $result->process($request, $handler));
     }
 
     public function testSuccessfulResultProcessedAsMiddlewareDelegatesToRoute(): void
     {
         $request  = $this->createMock(ServerRequestInterface::class);
         $response = $this->createMock(ResponseInterface::class);
-        $handler  = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request)->shouldNotBeCalled();
+        $handler  = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->expects(self::never())
+            ->method('handle');
 
-        $route = $this->prophesize(Route::class);
-        $route->process($request, $handler)->willReturn($response);
+        $route = $this->createMock(Route::class);
+        $route
+            ->method('process')
+            ->with($request, $handler)
+            ->willReturn($response);
 
-        $result = RouteResult::fromRoute($route->reveal());
+        $result = RouteResult::fromRoute($route);
 
-        $this->assertSame($response, $result->process($request, $handler->reveal()));
+        self::assertSame($response, $result->process($request, $handler));
     }
 }

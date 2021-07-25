@@ -5,21 +5,17 @@ declare(strict_types=1);
 namespace MezzioTest\Router\Middleware;
 
 use Mezzio\Router\Exception\MissingDependencyException;
-use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
 use Mezzio\Router\Middleware\ImplicitHeadMiddlewareFactory;
 use Mezzio\Router\RouterInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\StreamInterface;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 class ImplicitHeadMiddlewareFactoryTest extends TestCase
 {
-    use ProphecyTrait;
-
-    /** @var ContainerInterface|ObjectProphecy */
+    /** @var ContainerInterface&MockObject */
     private $container;
 
     /** @var ImplicitHeadMiddlewareFactory */
@@ -27,41 +23,50 @@ class ImplicitHeadMiddlewareFactoryTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->container = $this->prophesize(ContainerInterface::class);
+        $this->container = $this->createMock(ContainerInterface::class);
         $this->factory   = new ImplicitHeadMiddlewareFactory();
     }
 
     public function testFactoryRaisesExceptionIfRouterInterfaceServiceIsMissing(): void
     {
-        $this->container->has(RouterInterface::class)->willReturn(false);
-        $this->container->has(ZendExpressiveRouterInterface::class)->willReturn(false);
+        $this->container
+            ->method('has')
+            ->withConsecutive([RouterInterface::class], [ZendExpressiveRouterInterface::class])
+            ->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);
-        ($this->factory)($this->container->reveal());
+        ($this->factory)($this->container);
     }
 
     public function testFactoryRaisesExceptionIfStreamFactoryServiceIsMissing(): void
     {
-        $this->container->has(RouterInterface::class)->willReturn(true);
-        $this->container->has(StreamInterface::class)->willReturn(false);
+        $this->container
+            ->method('has')
+            ->withConsecutive([RouterInterface::class], [StreamInterface::class])
+            ->willReturnOnConsecutiveCalls(true, false);
 
         $this->expectException(MissingDependencyException::class);
-        ($this->factory)($this->container->reveal());
+        ($this->factory)($this->container);
     }
 
     public function testFactoryProducesImplicitHeadMiddlewareWhenAllDependenciesPresent(): void
     {
-        $router        = $this->prophesize(RouterInterface::class);
+        $router        = $this->createMock(RouterInterface::class);
         $streamFactory = function (): void {
         };
 
-        $this->container->has(RouterInterface::class)->willReturn(true);
-        $this->container->has(StreamInterface::class)->willReturn(true);
-        $this->container->get(RouterInterface::class)->will([$router, 'reveal']);
-        $this->container->get(StreamInterface::class)->willReturn($streamFactory);
+        $this->container
+            ->expects(self::exactly(2))
+            ->method('has')
+            ->withConsecutive([RouterInterface::class], [StreamInterface::class])
+            ->willReturn(true);
 
-        $middleware = ($this->factory)($this->container->reveal());
+        $this->container
+            ->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([RouterInterface::class], [StreamInterface::class])
+            ->willReturnOnConsecutiveCalls($router, $streamFactory);
 
-        $this->assertInstanceOf(ImplicitHeadMiddleware::class, $middleware);
+        ($this->factory)($this->container);
     }
 }

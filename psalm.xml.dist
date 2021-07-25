@@ -20,6 +20,9 @@
                 <referencedMethod name="Mezzio\Router\Response\CallableResponseFactoryDecorator::createResponse"/>
                 <referencedMethod name="Mezzio\Router\Response\CallableResponseFactoryDecorator::getResponseFromCallable"/>
                 <referencedMethod name="Mezzio\Router\Middleware\MethodNotAllowedMiddleware::getResponseFactory"/>
+                <referencedMethod name="Mezzio\Router\Middleware\RouteMiddleware::getRouter"/>
+                <referencedMethod name="Mezzio\Router\Middleware\RouteMiddlewareFactory::getRouterServiceName"/>
+                <referencedMethod name="Mezzio\Router\RouteCollector::willDetectDuplicates"/>
             </errorLevel>
         </InternalMethod>
         <InternalClass>

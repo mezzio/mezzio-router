@@ -8,9 +8,8 @@ use Mezzio\Router\Middleware\RouteMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -19,93 +18,136 @@ use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 class RouteMiddlewareTest extends TestCase
 {
-    use ProphecyTrait;
-
-    /** @var RouterInterface|ObjectProphecy */
+    /** @var RouterInterface&MockObject */
     private $router;
 
-    /** @var ResponseInterface|ObjectProphecy */
+    /** @var ResponseInterface&MockObject */
     private $response;
 
     /** @var RouteMiddleware */
     private $middleware;
 
-    /** @var ServerRequestInterface|ObjectProphecy */
+    /** @var ServerRequestInterface&MockObject */
     private $request;
 
-    /** @var RequestHandlerInterface|ObjectProphecy */
+    /** @var RequestHandlerInterface&MockObject */
     private $handler;
 
     protected function setUp(): void
     {
-        $this->router   = $this->prophesize(RouterInterface::class);
-        $this->request  = $this->prophesize(ServerRequestInterface::class);
-        $this->response = $this->prophesize(ResponseInterface::class);
-        $this->handler  = $this->prophesize(RequestHandlerInterface::class);
+        $this->router   = $this->createMock(RouterInterface::class);
+        $this->request  = $this->createMock(ServerRequestInterface::class);
+        $this->response = $this->createMock(ResponseInterface::class);
+        $this->handler  = $this->createMock(RequestHandlerInterface::class);
 
-        $this->middleware = new RouteMiddleware($this->router->reveal());
+        $this->middleware = new RouteMiddleware($this->router);
     }
 
     public function testRoutingFailureDueToHttpMethodCallsHandlerWithRequestComposingRouteResult(): void
     {
         $result = RouteResult::fromRouteFailure(['GET', 'POST']);
 
-        $this->router->match($this->request->reveal())->willReturn($result);
-        $this->handler->handle($this->request->reveal())->will([$this->response, 'reveal']);
+        $this->router
+            ->method('match')
+            ->with($this->request)
+            ->willReturn($result);
 
-        $this->request->withAttribute(RouteResult::class, $result)->will([$this->request, 'reveal']);
+        $this->handler
+            ->method('handle')
+            ->with($this->request)
+            ->willReturn($this->response);
+
         $this->request
-            ->withAttribute(ZendExpressiveRouteResult::class, $result)
-            ->will([$this->request, 'reveal']);
+            ->expects(self::exactly(2))
+            ->method('withAttribute')
+            ->withConsecutive(
+                [
+                    RouteResult::class,
+                    $result,
+                ],
+                [
+                    ZendExpressiveRouteResult::class,
+                    $result,
+                ]
+            )->willReturnSelf();
 
-        $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
-        $this->assertSame($this->response->reveal(), $response);
+        $response = $this->middleware->process($this->request, $this->handler);
+        self::assertSame($this->response, $response);
     }
 
     public function testGeneralRoutingFailureInvokesHandlerWithRequestComposingRouteResult(): void
     {
         $result = RouteResult::fromRouteFailure(null);
 
-        $this->router->match($this->request->reveal())->willReturn($result);
-        $this->handler->handle($this->request->reveal())->will([$this->response, 'reveal']);
+        $this->router
+            ->method('match')
+        ->with($this->request)
+            ->willReturn($result);
+        $this->handler
+            ->method('handle')
+            ->with($this->request)
+            ->willReturn($this->response);
 
-        $this->request->withAttribute(RouteResult::class, $result)->will([$this->request, 'reveal']);
         $this->request
-            ->withAttribute(ZendExpressiveRouteResult::class, $result)
-            ->will([$this->request, 'reveal']);
+            ->expects(self::exactly(2))
+            ->method('withAttribute')
+            ->withConsecutive(
+                [
+                    RouteResult::class,
+                    $result,
+                ],
+                [
+                    ZendExpressiveRouteResult::class,
+                    $result,
+                ]
+            )->willReturnSelf();
 
-        $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
-        $this->assertSame($this->response->reveal(), $response);
+        $response = $this->middleware->process($this->request, $this->handler);
+        self::assertSame($this->response, $response);
     }
 
     public function testRoutingSuccessInvokesHandlerWithRequestComposingRouteResultAndAttributes(): void
     {
         $middleware = $this->createMock(MiddlewareInterface::class);
-        $parameters = ['foo' => 'bar', 'baz' => 'bat'];
         $result     = RouteResult::fromRoute(
             new Route('/foo', $middleware),
-            $parameters
+            ['foo' => 'bar', 'baz' => 'bat']
         );
 
-        $this->router->match($this->request->reveal())->willReturn($result);
+        $this->router
+            ->expects(self::once())
+            ->method('match')
+            ->with($this->request)
+            ->willReturn($result);
 
         $this->request
-            ->withAttribute(RouteResult::class, $result)
-            ->will([$this->request, 'reveal']);
-        $this->request
-            ->withAttribute(ZendExpressiveRouteResult::class, $result)
-            ->will([$this->request, 'reveal']);
-        foreach ($parameters as $key => $value) {
-            $this->request
-                ->withAttribute($key, $value)
-                ->will([$this->request, 'reveal']);
-        }
+            ->expects(self::exactly(4))
+            ->method('withAttribute')
+            ->withConsecutive(
+                [
+                    RouteResult::class,
+                    $result,
+                ],
+                [
+                    ZendExpressiveRouteResult::class,
+                    $result,
+                ],
+                [
+                    'foo',
+                    'bar',
+                ],
+                [
+                    'baz',
+                    'bat',
+                ]
+            )->willReturnSelf();
 
         $this->handler
-            ->handle($this->request->reveal())
-            ->will([$this->response, 'reveal']);
+            ->method('handle')
+            ->with($this->request)
+            ->willReturn($this->response);
 
-        $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
-        $this->assertSame($this->response->reveal(), $response);
+        $response = $this->middleware->process($this->request, $this->handler);
+        self::assertSame($this->response, $response);
     }
 }

@@ -11,20 +11,16 @@ use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\RouteCollector;
 use Mezzio\Router\RouteCollectorFactory;
 use Mezzio\Router\RouterInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
-use ReflectionProperty;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 use function sprintf;
 
 class RouteCollectorFactoryTest extends TestCase
 {
-    use ProphecyTrait;
-
-    /** @var ContainerInterface|ObjectProphecy */
+    /** @var ContainerInterface&MockObject */
     private $container;
 
     /** @var RouteCollectorFactory */
@@ -32,35 +28,41 @@ class RouteCollectorFactoryTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->container = $this->prophesize(ContainerInterface::class);
+        $this->container = $this->createMock(ContainerInterface::class);
         $this->factory   = new RouteCollectorFactory();
     }
 
     public function testFactoryRaisesExceptionIfRouterServiceIsMissing(): void
     {
-        $this->container->has(RouterInterface::class)->willReturn(false);
-        $this->container->has(ZendExpressiveRouterInterface::class)->willReturn(false);
+        $this->container
+            ->expects(self::exactly(2))
+            ->method('has')
+            ->withConsecutive([RouterInterface::class], [ZendExpressiveRouterInterface::class])
+            ->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);
         $this->expectExceptionMessage(RouteCollector::class);
-        ($this->factory)($this->container->reveal());
+        ($this->factory)($this->container);
     }
 
     public function testFactoryProducesRouteCollectorWhenAllDependenciesPresent(): void
     {
         $router = $this->createMock(RouterInterface::class);
-        $this->container->has(RouterInterface::class)->willReturn(true);
-        $this->container->has('config')->willReturn(false);
-        $this->container->get(RouterInterface::class)->willReturn($router);
+        $this->container
+            ->expects(self::exactly(2))
+            ->method('has')
+            ->withConsecutive([RouterInterface::class], ['config'])
+            ->willReturnOnConsecutiveCalls(true, false);
 
-        $collector = ($this->factory)($this->container->reveal());
+        $this->container
+            ->expects(self::once())
+            ->method('get')
+            ->with(RouterInterface::class)
+            ->willReturn($router);
 
-        $this->assertInstanceOf(RouteCollector::class, $collector);
+        $collector = ($this->factory)($this->container);
 
-        $r = new ReflectionProperty($collector, 'detectDuplicates');
-        $r->setAccessible(true);
-
-        $this->assertTrue($r->getValue($collector));
+        self::assertTrue($collector->willDetectDuplicates());
     }
 
     public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromArrayConfig(): void
@@ -105,18 +107,23 @@ class RouteCollectorFactoryTest extends TestCase
     private function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig($config): void
     {
         $router = $this->createMock(RouterInterface::class);
-        $this->container->has(RouterInterface::class)->willReturn(true);
-        $this->container->has('config')->willReturn(true);
-        $this->container->get(RouterInterface::class)->willReturn($router);
-        $this->container->get('config')->willReturn($config);
+        $this->container
+            ->expects(self::exactly(2))
+            ->method('has')
+            ->withConsecutive(
+                [RouterInterface::class],
+                ['config']
+            )
+            ->willReturn(true);
 
-        $collector = ($this->factory)($this->container->reveal());
+        $this->container
+            ->expects(self::exactly(2))
+            ->method('get')
+            ->withConsecutive([RouterInterface::class], ['config'])
+            ->willReturnOnConsecutiveCalls($router, $config);
 
-        $this->assertInstanceOf(RouteCollector::class, $collector);
+        $collector = ($this->factory)($this->container);
 
-        $r = new ReflectionProperty($collector, 'detectDuplicates');
-        $r->setAccessible(true);
-
-        $this->assertFalse($r->getValue($collector));
+        self::assertFalse($collector->willDetectDuplicates());
     }
 }

@@ -9,7 +9,6 @@ use Mezzio\Router\Exception\InvalidArgumentException;
 use Mezzio\Router\Route;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -23,8 +22,6 @@ use function sprintf;
  */
 class RouteTest extends TestCase
 {
-    use ProphecyTrait;
-
     /** @var MiddlewareInterface&MockObject */
     private $noopMiddleware;
 
@@ -248,10 +245,13 @@ class RouteTest extends TestCase
         $request    = $this->createMock(ServerRequestInterface::class);
         $handler    = $this->createMock(RequestHandlerInterface::class);
         $response   = $this->createMock(ResponseInterface::class);
-        $middleware = $this->prophesize(MiddlewareInterface::class);
-        $middleware->process($request, $handler)->willReturn($response);
+        $middleware = $this->createMock(MiddlewareInterface::class);
+        $middleware
+            ->method('process')
+            ->with($request, $handler)
+            ->willReturn($response);
 
-        $route = new Route('/foo', $middleware->reveal());
+        $route = new Route('/foo', $middleware);
         $this->assertSame($response, $route->process($request, $handler));
     }
 

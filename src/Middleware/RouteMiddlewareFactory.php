@@ -55,4 +55,12 @@ class RouteMiddlewareFactory
 
         return new RouteMiddleware($container->get($this->routerServiceName));
     }
+
+    /**
+     * @internal This should only be used by unit tests.
+     */
+    public function getRouterServiceName(): string
+    {
+        return $this->routerServiceName;
+    }
 }

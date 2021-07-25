@@ -99,8 +99,8 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
             $request
                 ->withAttribute(RouteResult::class, $routeResult)
                 ->withAttribute(ZendExpressiveRouteResult::class, $routeResult)
-                ->withMethod(RequestMethod::METHOD_GET)
                 ->withAttribute(self::FORWARDED_HTTP_METHOD_ATTRIBUTE, RequestMethod::METHOD_HEAD)
+                ->withMethod(RequestMethod::METHOD_GET)
         );
 
         /** @var StreamInterface $body */
