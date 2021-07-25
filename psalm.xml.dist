@@ -17,15 +17,35 @@
     <issueHandlers>
         <InternalMethod>
             <errorLevel type="suppress">
-                <referencedMethod name="PHPUnit\Framework\MockObject\Builder\InvocationMocker::method"/>
-            </errorLevel>
-            <errorLevel type="suppress">
-                <referencedMethod name="PHPUnit\Framework\MockObject\Builder\InvocationMocker::willReturn"/>
-            </errorLevel>
-            <errorLevel type="suppress">
-                <referencedMethod name="PHPUnit\Framework\MockObject\Builder\InvocationMocker::with"/>
+                <referencedMethod name="Mezzio\Router\Response\CallableResponseFactoryDecorator::createResponse"/>
+                <referencedMethod name="Mezzio\Router\Response\CallableResponseFactoryDecorator::getResponseFromCallable"/>
+                <referencedMethod name="Mezzio\Router\Middleware\MethodNotAllowedMiddleware::getResponseFactory"/>
+                <referencedMethod name="Mezzio\Router\Middleware\RouteMiddleware::getRouter"/>
+                <referencedMethod name="Mezzio\Router\Middleware\RouteMiddlewareFactory::getRouterServiceName"/>
+                <referencedMethod name="Mezzio\Router\RouteCollector::willDetectDuplicates"/>
             </errorLevel>
         </InternalMethod>
+        <InternalClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Mezzio\Router\Response\CallableResponseFactoryDecorator"/>
+            </errorLevel>
+        </InternalClass>
+        <DeprecatedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Mezzio\Router\Response\CallableResponseFactoryDecorator"/>
+            </errorLevel>
+        </DeprecatedClass>
+        <UndefinedClass>
+            <errorLevel type="suppress">
+                <referencedClass name="Mezzio\Container\ResponseFactoryFactory"/>
+            </errorLevel>
+        </UndefinedClass>
+        <DeprecatedTrait>
+            <errorLevel type="suppress">
+                <file name="src/Middleware/MethodNotAllowedMiddlewareFactory.php"/>
+                <file name="src/Middleware/ImplicitOptionsMiddlewareFactory.php"/>
+            </errorLevel>
+        </DeprecatedTrait>
     </issueHandlers>
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>

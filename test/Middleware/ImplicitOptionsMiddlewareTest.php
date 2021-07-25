@@ -8,9 +8,8 @@ use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Mezzio\Router\Middleware\ImplicitOptionsMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -19,19 +18,17 @@ use function implode;
 
 class ImplicitOptionsMiddlewareTest extends TestCase
 {
-    use ProphecyTrait;
-
     /** @var ImplicitOptionsMiddleware */
     private $middleware;
 
-    /** @var ResponseInterface|ObjectProphecy */
+    /** @var ResponseInterface&MockObject */
     private $response;
 
     protected function setUp(): void
     {
-        $this->response  = $this->prophesize(ResponseInterface::class);
-        $responseFactory = function () {
-            return $this->response->reveal();
+        $this->response  = $this->createMock(ResponseInterface::class);
+        $responseFactory = function (): ResponseInterface {
+            return $this->response;
         };
 
         $this->middleware = new ImplicitOptionsMiddleware($responseFactory);
@@ -39,50 +36,74 @@ class ImplicitOptionsMiddlewareTest extends TestCase
 
     public function testNonOptionsRequestInvokesHandler(): void
     {
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_GET);
-        $request->getAttribute(RouteResult::class, false)->shouldNotBeCalled();
+        $request = $this->createMock(ServerRequestInterface::class);
+        $request
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_GET);
+        $request
+            ->expects(self::never())
+            ->method('getAttribute');
 
-        $response = $this->prophesize(ResponseInterface::class)->reveal();
+        $response = $this->createMock(ResponseInterface::class);
+        $handler  = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->with($request)
+            ->willReturn($response);
 
-        $handler = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request->reveal())->willReturn($response);
-
-        $result = $this->middleware->process($request->reveal(), $handler->reveal());
+        $result = $this->middleware->process($request, $handler);
         $this->assertSame($response, $result);
     }
 
     public function testMissingRouteResultInvokesHandler(): void
     {
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_OPTIONS);
-        $request->getAttribute(RouteResult::class)->willReturn(null);
+        $request = $this->createMock(ServerRequestInterface::class);
+        $request
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_OPTIONS);
 
-        $response = $this->prophesize(ResponseInterface::class)->reveal();
+        $request
+            ->method('getAttribute')
+            ->with(RouteResult::class)
+            ->willReturn(null);
 
-        $handler = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request->reveal())->willReturn($response);
+        $response = $this->createMock(ResponseInterface::class);
 
-        $result = $this->middleware->process($request->reveal(), $handler->reveal());
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->with($request)
+            ->willReturn($response);
+
+        $result = $this->middleware->process($request, $handler);
         $this->assertSame($response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteSupportsOptionsExplicitly(): void
     {
-        $route = $this->prophesize(Route::class);
+        $route = $this->createMock(Route::class);
 
-        $result = RouteResult::fromRoute($route->reveal());
+        $result = RouteResult::fromRoute($route);
 
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_OPTIONS);
-        $request->getAttribute(RouteResult::class)->willReturn($result);
+        $request = $this->createMock(ServerRequestInterface::class);
+        $request
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_OPTIONS);
 
-        $response = $this->prophesize(ResponseInterface::class)->reveal();
+        $request
+            ->method('getAttribute')
+            ->with(RouteResult::class)
+            ->willReturn($result);
 
-        $handler = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request->reveal())->willReturn($response);
+        $response = $this->createMock(ResponseInterface::class);
 
-        $result = $this->middleware->process($request->reveal(), $handler->reveal());
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->with($request)
+            ->willReturn($response);
+
+        $result = $this->middleware->process($request, $handler);
         $this->assertSame($response, $result);
     }
 
@@ -92,35 +113,58 @@ class ImplicitOptionsMiddlewareTest extends TestCase
 
         $result = RouteResult::fromRouteFailure($allowedMethods);
 
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_OPTIONS);
-        $request->getAttribute(RouteResult::class)->willReturn($result);
+        $request = $this->createMock(ServerRequestInterface::class);
+        $request
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_OPTIONS);
 
-        $handler = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request->reveal())->shouldNotBeCalled();
+        $request
+            ->method('getAttribute')
+            ->with(RouteResult::class)
+            ->willReturn($result);
+
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->expects(self::never())
+            ->method('handle');
 
         $this->response
-            ->withHeader('Allow', implode(',', $allowedMethods))
-            ->will([$this->response, 'reveal']);
+            ->method('withStatus')
+            ->willReturnSelf();
 
-        $result = $this->middleware->process($request->reveal(), $handler->reveal());
-        $this->assertSame($this->response->reveal(), $result);
+        $this->response
+            ->expects(self::once())
+            ->method('withHeader')
+            ->with('Allow', implode(',', $allowedMethods))
+            ->willReturnSelf();
+
+        $result = $this->middleware->process($request, $handler);
+        $this->assertSame($this->response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteNotFound(): void
     {
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
 
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_OPTIONS);
-        $request->getAttribute(RouteResult::class)->willReturn($result);
+        $request = $this->createMock(ServerRequestInterface::class);
+        $request
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_OPTIONS);
 
-        $response = $this->prophesize(ResponseInterface::class)->reveal();
+        $request
+            ->method('getAttribute')
+            ->with(RouteResult::class)
+            ->willReturn($result);
 
-        $handler = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request->reveal())->willReturn($response);
+        $response = $this->createMock(ResponseInterface::class);
 
-        $result = $this->middleware->process($request->reveal(), $handler->reveal());
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->with($request)
+            ->willReturn($response);
+
+        $result = $this->middleware->process($request, $handler);
         $this->assertSame($response, $result);
     }
 }

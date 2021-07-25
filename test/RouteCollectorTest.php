@@ -9,10 +9,8 @@ use Mezzio\Router\Exception;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteCollector;
 use Mezzio\Router\RouterInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -26,12 +24,10 @@ use function sprintf;
 
 class RouteCollectorTest extends TestCase
 {
-    use ProphecyTrait;
-
-    /** @var RouterInterface|ObjectProphecy */
+    /** @var RouterInterface&MockObject */
     private $router;
 
-    /** @var ResponseInterface|ObjectProphecy */
+    /** @var ResponseInterface&MockObject */
     private $response;
 
     /** @var RouteCollector */
@@ -42,15 +38,15 @@ class RouteCollectorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->router         = $this->prophesize(RouterInterface::class);
-        $this->response       = $this->prophesize(ResponseInterface::class);
-        $this->collector      = new RouteCollector($this->router->reveal());
+        $this->router         = $this->createMock(RouterInterface::class);
+        $this->response       = $this->createMock(ResponseInterface::class);
+        $this->collector      = new RouteCollector($this->router);
         $this->noopMiddleware = $this->createNoopMiddleware();
     }
 
     public function createNoopMiddleware(): MiddlewareInterface
     {
-        return new class ($this->response->reveal()) implements MiddlewareInterface {
+        return new class ($this->response) implements MiddlewareInterface {
             /** @var ResponseInterface */
             private $response;
 
@@ -85,21 +81,27 @@ class RouteCollectorTest extends TestCase
 
     public function testRouteMethodReturnsRouteInstance(): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalled();
+        $this->router
+            ->expects(self::once())
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
         $route = $this->collector->route('/foo', $this->noopMiddleware);
-        $this->assertInstanceOf(Route::class, $route);
-        $this->assertEquals('/foo', $route->getPath());
-        $this->assertSame($this->noopMiddleware, $route->getMiddleware());
+        self::assertEquals('/foo', $route->getPath());
+        self::assertSame($this->noopMiddleware, $route->getMiddleware());
     }
 
     public function testAnyRouteMethod(): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalled();
+        $this->router
+            ->expects(self::once())
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
         $route = $this->collector->any('/foo', $this->noopMiddleware);
-        $this->assertInstanceOf(Route::class, $route);
-        $this->assertEquals('/foo', $route->getPath());
-        $this->assertSame($this->noopMiddleware, $route->getMiddleware());
-        $this->assertSame(Route::HTTP_METHOD_ANY, $route->getAllowedMethods());
+        self::assertEquals('/foo', $route->getPath());
+        self::assertSame($this->noopMiddleware, $route->getMiddleware());
+        self::assertSame(Route::HTTP_METHOD_ANY, $route->getAllowedMethods());
     }
 
     /**
@@ -108,29 +110,39 @@ class RouteCollectorTest extends TestCase
      */
     public function testCanCallRouteWithHttpMethods($method): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalled();
+        $this->router
+            ->expects(self::once())
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
         $route = $this->collector->route('/foo', $this->noopMiddleware, [$method]);
-        $this->assertInstanceOf(Route::class, $route);
-        $this->assertEquals('/foo', $route->getPath());
-        $this->assertSame($this->noopMiddleware, $route->getMiddleware());
-        $this->assertTrue($route->allowsMethod($method));
-        $this->assertSame([$method], $route->getAllowedMethods());
+        self::assertEquals('/foo', $route->getPath());
+        self::assertSame($this->noopMiddleware, $route->getMiddleware());
+        self::assertTrue($route->allowsMethod($method));
+        self::assertSame([$method], $route->getAllowedMethods());
     }
 
     public function testCanCallRouteWithMultipleHttpMethods(): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalled();
+        $this->router
+            ->expects(self::once())
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
         $methods = array_keys($this->commonHttpMethods());
         $route   = $this->collector->route('/foo', $this->noopMiddleware, $methods);
-        $this->assertInstanceOf(Route::class, $route);
-        $this->assertEquals('/foo', $route->getPath());
-        $this->assertSame($this->noopMiddleware, $route->getMiddleware());
-        $this->assertSame($methods, $route->getAllowedMethods());
+        self::assertEquals('/foo', $route->getPath());
+        self::assertSame($this->noopMiddleware, $route->getMiddleware());
+        self::assertSame($methods, $route->getAllowedMethods());
     }
 
     public function testCallingRouteWithExistingPathAndOmittingMethodsArgumentRaisesException(): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalledTimes(2);
+        $this->router
+            ->expects(self::exactly(2))
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
         $this->collector->route('/foo', $this->noopMiddleware);
         $this->collector->route('/bar', $this->noopMiddleware);
         $this->expectException(Exception\DuplicateRouteException::class);
@@ -172,47 +184,50 @@ class RouteCollectorTest extends TestCase
     public function testCommonHttpMethodsAreExposedAsClassMethodsAndReturnRoutes($method): void
     {
         $route = $this->collector->{$method}('/foo', $this->noopMiddleware);
-        $this->assertInstanceOf(Route::class, $route);
-        $this->assertEquals('/foo', $route->getPath());
-        $this->assertSame($this->noopMiddleware, $route->getMiddleware());
-        $this->assertEquals([$method], $route->getAllowedMethods());
+        self::assertInstanceOf(Route::class, $route);
+        self::assertEquals('/foo', $route->getPath());
+        self::assertSame($this->noopMiddleware, $route->getMiddleware());
+        self::assertEquals([$method], $route->getAllowedMethods());
     }
 
     public function testCreatingHttpRouteMethodWithExistingPathButDifferentMethodCreatesNewRouteInstance(): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalledTimes(2);
+        $this->router
+            ->expects(self::exactly(2))
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
         $route = $this->collector->route('/foo', $this->noopMiddleware, [RequestMethod::METHOD_POST]);
 
         $middleware = $this->createNoopMiddleware();
         $test       = $this->collector->get('/foo', $middleware);
-        $this->assertNotSame($route, $test);
-        $this->assertSame($route->getPath(), $test->getPath());
-        $this->assertSame(['GET'], $test->getAllowedMethods());
-        $this->assertSame($middleware, $test->getMiddleware());
+        self::assertNotSame($route, $test);
+        self::assertSame($route->getPath(), $test->getPath());
+        self::assertSame(['GET'], $test->getAllowedMethods());
+        self::assertSame($middleware, $test->getMiddleware());
     }
 
     public function testGetRoutes(): void
     {
-        $middleware1 = $this->prophesize(MiddlewareInterface::class)->reveal();
+        $middleware1 = $this->createMock(MiddlewareInterface::class);
         $this->collector->any('/foo', $middleware1, 'abc');
-        $middleware2 = $this->prophesize(MiddlewareInterface::class)->reveal();
+        $middleware2 = $this->createMock(MiddlewareInterface::class);
         $this->collector->get('/bar', $middleware2, 'def');
 
         $routes = $this->collector->getRoutes();
 
-        $this->assertIsArray($routes);
-        $this->assertCount(2, $routes);
-        $this->assertContainsOnlyInstancesOf(Route::class, $routes);
+        self::assertCount(2, $routes);
+        self::assertContainsOnlyInstancesOf(Route::class, $routes);
 
-        $this->assertSame('/foo', $routes[0]->getPath());
-        $this->assertSame($middleware1, $routes[0]->getMiddleware());
-        $this->assertSame('abc', $routes[0]->getName());
-        $this->assertNull($routes[0]->getAllowedMethods());
+        self::assertSame('/foo', $routes[0]->getPath());
+        self::assertSame($middleware1, $routes[0]->getMiddleware());
+        self::assertSame('abc', $routes[0]->getName());
+        self::assertNull($routes[0]->getAllowedMethods());
 
-        $this->assertSame('/bar', $routes[1]->getPath());
-        $this->assertSame($middleware2, $routes[1]->getMiddleware());
-        $this->assertSame('def', $routes[1]->getName());
-        $this->assertSame([RequestMethod::METHOD_GET], $routes[1]->getAllowedMethods());
+        self::assertSame('/bar', $routes[1]->getPath());
+        self::assertSame($middleware2, $routes[1]->getMiddleware());
+        self::assertSame('def', $routes[1]->getName());
+        self::assertSame([RequestMethod::METHOD_GET], $routes[1]->getAllowedMethods());
     }
 
     public function testCreatingHttpRouteWithExistingPathShouldBeLinear(): void
@@ -222,7 +237,7 @@ class RouteCollectorTest extends TestCase
             $this->collector->get("/bar$item", $this->noopMiddleware);
         }
         $baseDuration    = microtime(true) - $start;
-        $this->collector = new RouteCollector($this->router->reveal());
+        $this->collector = new RouteCollector($this->router);
 
         $start = microtime(true);
         foreach (range(1, 10000) as $item) {
@@ -232,7 +247,7 @@ class RouteCollectorTest extends TestCase
         $duration         = microtime(true) - $start;
         $expectedDuration = $baseDuration * 1000;
         $error            = 30 * $expectedDuration / 100;
-        $this->assertTrue(
+        self::assertTrue(
             $expectedDuration + $error > $duration,
             sprintf(
                 'Route add time should be linear by amount of routes,'
@@ -246,7 +261,11 @@ class RouteCollectorTest extends TestCase
 
     public function testCreatingHttpRouteWithExistingPathAndMethodRaisesException(): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalledTimes(1);
+        $this->router
+            ->expects(self::once())
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
         $this->collector->get('/foo', $this->noopMiddleware, 'route1');
 
         $this->expectException(Exception\DuplicateRouteException::class);
@@ -258,7 +277,11 @@ class RouteCollectorTest extends TestCase
 
     public function testCheckDuplicateRouteWhenExistsRouteForAnyMethods(): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalledTimes(1);
+        $this->router
+            ->expects(self::once())
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
         $this->collector->any('/foo', $this->noopMiddleware, 'route1');
 
         $this->expectException(Exception\DuplicateRouteException::class);
@@ -270,7 +293,11 @@ class RouteCollectorTest extends TestCase
 
     public function testCheckDuplicateRouteWhenExistsRouteForGetMethodsAndAddingRouteForAnyMethod(): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalledTimes(1);
+        $this->router
+            ->expects(self::once())
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
         $this->collector->get('/foo', $this->noopMiddleware, 'route1');
 
         $this->expectException(Exception\DuplicateRouteException::class);
@@ -282,7 +309,11 @@ class RouteCollectorTest extends TestCase
 
     public function testCreatingHttpRouteWithExistingNameRaisesException(): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalledTimes(1);
+        $this->router
+            ->expects(self::once())
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
         $this->collector->get('/foo', $this->noopMiddleware, 'duplicate');
 
         $this->expectException(Exception\DuplicateRouteException::class);
@@ -294,11 +325,15 @@ class RouteCollectorTest extends TestCase
 
     public function testCreatingHttpRouteWithExistingNameDoesNotRaiseExceptionIfDuplicateDetectionDisabled(): void
     {
-        $this->router->addRoute(Argument::type(Route::class))->shouldBeCalledTimes(2);
-        $collector = new RouteCollector($this->router->reveal(), false);
+        $this->router
+            ->expects(self::exactly(2))
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
+        $collector = new RouteCollector($this->router, false);
         $collector->get('/foo', $this->noopMiddleware, 'duplicate');
         $collector->get('/foo/baz', $this->createNoopMiddleware(), 'duplicate');
 
-        $this->assertCount(2, $collector->getRoutes());
+        self::assertCount(2, $collector->getRoutes());
     }
 }

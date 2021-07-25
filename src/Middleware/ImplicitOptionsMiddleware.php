@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace Mezzio\Router\Middleware;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
+use Mezzio\Router\Response\CallableResponseFactoryDecorator;
 use Mezzio\Router\RouteResult;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 use function implode;
+use function is_callable;
 
 /**
  * Handle implicit OPTIONS requests.
@@ -38,20 +41,26 @@ use function implode;
  */
 class ImplicitOptionsMiddleware implements MiddlewareInterface
 {
-    /** @var callable */
+    /** @var ResponseFactoryInterface */
     private $responseFactory;
 
     /**
-     * @param callable $responseFactory A factory capable of returning an
+     * @param (callable():ResponseInterface)|ResponseFactoryInterface $responseFactory A factory capable of returning an
      *     empty ResponseInterface instance to return for implicit OPTIONS
      *     requests.
      */
-    public function __construct(callable $responseFactory)
+    public function __construct($responseFactory)
     {
-        // Factories is wrapped in a closure in order to enforce return type safety.
-        $this->responseFactory = function () use ($responseFactory): ResponseInterface {
-            return $responseFactory();
-        };
+        if (is_callable($responseFactory)) {
+            // Factories is wrapped in a closure in order to enforce return type safety.
+            $responseFactory = new CallableResponseFactoryDecorator(
+                static function () use ($responseFactory): ResponseInterface {
+                    return $responseFactory();
+                }
+            );
+        }
+
+        $this->responseFactory = $responseFactory;
     }
 
     /**
@@ -78,6 +87,6 @@ class ImplicitOptionsMiddleware implements MiddlewareInterface
 
         $allowedMethods = $result->getAllowedMethods();
 
-        return ($this->responseFactory)()->withHeader('Allow', implode(',', $allowedMethods));
+        return $this->responseFactory->createResponse()->withHeader('Allow', implode(',', $allowedMethods));
     }
 }

@@ -49,4 +49,12 @@ class RouteMiddleware implements MiddlewareInterface
 
         return $handler->handle($request);
     }
+
+    /**
+     * @internal This should only be used by unit tests.
+     */
+    public function getRouter(): RouterInterface
+    {
+        return $this->router;
+    }
 }

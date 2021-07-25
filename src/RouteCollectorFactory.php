@@ -29,9 +29,16 @@ class RouteCollectorFactory
      */
     public function __invoke(ContainerInterface $container): RouteCollector
     {
+        $hasRouter           = $container->has(RouterInterface::class);
+        $hasDeprecatedRouter = false;
+
+        if (! $hasRouter) {
+            $hasDeprecatedRouter = $container->has(ZendExpressiveRouterInterface::class);
+        }
+
         if (
-            ! $container->has(RouterInterface::class)
-            && ! $container->has(ZendExpressiveRouterInterface::class)
+            ! $hasRouter
+            && ! $hasDeprecatedRouter
         ) {
             throw Exception\MissingDependencyException::dependencyForService(
                 RouterInterface::class,
@@ -40,7 +47,7 @@ class RouteCollectorFactory
         }
 
         return new RouteCollector(
-            $container->has(RouterInterface::class)
+            $hasRouter
                 ? $container->get(RouterInterface::class)
                 : $container->get(ZendExpressiveRouterInterface::class),
             $this->getDetectDuplicatesFlag($container)

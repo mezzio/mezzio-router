@@ -9,10 +9,8 @@ use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -21,167 +19,272 @@ use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 class ImplicitHeadMiddlewareTest extends TestCase
 {
-    use ProphecyTrait;
-
     /** @var ImplicitHeadMiddleware */
     private $middleware;
 
-    /** @var ResponseInterface|ObjectProphecy */
+    /** @var ResponseInterface&MockObject */
     private $response;
 
-    /** @var RouterInterface|ObjectProphecy */
+    /** @var RouterInterface&MockObject */
     private $router;
 
-    /** @var StreamInterface|ObjectProphecy */
+    /** @var StreamInterface&MockObject */
     private $stream;
 
     protected function setUp(): void
     {
-        $this->router = $this->prophesize(RouterInterface::class);
-        $this->stream = $this->prophesize(StreamInterface::class);
+        $this->router = $this->createMock(RouterInterface::class);
+        $this->stream = $this->createMock(StreamInterface::class);
 
-        $streamFactory = function () {
-            return $this->stream->reveal();
+        $streamFactory = function (): StreamInterface {
+            return $this->stream;
         };
 
-        $this->middleware = new ImplicitHeadMiddleware($this->router->reveal(), $streamFactory);
-        $this->response   = $this->prophesize(ResponseInterface::class);
+        $this->middleware = new ImplicitHeadMiddleware($this->router, $streamFactory);
+        $this->response   = $this->createMock(ResponseInterface::class);
     }
 
     public function testReturnsResultOfHandlerOnNonHeadRequests(): void
     {
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_GET);
+        $request = $this->createMock(ServerRequestInterface::class);
+        $request
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_GET);
 
-        $handler = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request->reveal())->will([$this->response, 'reveal']);
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->with($request)
+            ->willReturn($this->response);
 
-        $result = $this->middleware->process($request->reveal(), $handler->reveal());
+        $result = $this->middleware->process($request, $handler);
 
-        $this->assertSame($this->response->reveal(), $result);
+        self::assertSame($this->response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenNoRouteResultPresentInRequest(): void
     {
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_HEAD);
-        $request->getAttribute(RouteResult::class)->willReturn(null);
+        $request = $this->createMock(ServerRequestInterface::class);
+        $request
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_HEAD);
 
-        $handler = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request->reveal())->will([$this->response, 'reveal']);
+        $request
+            ->method('getAttribute')
+            ->with(RouteResult::class)
+            ->willReturn(null);
 
-        $result = $this->middleware->process($request->reveal(), $handler->reveal());
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->with($request)
+            ->willReturn($this->response);
 
-        $this->assertSame($this->response->reveal(), $result);
+        $result = $this->middleware->process($request, $handler);
+
+        self::assertSame($this->response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteSupportsHeadExplicitly(): void
     {
-        $route  = $this->prophesize(Route::class);
-        $result = RouteResult::fromRoute($route->reveal());
+        $route  = $this->createMock(Route::class);
+        $result = RouteResult::fromRoute($route);
 
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_HEAD);
-        $request->getAttribute(RouteResult::class)->willReturn($result);
+        $request = $this->createMock(ServerRequestInterface::class);
+        $request
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_HEAD);
 
-        $handler = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request->reveal())->will([$this->response, 'reveal']);
+        $request
+            ->method('getAttribute')
+            ->with(RouteResult::class)
+            ->willReturn($result);
 
-        $result = $this->middleware->process($request->reveal(), $handler->reveal());
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->with($request)
+            ->willReturn($this->response);
 
-        $this->assertSame($this->response->reveal(), $result);
+        $result = $this->middleware->process($request, $handler);
+
+        self::assertSame($this->response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteDoesNotExplicitlySupportHeadAndDoesNotSupportGet(): void
     {
         $result = RouteResult::fromRouteFailure([]);
 
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_HEAD);
-        $request->getAttribute(RouteResult::class)->willReturn($result);
-        $request->withMethod(RequestMethod::METHOD_GET)->will([$request, 'reveal']);
+        $request = $this->createMock(ServerRequestInterface::class);
+        $request
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_HEAD);
 
-        $this->router->match($request)->willReturn($result);
+        $request
+            ->method('getAttribute')
+            ->with(RouteResult::class)
+            ->willReturn($result);
+        $request
+            ->expects(self::once())
+            ->method('withMethod')
+            ->with(RequestMethod::METHOD_GET)
+            ->willReturnSelf();
 
-        $handler = $this->prophesize(RequestHandlerInterface::class);
-        $handler->handle($request->reveal())->will([$this->response, 'reveal']);
+        $this->router
+            ->expects(self::once())
+            ->method('match')
+            ->with($request)
+            ->willReturn($result);
 
-        $response = $this->middleware->process($request->reveal(), $handler->reveal());
+        $handler = $this->createMock(RequestHandlerInterface::class);
+        $handler
+            ->method('handle')
+            ->with($request)
+            ->willReturn($this->response);
 
-        $this->assertSame($this->response->reveal(), $response);
+        $response = $this->middleware->process($request, $handler);
+
+        self::assertSame($this->response, $response);
     }
 
     public function testInvokesHandlerWhenRouteImplicitlySupportsHeadAndSupportsGet(): void
     {
         $result = RouteResult::fromRouteFailure([]);
 
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_HEAD);
-        $request->getAttribute(RouteResult::class)->willReturn($result);
-        $request->withMethod(RequestMethod::METHOD_GET)->will([$request, 'reveal']);
+        $request = $this->createMock(ServerRequestInterface::class);
         $request
-            ->withAttribute(
-                ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE,
-                RequestMethod::METHOD_HEAD
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_HEAD);
+
+        $request
+            ->method('getAttribute')
+            ->with(RouteResult::class)
+            ->willReturn($result);
+
+        $request
+            ->expects(self::exactly(2))
+            ->method('withMethod')
+            ->with(RequestMethod::METHOD_GET)
+            ->willReturnSelf();
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response
+            ->expects(self::once())
+            ->method('withBody')
+            ->with($this->stream)
+            ->willReturnSelf();
+
+        $route  = $this->createMock(Route::class);
+        $result = RouteResult::fromRoute($route);
+
+        $request
+            ->expects(self::exactly(3))
+            ->method('withAttribute')
+            ->withConsecutive(
+                [
+                    RouteResult::class,
+                    $result,
+                ],
+                [
+                    ZendExpressiveRouteResult::class,
+                    $result,
+                ],
+                [
+                    ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE,
+                    RequestMethod::METHOD_HEAD,
+                ]
             )
-            ->will([$request, 'reveal']);
+            ->willReturnSelf();
 
-        $response = $this->prophesize(ResponseInterface::class);
-        $response->withBody($this->stream->reveal())->will([$response, 'reveal']);
+        $this->router
+            ->expects(self::once())
+            ->method('match')
+            ->with($request)
+            ->willReturn($result);
 
-        $route  = $this->prophesize(Route::class);
-        $result = RouteResult::fromRoute($route->reveal());
-
-        $request->withAttribute(RouteResult::class, $result)->will([$request, 'reveal']);
-        $request->withAttribute(ZendExpressiveRouteResult::class, $result)->will([$request, 'reveal']);
-
-        $this->router->match($request)->willReturn($result);
-
-        $handler = $this->prophesize(RequestHandlerInterface::class);
+        $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
-            ->handle(Argument::that([$request, 'reveal']))
-            ->will([$response, 'reveal']);
+            ->method('handle')
+            ->with($request)
+            ->willReturn($response);
 
-        $result = $this->middleware->process($request->reveal(), $handler->reveal());
+        $result = $this->middleware->process($request, $handler);
 
-        $this->assertSame($response->reveal(), $result);
+        self::assertSame($response, $result);
     }
 
     public function testInvokesHandlerWithRequestComposingRouteResultAndAttributes(): void
     {
         $result = RouteResult::fromRouteFailure([]);
 
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn(RequestMethod::METHOD_HEAD);
-        $request->getAttribute(RouteResult::class)->willReturn($result);
-        $request->withMethod(RequestMethod::METHOD_GET)->will([$request, 'reveal']);
+        $request = $this->createMock(ServerRequestInterface::class);
         $request
-            ->withAttribute(
-                ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE,
-                RequestMethod::METHOD_HEAD
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_HEAD);
+
+        $request
+            ->method('getAttribute')
+            ->with(RouteResult::class)
+            ->willReturn($result);
+
+        $request
+            ->expects(self::exactly(2))
+            ->method('withMethod')
+            ->with(RequestMethod::METHOD_GET)
+            ->willReturnSelf();
+
+        $route                     = $this->createMock(Route::class);
+        $resultForRequestMethodGet = RouteResult::fromRoute($route, ['foo' => 'bar', 'baz' => 'bat']);
+
+        $request
+            ->expects(self::exactly(5))
+            ->method('withAttribute')
+            ->withConsecutive(
+                [
+                    'foo',
+                    'bar',
+                ],
+                [
+                    'baz',
+                    'bat',
+                ],
+                [
+                    RouteResult::class,
+                    $resultForRequestMethodGet,
+                ],
+                [
+                    ZendExpressiveRouteResult::class,
+                    $resultForRequestMethodGet,
+                ],
+                [
+                    ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE,
+                    RequestMethod::METHOD_HEAD,
+                ]
             )
-            ->will([$request, 'reveal']);
+            ->willReturnSelf();
 
-        $response = $this->prophesize(ResponseInterface::class);
-        $response->withBody($this->stream->reveal())->will([$response, 'reveal']);
+        $response = $this->createMock(ResponseInterface::class);
+        $response
+            ->expects(self::once())
+            ->method('withBody')
+            ->with($this->stream)
+            ->willReturnSelf();
 
-        $route  = $this->prophesize(Route::class);
-        $result = RouteResult::fromRoute($route->reveal(), ['foo' => 'bar', 'baz' => 'bat']);
+        $this->router
+            ->expects(self::once())
+            ->method('match')
+            ->with($request)
+            ->willReturn($resultForRequestMethodGet);
 
-        $request->withAttribute(RouteResult::class, $result)->will([$request, 'reveal']);
-        $request->withAttribute(ZendExpressiveRouteResult::class, $result)->will([$request, 'reveal']);
-        $request->withAttribute('foo', 'bar')->will([$request, 'reveal'])->shouldBeCalled();
-        $request->withAttribute('baz', 'bat')->will([$request, 'reveal'])->shouldBeCalled();
-
-        $this->router->match($request)->willReturn($result);
-
-        $handler = $this->prophesize(RequestHandlerInterface::class);
+        $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
-            ->handle(Argument::that([$request, 'reveal']))
-            ->will([$response, 'reveal']);
+            ->expects(self::once())
+            ->method('handle')
+            ->with($request)
+            ->willReturn($response);
 
-        $result = $this->middleware->process($request->reveal(), $handler->reveal());
+        $result = $this->middleware->process($request, $handler);
 
-        $this->assertSame($response->reveal(), $result);
+        self::assertSame($response, $result);
     }
 }
