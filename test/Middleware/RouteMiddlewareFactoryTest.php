@@ -42,7 +42,7 @@ class RouteMiddlewareFactoryTest extends TestCase
 
     public function testFactoryProducesRouteMiddlewareWhenAllDependenciesPresent(): void
     {
-        $router = $this->prophesize(RouterInterface::class)->reveal();
+        $router = $this->createMock(RouterInterface::class);
         $this->container->has(RouterInterface::class)->willReturn(true);
         $this->container->get(RouterInterface::class)->willReturn($router);
 
@@ -53,7 +53,7 @@ class RouteMiddlewareFactoryTest extends TestCase
 
     public function testFactoryAllowsSpecifyingRouterServiceViaConstructor(): void
     {
-        $router = $this->prophesize(RouterInterface::class)->reveal();
+        $router = $this->createMock(RouterInterface::class);
         $this->container->has(Router::class)->willReturn(true);
         $this->container->get(Router::class)->willReturn($router);
 

@@ -118,8 +118,8 @@ class RouteResultTest extends TestCase
 
     public function testFailureResultProcessedAsMiddlewareDelegatesToHandler(): void
     {
-        $request  = $this->prophesize(ServerRequestInterface::class)->reveal();
-        $response = $this->prophesize(ResponseInterface::class)->reveal();
+        $request  = $this->createMock(ServerRequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
         $handler  = $this->prophesize(RequestHandlerInterface::class);
         $handler->handle($request)->willReturn($response);
 
@@ -130,8 +130,8 @@ class RouteResultTest extends TestCase
 
     public function testSuccessfulResultProcessedAsMiddlewareDelegatesToRoute(): void
     {
-        $request  = $this->prophesize(ServerRequestInterface::class)->reveal();
-        $response = $this->prophesize(ResponseInterface::class)->reveal();
+        $request  = $this->createMock(ServerRequestInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
         $handler  = $this->prophesize(RequestHandlerInterface::class);
         $handler->handle($request)->shouldNotBeCalled();
 

@@ -436,33 +436,12 @@
     </MixedMethodCall>
   </file>
   <file src="test/RouteTest.php">
-    <InvalidArgument occurrences="22">
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
-      <code>$this-&gt;noopMiddleware</code>
+    <InvalidArgument occurrences="4">
       <code>'FOO'</code>
       <code>12345</code>
       <code>12345</code>
       <code>12345</code>
     </InvalidArgument>
-    <InvalidPropertyAssignmentValue occurrences="1">
-      <code>$this-&gt;prophesize(MiddlewareInterface::class)-&gt;reveal()</code>
-    </InvalidPropertyAssignmentValue>
     <MixedArgument occurrences="1">
       <code>$middleware</code>
     </MixedArgument>

@@ -193,9 +193,9 @@ class RouteCollectorTest extends TestCase
 
     public function testGetRoutes(): void
     {
-        $middleware1 = $this->prophesize(MiddlewareInterface::class)->reveal();
+        $middleware1 = $this->createMock(MiddlewareInterface::class);
         $this->collector->any('/foo', $middleware1, 'abc');
-        $middleware2 = $this->prophesize(MiddlewareInterface::class)->reveal();
+        $middleware2 = $this->createMock(MiddlewareInterface::class);
         $this->collector->get('/bar', $middleware2, 'def');
 
         $routes = $this->collector->getRoutes();

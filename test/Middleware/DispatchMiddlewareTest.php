@@ -32,7 +32,7 @@ class DispatchMiddlewareTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->response   = $this->prophesize(ResponseInterface::class)->reveal();
+        $this->response   = $this->createMock(ResponseInterface::class);
         $this->request    = $this->prophesize(ServerRequestInterface::class);
         $this->handler    = $this->prophesize(RequestHandlerInterface::class);
         $this->middleware = new DispatchMiddleware();

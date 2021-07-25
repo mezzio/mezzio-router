@@ -7,6 +7,7 @@ namespace MezzioTest\Router;
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Mezzio\Router\Exception\InvalidArgumentException;
 use Mezzio\Router\Route;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ResponseInterface;
@@ -24,12 +25,12 @@ class RouteTest extends TestCase
 {
     use ProphecyTrait;
 
-    /** @var callable */
+    /** @var MiddlewareInterface&MockObject */
     private $noopMiddleware;
 
     protected function setUp(): void
     {
-        $this->noopMiddleware = $this->prophesize(MiddlewareInterface::class)->reveal();
+        $this->noopMiddleware = $this->createMock(MiddlewareInterface::class);
     }
 
     public function testRoutePathIsRetrievable(): void
@@ -199,7 +200,7 @@ class RouteTest extends TestCase
 
     public function testAllowsHttpInteropMiddleware(): void
     {
-        $middleware = $this->prophesize(MiddlewareInterface::class)->reveal();
+        $middleware = $this->createMock(MiddlewareInterface::class);
         $route      = new Route('/test', $middleware, Route::HTTP_METHOD_ANY);
         $this->assertSame($middleware, $route->getMiddleware());
     }
@@ -244,9 +245,9 @@ class RouteTest extends TestCase
 
     public function testRouteIsMiddlewareAndProxiesToComposedMiddleware(): void
     {
-        $request    = $this->prophesize(ServerRequestInterface::class)->reveal();
-        $handler    = $this->prophesize(RequestHandlerInterface::class)->reveal();
-        $response   = $this->prophesize(ResponseInterface::class)->reveal();
+        $request    = $this->createMock(ServerRequestInterface::class);
+        $handler    = $this->createMock(RequestHandlerInterface::class);
+        $response   = $this->createMock(ResponseInterface::class);
         $middleware = $this->prophesize(MiddlewareInterface::class);
         $middleware->process($request, $handler)->willReturn($response);
 
@@ -256,7 +257,7 @@ class RouteTest extends TestCase
 
     public function testConstructorShouldRaiseExceptionIfMethodsArgumentIsAnEmptyArray(): void
     {
-        $middleware = $this->prophesize(MiddlewareInterface::class)->reveal();
+        $middleware = $this->createMock(MiddlewareInterface::class);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('empty');

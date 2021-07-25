@@ -48,7 +48,7 @@ class RouteCollectorFactoryTest extends TestCase
 
     public function testFactoryProducesRouteCollectorWhenAllDependenciesPresent(): void
     {
-        $router = $this->prophesize(RouterInterface::class)->reveal();
+        $router = $this->createMock(RouterInterface::class);
         $this->container->has(RouterInterface::class)->willReturn(true);
         $this->container->has('config')->willReturn(false);
         $this->container->get(RouterInterface::class)->willReturn($router);
@@ -104,7 +104,7 @@ class RouteCollectorFactoryTest extends TestCase
      */
     private function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig($config): void
     {
-        $router = $this->prophesize(RouterInterface::class)->reveal();
+        $router = $this->createMock(RouterInterface::class);
         $this->container->has(RouterInterface::class)->willReturn(true);
         $this->container->has('config')->willReturn(true);
         $this->container->get(RouterInterface::class)->willReturn($router);

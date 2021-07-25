@@ -80,7 +80,7 @@ class RouteMiddlewareTest extends TestCase
 
     public function testRoutingSuccessInvokesHandlerWithRequestComposingRouteResultAndAttributes(): void
     {
-        $middleware = $this->prophesize(MiddlewareInterface::class)->reveal();
+        $middleware = $this->createMock(MiddlewareInterface::class);
         $parameters = ['foo' => 'bar', 'baz' => 'bat'];
         $result     = RouteResult::fromRoute(
             new Route('/foo', $middleware),
