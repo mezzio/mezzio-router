@@ -30,7 +30,6 @@
     "require": {
         "php": "^7.3 || ~8.0.0 || ~8.1.0",
         "fig/http-message-util": "^1.1.2",
-        "laminas/laminas-zendframework-bridge": "^1.0",
         "psr/container": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/http-message": "^1.0.1",
@@ -38,7 +37,8 @@
         "webmozart/assert": "^1.10"
     },
     "conflict": {
-        "mezzio/mezzio": "<3.5"
+        "mezzio/mezzio": "<3.5",
+        "zendframework/zend-expressive-router": "*"
     },
     "require-dev": {
         "laminas/laminas-coding-standard": "~2.2.0",
@@ -75,8 +75,5 @@
         "static-analysis": "psalm --shepherd --stats",
         "test": "phpunit --colors=always",
         "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
-    },
-    "replace": {
-        "zendframework/zend-expressive-router": "^3.1.1"
     }
 }
