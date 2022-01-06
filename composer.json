@@ -52,7 +52,7 @@
         "phpspec/prophecy-phpunit": "^2.0",
         "phpunit/phpunit": "^9.5.11",
         "psalm/plugin-phpunit": "^0.15.0",
-        "vimeo/psalm": "^4.3"
+        "vimeo/psalm": "^4.17"
     },
     "suggest": {
         "mezzio/mezzio-aurarouter": "^3.0 to use the Aura.Router routing adapter",
