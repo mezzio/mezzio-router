@@ -20,7 +20,11 @@
         "forum": "https://discourse.laminas.dev"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "composer/package-versions-deprecated": true
+        }
     },
     "extra": {
         "laminas": {
@@ -41,12 +45,12 @@
         "zendframework/zend-expressive-router": "*"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "~2.2.0",
+        "laminas/laminas-coding-standard": "~2.3.0",
         "laminas/laminas-diactoros": "^2.6",
         "laminas/laminas-stratigility": "^3.4",
         "phpspec/prophecy": "^1.9",
         "phpspec/prophecy-phpunit": "^2.0",
-        "phpunit/phpunit": "^9.4.1",
+        "phpunit/phpunit": "^9.5.11",
         "psalm/plugin-phpunit": "^0.15.0",
         "vimeo/psalm": "^4.3"
     },
