@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Mezzio\Router;
 
+use Mezzio\Router\Exception\RouteCannotBeFoundException;
 use Psr\Http\Server\MiddlewareInterface;
+
+use function array_filter;
+use function reset;
 
 /**
  * Aggregate routes for the router.
@@ -37,7 +41,7 @@ class RouteCollector implements RouteCollectorInterface
     /**
      * List of all routes registered directly with the application.
      *
-     * @var Route[]
+     * @var list<Route>
      */
     private $routes = [];
 
@@ -125,7 +129,7 @@ class RouteCollector implements RouteCollectorInterface
     /**
      * Retrieve all directly registered routes with the application.
      *
-     * @return Route[]
+     * @return list<Route>
      */
     public function getRoutes(): array
     {
@@ -150,5 +154,33 @@ class RouteCollector implements RouteCollectorInterface
     public function willDetectDuplicates(): bool
     {
         return $this->detectDuplicates;
+    }
+
+    public function routeExists(string $name): bool
+    {
+        try {
+            $this->retrieveRouteByName($name);
+
+            return true;
+        } catch (RouteCannotBeFoundException $error) {
+            return false;
+        }
+    }
+
+    /**
+     * Find the first route found that has the given name
+     *
+     * @throws RouteCannotBeFoundException If the route with the given name cannot be found.
+     */
+    public function retrieveRouteByName(string $name): Route
+    {
+        $routes = array_filter($this->routes, static fn (Route $route): bool => $route->getName() === $name);
+        $route  = reset($routes);
+
+        if (! $route instanceof Route) {
+            throw RouteCannotBeFoundException::withName($name);
+        }
+
+        return $route;
     }
 }

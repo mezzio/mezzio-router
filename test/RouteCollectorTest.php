@@ -336,4 +336,55 @@ class RouteCollectorTest extends TestCase
 
         self::assertCount(2, $collector->getRoutes());
     }
+
+    public function testThatRoutesCreatedWithANameCanBeRetrievedWithTheSameName(): void
+    {
+        $this->router->expects(self::exactly(2))
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
+        $this->collector->get('/foo', $this->noopMiddleware, 'route-one');
+        $this->collector->get('/bar', $this->noopMiddleware, 'route-two');
+
+        $one = $this->collector->retrieveRouteByName('route-one');
+        self::assertEquals('route-one', $one->getName());
+
+        $two = $this->collector->retrieveRouteByName('route-two');
+        self::assertEquals('route-two', $two->getName());
+
+        self::assertNotSame($one, $two);
+    }
+
+    public function testThatAKnownNamedRouteIsConsideredInExistence(): void
+    {
+        $this->router->expects(self::once())
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
+        $this->collector->get('/foo', $this->noopMiddleware, 'something');
+
+        self::assertTrue($this->collector->routeExists('something'));
+        self::assertFalse($this->collector->routeExists('something-else'));
+    }
+
+    public function testThatItIsExceptionalToRetrieveARouteByNameThatDoesNotExist(): void
+    {
+        $this->expectException(Exception\RouteCannotBeFoundException::class);
+        $this->expectDeprecationMessage('A route with the name "goats" has not been registered');
+        $this->collector->retrieveRouteByName('goats');
+    }
+
+    public function testThatRetrievingARouteWithADuplicateNameWillReturnTheFirstRouteRegistered(): void
+    {
+        $this->router->expects(self::exactly(2))
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
+        $collector = new RouteCollector($this->router, false);
+        $collector->get('/foo', $this->noopMiddleware, 'something');
+        $collector->get('/bar', $this->noopMiddleware, 'something');
+
+        $route = $collector->retrieveRouteByName('something');
+        self::assertEquals('/foo', $route->getPath());
+    }
 }
