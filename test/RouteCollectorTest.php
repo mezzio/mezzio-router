@@ -387,4 +387,16 @@ class RouteCollectorTest extends TestCase
         $route = $collector->retrieveRouteByName('something');
         self::assertEquals('/foo', $route->getPath());
     }
+
+    public function testThatRetrievingRoutesByNameIsCaseSensitive(): void
+    {
+        $this->router->expects(self::once())
+            ->method('addRoute')
+            ->willReturnArgument(0);
+
+        $this->collector->get('/foo', $this->noopMiddleware, 'something');
+        $this->expectException(Exception\RouteCannotBeFoundException::class);
+        $this->expectDeprecationMessage('A route with the name "SOMETHING" has not been registered');
+        $this->collector->retrieveRouteByName('SOMETHING');
+    }
 }
