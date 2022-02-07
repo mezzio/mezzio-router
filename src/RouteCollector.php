@@ -156,17 +156,6 @@ class RouteCollector implements RouteCollectorInterface
         return $this->detectDuplicates;
     }
 
-    public function routeExists(string $name): bool
-    {
-        try {
-            $this->retrieveRouteByName($name);
-
-            return true;
-        } catch (RouteCannotBeFoundException $error) {
-            return false;
-        }
-    }
-
     /**
      * Find the first route found that has the given name
      *

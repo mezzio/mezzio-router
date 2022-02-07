@@ -355,18 +355,6 @@ class RouteCollectorTest extends TestCase
         self::assertNotSame($one, $two);
     }
 
-    public function testThatAKnownNamedRouteIsConsideredInExistence(): void
-    {
-        $this->router->expects(self::once())
-            ->method('addRoute')
-            ->willReturnArgument(0);
-
-        $this->collector->get('/foo', $this->noopMiddleware, 'something');
-
-        self::assertTrue($this->collector->routeExists('something'));
-        self::assertFalse($this->collector->routeExists('something-else'));
-    }
-
     public function testThatItIsExceptionalToRetrieveARouteByNameThatDoesNotExist(): void
     {
         $this->expectException(Exception\RouteCannotBeFoundException::class);
