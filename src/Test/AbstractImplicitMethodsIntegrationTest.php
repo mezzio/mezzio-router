@@ -176,7 +176,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
         $response = $pipeline->process($request, $finalHandler);
 
-        self::assertEquals(StatusCode::STATUS_OK, $response->getStatusCode());
+        self::assertSame(StatusCode::STATUS_OK, $response->getStatusCode());
         self::assertSame('FOO BAR BODY', (string) $response->getBody());
         self::assertTrue($response->hasHeader('foo-bar'));
         self::assertSame('baz', $response->getHeaderLine('foo-bar'));
@@ -355,7 +355,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
         $response = $pipeline->process($request, $finalHandler);
 
-        self::assertEquals(StatusCode::STATUS_OK, $response->getStatusCode());
+        self::assertSame(StatusCode::STATUS_OK, $response->getStatusCode());
         self::assertEmpty((string) $response->getBody());
         self::assertTrue($response->hasHeader('foo-bar'));
         self::assertSame('baz', $response->getHeaderLine('foo-bar'));
@@ -454,7 +454,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
         $response = $pipeline->process($request, $finalHandler);
 
-        self::assertEquals(StatusCode::STATUS_IM_A_TEAPOT, $response->getStatusCode());
+        self::assertSame(StatusCode::STATUS_IM_A_TEAPOT, $response->getStatusCode());
         self::assertSame('FOO BAR BODY', (string) $response->getBody());
         self::assertTrue($response->hasHeader('foo-bar'));
         self::assertSame('baz', $response->getHeaderLine('foo-bar'));

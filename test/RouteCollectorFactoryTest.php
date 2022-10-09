@@ -18,16 +18,18 @@ use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 use function sprintf;
 
-class RouteCollectorFactoryTest extends TestCase
+/** @covers \Mezzio\Router\RouteCollectorFactory */
+final class RouteCollectorFactoryTest extends TestCase
 {
     /** @var ContainerInterface&MockObject */
-    private $container;
+    private ContainerInterface $container;
 
-    /** @var RouteCollectorFactory */
-    private $factory;
+    private RouteCollectorFactory $factory;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->container = $this->createMock(ContainerInterface::class);
         $this->factory   = new RouteCollectorFactory();
     }
@@ -42,12 +44,14 @@ class RouteCollectorFactoryTest extends TestCase
 
         $this->expectException(MissingDependencyException::class);
         $this->expectExceptionMessage(RouteCollector::class);
+
         ($this->factory)($this->container);
     }
 
     public function testFactoryProducesRouteCollectorWhenAllDependenciesPresent(): void
     {
         $router = $this->createMock(RouterInterface::class);
+
         $this->container
             ->expects(self::exactly(2))
             ->method('has')
@@ -107,6 +111,7 @@ class RouteCollectorFactoryTest extends TestCase
     private function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig($config): void
     {
         $router = $this->createMock(RouterInterface::class);
+
         $this->container
             ->expects(self::exactly(2))
             ->method('has')

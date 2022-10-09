@@ -14,28 +14,28 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class MethodNotAllowedMiddlewareTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\MethodNotAllowedMiddleware */
+final class MethodNotAllowedMiddlewareTest extends TestCase
 {
     /** @var RequestHandlerInterface&MockObject */
-    private $handler;
-
-    /** @var MethodNotAllowedMiddleware */
-    private $middleware;
+    private RequestHandlerInterface $handler;
 
     /** @var ServerRequestInterface&MockObject */
-    private $request;
+    private ServerRequestInterface $request;
 
     /** @var ResponseInterface&MockObject */
-    private $response;
+    private ResponseInterface $response;
+
+    private MethodNotAllowedMiddleware $middleware;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->handler   = $this->createMock(RequestHandlerInterface::class);
         $this->request   = $this->createMock(ServerRequestInterface::class);
         $this->response  = $this->createMock(ResponseInterface::class);
-        $responseFactory = function (): ResponseInterface {
-            return $this->response;
-        };
+        $responseFactory = fn (): ResponseInterface => $this->response;
 
         $this->middleware = new MethodNotAllowedMiddleware($responseFactory);
     }
@@ -60,7 +60,7 @@ class MethodNotAllowedMiddlewareTest extends TestCase
             ->expects(self::never())
             ->method('withHeader');
 
-        $this->assertSame(
+        self::assertSame(
             $this->response,
             $this->middleware->process($this->request, $this->handler)
         );
@@ -88,7 +88,7 @@ class MethodNotAllowedMiddlewareTest extends TestCase
             ->expects(self::never())
             ->method('withHeader');
 
-        $this->assertSame(
+        self::assertSame(
             $this->response,
             $this->middleware->process($this->request, $this->handler)
         );
@@ -119,7 +119,7 @@ class MethodNotAllowedMiddlewareTest extends TestCase
             ->with('Allow', 'GET,POST')
             ->willReturnSelf();
 
-        $this->assertSame(
+        self::assertSame(
             $this->response,
             $this->middleware->process($this->request, $this->handler)
         );

@@ -8,7 +8,8 @@ use Mezzio\Router\Middleware\DispatchMiddlewareFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-class DispatchMiddlewareFactoryTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\DispatchMiddlewareFactory */
+final class DispatchMiddlewareFactoryTest extends TestCase
 {
     public function testFactoryProducesDispatchMiddleware(): void
     {

@@ -22,22 +22,23 @@ use function microtime;
 use function range;
 use function sprintf;
 
-class RouteCollectorTest extends TestCase
+/** @covers \Mezzio\Router\RouteCollector */
+final class RouteCollectorTest extends TestCase
 {
     /** @var RouterInterface&MockObject */
-    private $router;
+    private RouterInterface $router;
 
     /** @var ResponseInterface&MockObject */
-    private $response;
+    private ResponseInterface $response;
 
-    /** @var RouteCollector */
-    private $collector;
+    private RouteCollector $collector;
 
-    /** @var MiddlewareInterface */
-    private $noopMiddleware;
+    private MiddlewareInterface $noopMiddleware;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->router         = $this->createMock(RouterInterface::class);
         $this->response       = $this->createMock(ResponseInterface::class);
         $this->collector      = new RouteCollector($this->router);
@@ -47,8 +48,7 @@ class RouteCollectorTest extends TestCase
     public function createNoopMiddleware(): MiddlewareInterface
     {
         return new class ($this->response) implements MiddlewareInterface {
-            /** @var ResponseInterface */
-            private $response;
+            private ResponseInterface $response;
 
             public function __construct(ResponseInterface $response)
             {
@@ -87,7 +87,8 @@ class RouteCollectorTest extends TestCase
             ->willReturnArgument(0);
 
         $route = $this->collector->route('/foo', $this->noopMiddleware);
-        self::assertEquals('/foo', $route->getPath());
+
+        self::assertSame('/foo', $route->getPath());
         self::assertSame($this->noopMiddleware, $route->getMiddleware());
     }
 
@@ -99,7 +100,8 @@ class RouteCollectorTest extends TestCase
             ->willReturnArgument(0);
 
         $route = $this->collector->any('/foo', $this->noopMiddleware);
-        self::assertEquals('/foo', $route->getPath());
+
+        self::assertSame('/foo', $route->getPath());
         self::assertSame($this->noopMiddleware, $route->getMiddleware());
         self::assertSame(Route::HTTP_METHOD_ANY, $route->getAllowedMethods());
     }
@@ -116,7 +118,8 @@ class RouteCollectorTest extends TestCase
             ->willReturnArgument(0);
 
         $route = $this->collector->route('/foo', $this->noopMiddleware, [$method]);
-        self::assertEquals('/foo', $route->getPath());
+
+        self::assertSame('/foo', $route->getPath());
         self::assertSame($this->noopMiddleware, $route->getMiddleware());
         self::assertTrue($route->allowsMethod($method));
         self::assertSame([$method], $route->getAllowedMethods());
@@ -131,7 +134,7 @@ class RouteCollectorTest extends TestCase
 
         $methods = array_keys($this->commonHttpMethods());
         $route   = $this->collector->route('/foo', $this->noopMiddleware, $methods);
-        self::assertEquals('/foo', $route->getPath());
+        self::assertSame('/foo', $route->getPath());
         self::assertSame($this->noopMiddleware, $route->getMiddleware());
         self::assertSame($methods, $route->getAllowedMethods());
     }
@@ -145,7 +148,9 @@ class RouteCollectorTest extends TestCase
 
         $this->collector->route('/foo', $this->noopMiddleware);
         $this->collector->route('/bar', $this->noopMiddleware);
+
         $this->expectException(Exception\DuplicateRouteException::class);
+
         $this->collector->route('/foo', $this->createNoopMiddleware());
     }
 
@@ -174,6 +179,7 @@ class RouteCollectorTest extends TestCase
     public function testCallingRouteWithAnInvalidPathTypeRaisesAnException($path): void
     {
         $this->expectException(TypeError::class);
+
         $this->collector->route($path, $this->createNoopMiddleware());
     }
 
@@ -184,10 +190,11 @@ class RouteCollectorTest extends TestCase
     public function testCommonHttpMethodsAreExposedAsClassMethodsAndReturnRoutes($method): void
     {
         $route = $this->collector->{$method}('/foo', $this->noopMiddleware);
+
         self::assertInstanceOf(Route::class, $route);
-        self::assertEquals('/foo', $route->getPath());
+        self::assertSame('/foo', $route->getPath());
         self::assertSame($this->noopMiddleware, $route->getMiddleware());
-        self::assertEquals([$method], $route->getAllowedMethods());
+        self::assertSame([$method], $route->getAllowedMethods());
     }
 
     public function testCreatingHttpRouteMethodWithExistingPathButDifferentMethodCreatesNewRouteInstance(): void
@@ -201,6 +208,7 @@ class RouteCollectorTest extends TestCase
 
         $middleware = $this->createNoopMiddleware();
         $test       = $this->collector->get('/foo', $middleware);
+
         self::assertNotSame($route, $test);
         self::assertSame($route->getPath(), $test->getPath());
         self::assertSame(['GET'], $test->getAllowedMethods());
@@ -236,6 +244,7 @@ class RouteCollectorTest extends TestCase
         foreach (range(1, 10) as $item) {
             $this->collector->get("/bar$item", $this->noopMiddleware);
         }
+
         $baseDuration    = microtime(true) - $start;
         $this->collector = new RouteCollector($this->router);
 

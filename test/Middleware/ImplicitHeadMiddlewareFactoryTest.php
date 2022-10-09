@@ -13,16 +13,18 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\StreamInterface;
 use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
-class ImplicitHeadMiddlewareFactoryTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\ImplicitHeadMiddlewareFactory */
+final class ImplicitHeadMiddlewareFactoryTest extends TestCase
 {
     /** @var ContainerInterface&MockObject */
-    private $container;
+    private ContainerInterface $container;
 
-    /** @var ImplicitHeadMiddlewareFactory */
-    private $factory;
+    private ImplicitHeadMiddlewareFactory $factory;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->container = $this->createMock(ContainerInterface::class);
         $this->factory   = new ImplicitHeadMiddlewareFactory();
     }
@@ -35,6 +37,7 @@ class ImplicitHeadMiddlewareFactoryTest extends TestCase
             ->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);
+
         ($this->factory)($this->container);
     }
 
@@ -46,13 +49,14 @@ class ImplicitHeadMiddlewareFactoryTest extends TestCase
             ->willReturnOnConsecutiveCalls(true, false);
 
         $this->expectException(MissingDependencyException::class);
+
         ($this->factory)($this->container);
     }
 
     public function testFactoryProducesImplicitHeadMiddlewareWhenAllDependenciesPresent(): void
     {
         $router        = $this->createMock(RouterInterface::class);
-        $streamFactory = function (): void {
+        $streamFactory = static function (): void {
         };
 
         $this->container
@@ -65,7 +69,7 @@ class ImplicitHeadMiddlewareFactoryTest extends TestCase
             ->expects(self::exactly(2))
             ->method('get')
             ->withConsecutive([RouterInterface::class], [StreamInterface::class])
-            ->willReturnOnConsecutiveCalls($router, $streamFactory);
+            ->willReturn($router, $streamFactory);
 
         ($this->factory)($this->container);
     }

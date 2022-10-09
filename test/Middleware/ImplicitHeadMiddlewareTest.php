@@ -17,28 +17,28 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
-class ImplicitHeadMiddlewareTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\ImplicitHeadMiddleware */
+final class ImplicitHeadMiddlewareTest extends TestCase
 {
-    /** @var ImplicitHeadMiddleware */
-    private $middleware;
-
     /** @var ResponseInterface&MockObject */
-    private $response;
+    private ResponseInterface $response;
 
     /** @var RouterInterface&MockObject */
-    private $router;
+    private RouterInterface $router;
 
     /** @var StreamInterface&MockObject */
-    private $stream;
+    private StreamInterface $stream;
+
+    private ImplicitHeadMiddleware $middleware;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->router = $this->createMock(RouterInterface::class);
         $this->stream = $this->createMock(StreamInterface::class);
 
-        $streamFactory = function (): StreamInterface {
-            return $this->stream;
-        };
+        $streamFactory = fn (): StreamInterface => $this->stream;
 
         $this->middleware = new ImplicitHeadMiddleware($this->router, $streamFactory);
         $this->response   = $this->createMock(ResponseInterface::class);
@@ -124,6 +124,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn($result);
+
         $request
             ->expects(self::once())
             ->method('withMethod')

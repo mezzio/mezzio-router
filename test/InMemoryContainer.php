@@ -15,10 +15,7 @@ final class InMemoryContainer implements ContainerInterface
     /** @var array<string,mixed> */
     private $services = [];
 
-    /**
-     * @param string $id
-     * @return mixed
-     */
+    /** {@inheritDoc} */
     public function get($id)
     {
         if (! $this->has($id)) {
@@ -29,9 +26,7 @@ final class InMemoryContainer implements ContainerInterface
         return $this->services[$id];
     }
 
-    /**
-     * @param string $id
-     */
+    /** {@inheritDoc} */
     public function has($id): bool
     {
         return array_key_exists($id, $this->services);

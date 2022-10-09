@@ -16,20 +16,20 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 use function implode;
 
-class ImplicitOptionsMiddlewareTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\ImplicitOptionsMiddleware */
+final class ImplicitOptionsMiddlewareTest extends TestCase
 {
-    /** @var ImplicitOptionsMiddleware */
-    private $middleware;
-
     /** @var ResponseInterface&MockObject */
-    private $response;
+    private ResponseInterface $response;
+
+    private ImplicitOptionsMiddleware $middleware;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->response  = $this->createMock(ResponseInterface::class);
-        $responseFactory = function (): ResponseInterface {
-            return $this->response;
-        };
+        $responseFactory = fn (): ResponseInterface => $this->response;
 
         $this->middleware = new ImplicitOptionsMiddleware($responseFactory);
     }
@@ -40,6 +40,7 @@ class ImplicitOptionsMiddlewareTest extends TestCase
         $request
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_GET);
+
         $request
             ->expects(self::never())
             ->method('getAttribute');
@@ -52,7 +53,8 @@ class ImplicitOptionsMiddlewareTest extends TestCase
             ->willReturn($response);
 
         $result = $this->middleware->process($request, $handler);
-        $this->assertSame($response, $result);
+
+        self::assertSame($response, $result);
     }
 
     public function testMissingRouteResultInvokesHandler(): void
@@ -76,7 +78,8 @@ class ImplicitOptionsMiddlewareTest extends TestCase
             ->willReturn($response);
 
         $result = $this->middleware->process($request, $handler);
-        $this->assertSame($response, $result);
+
+        self::assertSame($response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteSupportsOptionsExplicitly(): void
@@ -104,7 +107,8 @@ class ImplicitOptionsMiddlewareTest extends TestCase
             ->willReturn($response);
 
         $result = $this->middleware->process($request, $handler);
-        $this->assertSame($response, $result);
+
+        self::assertSame($response, $result);
     }
 
     public function testInjectsAllowHeaderInResponseProvidedToConstructorDuringOptionsRequest(): void
@@ -139,7 +143,8 @@ class ImplicitOptionsMiddlewareTest extends TestCase
             ->willReturnSelf();
 
         $result = $this->middleware->process($request, $handler);
-        $this->assertSame($this->response, $result);
+
+        self::assertSame($this->response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteNotFound(): void
@@ -165,6 +170,7 @@ class ImplicitOptionsMiddlewareTest extends TestCase
             ->willReturn($response);
 
         $result = $this->middleware->process($request, $handler);
-        $this->assertSame($response, $result);
+
+        self::assertSame($response, $result);
     }
 }

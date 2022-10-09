@@ -16,16 +16,18 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class MethodNotAllowedMiddlewareFactoryTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\MethodNotAllowedMiddlewareFactory */
+final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
 {
     /** @var ContainerInterface&MockObject */
-    private $container;
+    private ContainerInterface $container;
 
-    /** @var MethodNotAllowedMiddlewareFactory */
-    private $factory;
+    private MethodNotAllowedMiddlewareFactory $factory;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->container = $this->createMock(ContainerInterface::class);
         $this->factory   = new MethodNotAllowedMiddlewareFactory();
     }
@@ -62,9 +64,7 @@ class MethodNotAllowedMiddlewareFactoryTest extends TestCase
                 'dependencies' => [
                     'delegators' => [
                         ResponseInterface::class => [
-                            function (): ResponseInterface {
-                                return $this->createMock(ResponseInterface::class);
-                            },
+                            fn (): ResponseInterface => $this->createMock(ResponseInterface::class),
                         ],
                     ],
                 ],
@@ -78,20 +78,22 @@ class MethodNotAllowedMiddlewareFactoryTest extends TestCase
             ->method('has')
             ->withConsecutive([ResponseFactoryInterface::class], [ResponseInterface::class])
             ->willReturn(false);
+
         $this->expectException(MissingDependencyException::class);
+
         ($this->factory)($this->container);
     }
 
     public function testFactoryProducesMethodNotAllowedMiddlewareWhenAllDependenciesPresent(): void
     {
-        $factory = function (): void {
+        $factory = static function (): void {
         };
 
         $this->container
             ->expects(self::exactly(2))
             ->method('has')
             ->withConsecutive([ResponseFactoryInterface::class], [ResponseInterface::class])
-            ->willReturnOnConsecutiveCalls(false, true);
+            ->willReturn(false, true);
 
         $this->container
             ->expects(self::once())
@@ -115,6 +117,7 @@ class MethodNotAllowedMiddlewareFactoryTest extends TestCase
         ]);
         $container->set(ResponseFactoryInterface::class, $responseFactory);
         $middleware = ($this->factory)($container);
+
         self::assertSame($responseFactory, $middleware->getResponseFactory());
     }
 
@@ -130,14 +133,13 @@ class MethodNotAllowedMiddlewareFactoryTest extends TestCase
         $container->set('config', $config);
         $container->set(ResponseFactoryInterface::class, $responseFactory);
         $response = $this->createMock(ResponseInterface::class);
-        $container->set(ResponseInterface::class, function () use ($response): ResponseInterface {
-            return $response;
-        });
+        $container->set(ResponseInterface::class, static fn (): ResponseInterface => $response);
 
         $middleware                   = ($this->factory)($container);
         $responseFactoryFromGenerator = $middleware->getResponseFactory();
+
         self::assertNotSame($responseFactory, $responseFactoryFromGenerator);
         self::assertInstanceOf(CallableResponseFactoryDecorator::class, $responseFactoryFromGenerator);
-        self::assertEquals($response, $responseFactoryFromGenerator->getResponseFromCallable());
+        self::assertSame($response, $responseFactoryFromGenerator->getResponseFromCallable());
     }
 }

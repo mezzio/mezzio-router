@@ -9,21 +9,20 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
+/** @covers \Mezzio\Router\Response\CallableResponseFactoryDecorator */
 final class CallableResponseFactoryDecoratorTest extends TestCase
 {
-    /** @var MockObject&ResponseInterface */
-    private $response;
+    /** @var ResponseInterface&MockObject */
+    private ResponseInterface $response;
 
-    /** @var CallableResponseFactoryDecorator */
-    private $factory;
+    private CallableResponseFactoryDecorator $factory;
 
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->response = $this->createMock(ResponseInterface::class);
-        $this->factory  = new CallableResponseFactoryDecorator(function (): ResponseInterface {
-            return $this->response;
-        });
+        $this->factory  = new CallableResponseFactoryDecorator(fn (): ResponseInterface => $this->response);
     }
 
     public function testWillPassStatusCodeAndPhraseToCallable(): void
@@ -44,6 +43,6 @@ final class CallableResponseFactoryDecoratorTest extends TestCase
             ->method('withStatus')
             ->willReturnSelf();
 
-        self::assertEquals($this->response, $this->factory->createResponse());
+        self::assertSame($this->response, $this->factory->createResponse());
     }
 }

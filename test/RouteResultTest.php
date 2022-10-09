@@ -19,23 +19,26 @@ use function assert;
  *
  * @covers \Mezzio\Router\RouteResult
  */
-class RouteResultTest extends TestCase
+final class RouteResultTest extends TestCase
 {
     public function testRouteNameIsNotRetrievable(): void
     {
         $result = RouteResult::fromRouteFailure([]);
+
         self::assertFalse($result->getMatchedRouteName());
     }
 
     public function testRouteFailureRetrieveAllHttpMethods(): void
     {
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
+
         self::assertSame(Route::HTTP_METHOD_ANY, $result->getAllowedMethods());
     }
 
     public function testRouteFailureRetrieveHttpMethods(): void
     {
         $result = RouteResult::fromRouteFailure([]);
+
         self::assertSame([], $result->getAllowedMethods());
     }
 
@@ -51,6 +54,7 @@ class RouteResultTest extends TestCase
     public function testRouteMethodFailure(): void
     {
         $result = RouteResult::fromRouteFailure(['GET']);
+
         self::assertTrue($result->isMethodFailure());
     }
 
@@ -71,6 +75,7 @@ class RouteResultTest extends TestCase
         $route = $this->createMock(Route::class);
 
         $result = RouteResult::fromRoute($route, ['foo' => 'bar']);
+
         self::assertTrue($result->isSuccess());
         self::assertSame($route, $result->getMatchedRoute());
 
@@ -95,21 +100,24 @@ class RouteResultTest extends TestCase
             ->method('getAllowedMethods')
             ->willReturn(['HEAD', 'OPTIONS', 'GET']);
 
-        self::assertEquals('route', $result->getMatchedRouteName());
-        self::assertEquals(['HEAD', 'OPTIONS', 'GET'], $result->getAllowedMethods());
+        self::assertSame('route', $result->getMatchedRouteName());
+        self::assertSame(['HEAD', 'OPTIONS', 'GET'], $result->getAllowedMethods());
     }
 
     public function testRouteFailureWithNoAllowedHttpMethodsShouldReportTrueForIsMethodFailure(): void
     {
         $result = RouteResult::fromRouteFailure([]);
+
         self::assertTrue($result->isMethodFailure());
     }
 
     public function testFailureResultDoesNotIndicateAMethodFailureIfAllMethodsAreAllowed(): RouteResult
     {
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
+
         self::assertTrue($result->isFailure());
         self::assertFalse($result->isMethodFailure());
+
         return $result;
     }
 

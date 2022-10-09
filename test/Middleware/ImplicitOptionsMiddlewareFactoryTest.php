@@ -12,16 +12,18 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class ImplicitOptionsMiddlewareFactoryTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\ImplicitOptionsMiddlewareFactory */
+final class ImplicitOptionsMiddlewareFactoryTest extends TestCase
 {
     /** @var ContainerInterface&MockObject */
-    private $container;
+    private ContainerInterface $container;
 
-    /** @var ImplicitOptionsMiddlewareFactory */
-    private $factory;
+    private ImplicitOptionsMiddlewareFactory $factory;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->container = $this->createMock(ContainerInterface::class);
         $this->factory   = new ImplicitOptionsMiddlewareFactory();
     }
@@ -29,6 +31,7 @@ class ImplicitOptionsMiddlewareFactoryTest extends TestCase
     public function testFactoryRaisesExceptionIfResponseFactoryServiceIsMissing(): void
     {
         $this->expectException(MissingDependencyException::class);
+
         ($this->factory)($this->container);
     }
 

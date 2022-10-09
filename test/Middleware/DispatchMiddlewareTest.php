@@ -12,25 +12,28 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class DispatchMiddlewareTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\DispatchMiddleware */
+final class DispatchMiddlewareTest extends TestCase
 {
     /** @var RequestHandlerInterface&MockObject */
-    private $handler;
-
-    /** @var DispatchMiddleware */
-    private $middleware;
+    private RequestHandlerInterface $handler;
 
     /** @var ServerRequestInterface&MockObject */
-    private $request;
+    private ServerRequestInterface $request;
 
     /** @var ResponseInterface&MockObject */
-    private $response;
+    private ResponseInterface $response;
+
+    private DispatchMiddleware $middleware;
 
     protected function setUp(): void
     {
-        $this->response   = $this->createMock(ResponseInterface::class);
-        $this->request    = $this->createMock(ServerRequestInterface::class);
-        $this->handler    = $this->createMock(RequestHandlerInterface::class);
+        parent::setUp();
+
+        $this->response = $this->createMock(ResponseInterface::class);
+        $this->request  = $this->createMock(ServerRequestInterface::class);
+        $this->handler  = $this->createMock(RequestHandlerInterface::class);
+
         $this->middleware = new DispatchMiddleware();
     }
 
