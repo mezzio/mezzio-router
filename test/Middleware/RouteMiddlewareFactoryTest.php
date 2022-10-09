@@ -11,16 +11,18 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-class RouteMiddlewareFactoryTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\RouteMiddlewareFactory */
+final class RouteMiddlewareFactoryTest extends TestCase
 {
     /** @var ContainerInterface&MockObject */
-    private $container;
+    private ContainerInterface $container;
 
-    /** @var RouteMiddlewareFactory */
-    private $factory;
+    private RouteMiddlewareFactory $factory;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->container = $this->createMock(ContainerInterface::class);
         $this->factory   = new RouteMiddlewareFactory();
     }
@@ -34,12 +36,14 @@ class RouteMiddlewareFactoryTest extends TestCase
             ->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);
+
         ($this->factory)($this->container);
     }
 
     public function testFactoryProducesRouteMiddlewareWhenAllDependenciesPresent(): void
     {
         $router = $this->createMock(RouterInterface::class);
+
         $this->container
             ->expects(self::once())
             ->method('has')
@@ -58,11 +62,13 @@ class RouteMiddlewareFactoryTest extends TestCase
     public function testFactoryAllowsSpecifyingRouterServiceViaConstructor(): void
     {
         $router = $this->createMock(RouterInterface::class);
+
         $this->container
             ->expects(self::once())
             ->method('has')
             ->with(Router::class)
             ->willReturn(true);
+
         $this->container
             ->expects(self::once())
             ->method('get')
@@ -72,6 +78,7 @@ class RouteMiddlewareFactoryTest extends TestCase
         $factory = new RouteMiddlewareFactory(Router::class);
 
         $middleware = $factory($this->container);
+
         self::assertSame($router, $middleware->getRouter());
     }
 

@@ -16,20 +16,20 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 use function implode;
 
-class ImplicitOptionsMiddlewareTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\ImplicitOptionsMiddleware */
+final class ImplicitOptionsMiddlewareTest extends TestCase
 {
-    /** @var ImplicitOptionsMiddleware */
-    private $middleware;
-
     /** @var ResponseInterface&MockObject */
-    private $response;
+    private ResponseInterface $response;
+
+    private ImplicitOptionsMiddleware $middleware;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->response  = $this->createMock(ResponseInterface::class);
-        $responseFactory = function (): ResponseInterface {
-            return $this->response;
-        };
+        $responseFactory = fn (): ResponseInterface => $this->response;
 
         $this->middleware = new ImplicitOptionsMiddleware($responseFactory);
     }
@@ -38,8 +38,10 @@ class ImplicitOptionsMiddlewareTest extends TestCase
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_GET);
+
         $request
             ->expects(self::never())
             ->method('getAttribute');
@@ -47,22 +49,26 @@ class ImplicitOptionsMiddlewareTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $handler  = $this->createMock(RequestHandlerInterface::class);
         $handler
+            ->expects(self::once())
             ->method('handle')
             ->with($request)
             ->willReturn($response);
 
         $result = $this->middleware->process($request, $handler);
-        $this->assertSame($response, $result);
+
+        self::assertSame($response, $result);
     }
 
     public function testMissingRouteResultInvokesHandler(): void
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_OPTIONS);
 
         $request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn(null);
@@ -71,12 +77,14 @@ class ImplicitOptionsMiddlewareTest extends TestCase
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
+            ->expects(self::once())
             ->method('handle')
             ->with($request)
             ->willReturn($response);
 
         $result = $this->middleware->process($request, $handler);
-        $this->assertSame($response, $result);
+
+        self::assertSame($response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteSupportsOptionsExplicitly(): void
@@ -87,10 +95,12 @@ class ImplicitOptionsMiddlewareTest extends TestCase
 
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_OPTIONS);
 
         $request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn($result);
@@ -99,12 +109,14 @@ class ImplicitOptionsMiddlewareTest extends TestCase
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
+            ->expects(self::once())
             ->method('handle')
             ->with($request)
             ->willReturn($response);
 
         $result = $this->middleware->process($request, $handler);
-        $this->assertSame($response, $result);
+
+        self::assertSame($response, $result);
     }
 
     public function testInjectsAllowHeaderInResponseProvidedToConstructorDuringOptionsRequest(): void
@@ -115,10 +127,12 @@ class ImplicitOptionsMiddlewareTest extends TestCase
 
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_OPTIONS);
 
         $request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn($result);
@@ -129,6 +143,7 @@ class ImplicitOptionsMiddlewareTest extends TestCase
             ->method('handle');
 
         $this->response
+            ->expects(self::once())
             ->method('withStatus')
             ->willReturnSelf();
 
@@ -139,7 +154,8 @@ class ImplicitOptionsMiddlewareTest extends TestCase
             ->willReturnSelf();
 
         $result = $this->middleware->process($request, $handler);
-        $this->assertSame($this->response, $result);
+
+        self::assertSame($this->response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteNotFound(): void
@@ -148,10 +164,12 @@ class ImplicitOptionsMiddlewareTest extends TestCase
 
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_OPTIONS);
 
         $request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn($result);
@@ -160,11 +178,13 @@ class ImplicitOptionsMiddlewareTest extends TestCase
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
+            ->expects(self::once())
             ->method('handle')
             ->with($request)
             ->willReturn($response);
 
         $result = $this->middleware->process($request, $handler);
-        $this->assertSame($response, $result);
+
+        self::assertSame($response, $result);
     }
 }

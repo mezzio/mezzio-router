@@ -16,25 +16,27 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
-class RouteMiddlewareTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\RouteMiddleware */
+final class RouteMiddlewareTest extends TestCase
 {
     /** @var RouterInterface&MockObject */
-    private $router;
+    private RouterInterface $router;
 
     /** @var ResponseInterface&MockObject */
-    private $response;
-
-    /** @var RouteMiddleware */
-    private $middleware;
+    private ResponseInterface $response;
 
     /** @var ServerRequestInterface&MockObject */
-    private $request;
+    private ServerRequestInterface $request;
 
     /** @var RequestHandlerInterface&MockObject */
-    private $handler;
+    private RequestHandlerInterface $handler;
+
+    private RouteMiddleware $middleware;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->router   = $this->createMock(RouterInterface::class);
         $this->request  = $this->createMock(ServerRequestInterface::class);
         $this->response = $this->createMock(ResponseInterface::class);
@@ -48,11 +50,13 @@ class RouteMiddlewareTest extends TestCase
         $result = RouteResult::fromRouteFailure(['GET', 'POST']);
 
         $this->router
+            ->expects(self::once())
             ->method('match')
             ->with($this->request)
             ->willReturn($result);
 
         $this->handler
+            ->expects(self::once())
             ->method('handle')
             ->with($this->request)
             ->willReturn($this->response);
@@ -72,6 +76,7 @@ class RouteMiddlewareTest extends TestCase
             )->willReturnSelf();
 
         $response = $this->middleware->process($this->request, $this->handler);
+
         self::assertSame($this->response, $response);
     }
 
@@ -80,10 +85,13 @@ class RouteMiddlewareTest extends TestCase
         $result = RouteResult::fromRouteFailure(null);
 
         $this->router
+            ->expects(self::once())
             ->method('match')
-        ->with($this->request)
+            ->with($this->request)
             ->willReturn($result);
+
         $this->handler
+            ->expects(self::once())
             ->method('handle')
             ->with($this->request)
             ->willReturn($this->response);
@@ -103,6 +111,7 @@ class RouteMiddlewareTest extends TestCase
             )->willReturnSelf();
 
         $response = $this->middleware->process($this->request, $this->handler);
+
         self::assertSame($this->response, $response);
     }
 
@@ -148,6 +157,7 @@ class RouteMiddlewareTest extends TestCase
             ->willReturn($this->response);
 
         $response = $this->middleware->process($this->request, $this->handler);
+
         self::assertSame($this->response, $response);
     }
 }

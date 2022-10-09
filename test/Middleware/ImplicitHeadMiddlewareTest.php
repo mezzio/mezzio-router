@@ -17,28 +17,28 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
-class ImplicitHeadMiddlewareTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\ImplicitHeadMiddleware */
+final class ImplicitHeadMiddlewareTest extends TestCase
 {
-    /** @var ImplicitHeadMiddleware */
-    private $middleware;
-
     /** @var ResponseInterface&MockObject */
-    private $response;
+    private ResponseInterface $response;
 
     /** @var RouterInterface&MockObject */
-    private $router;
+    private RouterInterface $router;
 
     /** @var StreamInterface&MockObject */
-    private $stream;
+    private StreamInterface $stream;
+
+    private ImplicitHeadMiddleware $middleware;
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->router = $this->createMock(RouterInterface::class);
         $this->stream = $this->createMock(StreamInterface::class);
 
-        $streamFactory = function (): StreamInterface {
-            return $this->stream;
-        };
+        $streamFactory = fn (): StreamInterface => $this->stream;
 
         $this->middleware = new ImplicitHeadMiddleware($this->router, $streamFactory);
         $this->response   = $this->createMock(ResponseInterface::class);
@@ -48,11 +48,13 @@ class ImplicitHeadMiddlewareTest extends TestCase
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_GET);
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
+            ->expects(self::once())
             ->method('handle')
             ->with($request)
             ->willReturn($this->response);
@@ -66,16 +68,19 @@ class ImplicitHeadMiddlewareTest extends TestCase
     {
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_HEAD);
 
         $request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn(null);
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
+            ->expects(self::once())
             ->method('handle')
             ->with($request)
             ->willReturn($this->response);
@@ -92,16 +97,19 @@ class ImplicitHeadMiddlewareTest extends TestCase
 
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_HEAD);
 
         $request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn($result);
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
+            ->expects(self::once())
             ->method('handle')
             ->with($request)
             ->willReturn($this->response);
@@ -117,13 +125,16 @@ class ImplicitHeadMiddlewareTest extends TestCase
 
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_HEAD);
 
         $request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn($result);
+
         $request
             ->expects(self::once())
             ->method('withMethod')
@@ -138,6 +149,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
+            ->expects(self::once())
             ->method('handle')
             ->with($request)
             ->willReturn($this->response);
@@ -153,10 +165,12 @@ class ImplicitHeadMiddlewareTest extends TestCase
 
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_HEAD);
 
         $request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn($result);
@@ -204,6 +218,7 @@ class ImplicitHeadMiddlewareTest extends TestCase
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
+            ->expects(self::once())
             ->method('handle')
             ->with($request)
             ->willReturn($response);
@@ -219,10 +234,12 @@ class ImplicitHeadMiddlewareTest extends TestCase
 
         $request = $this->createMock(ServerRequestInterface::class);
         $request
+            ->expects(self::once())
             ->method('getMethod')
             ->willReturn(RequestMethod::METHOD_HEAD);
 
         $request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn($result);

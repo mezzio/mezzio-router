@@ -12,36 +12,41 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class DispatchMiddlewareTest extends TestCase
+/** @covers \Mezzio\Router\Middleware\DispatchMiddleware */
+final class DispatchMiddlewareTest extends TestCase
 {
     /** @var RequestHandlerInterface&MockObject */
-    private $handler;
-
-    /** @var DispatchMiddleware */
-    private $middleware;
+    private RequestHandlerInterface $handler;
 
     /** @var ServerRequestInterface&MockObject */
-    private $request;
+    private ServerRequestInterface $request;
 
     /** @var ResponseInterface&MockObject */
-    private $response;
+    private ResponseInterface $response;
+
+    private DispatchMiddleware $middleware;
 
     protected function setUp(): void
     {
-        $this->response   = $this->createMock(ResponseInterface::class);
-        $this->request    = $this->createMock(ServerRequestInterface::class);
-        $this->handler    = $this->createMock(RequestHandlerInterface::class);
+        parent::setUp();
+
+        $this->response = $this->createMock(ResponseInterface::class);
+        $this->request  = $this->createMock(ServerRequestInterface::class);
+        $this->handler  = $this->createMock(RequestHandlerInterface::class);
+
         $this->middleware = new DispatchMiddleware();
     }
 
     public function testInvokesHandlerIfRequestDoesNotContainRouteResult(): void
     {
         $this->request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class, false)
             ->willReturnArgument(1);
 
         $this->handler
+            ->expects(self::once())
             ->method('handle')
             ->with($this->request)
             ->willReturn($this->response);
@@ -59,11 +64,13 @@ class DispatchMiddlewareTest extends TestCase
 
         $routeResult = $this->createMock(RouteResult::class);
         $routeResult
+            ->expects(self::once())
             ->method('process')
             ->with($this->request, $this->handler)
             ->willReturn($this->response);
 
         $this->request
+            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class, false)
             ->willReturn($routeResult);

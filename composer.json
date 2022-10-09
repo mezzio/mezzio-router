@@ -51,8 +51,6 @@
         "laminas/laminas-coding-standard": "~2.4.0",
         "laminas/laminas-diactoros": "^2.11",
         "laminas/laminas-stratigility": "^3.4",
-        "phpspec/prophecy": "^1.9",
-        "phpspec/prophecy-phpunit": "^2.0",
         "phpunit/phpunit": "^9.5.11",
         "psalm/plugin-phpunit": "^0.17.0",
         "vimeo/psalm": "^4.17"
