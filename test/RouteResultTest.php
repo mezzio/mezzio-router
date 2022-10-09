@@ -93,12 +93,10 @@ final class RouteResultTest extends TestCase
         assert($route instanceof MockObject);
 
         $route
-            ->expects(self::once())
             ->method('getName')
             ->willReturn('route');
 
         $route
-            ->expects(self::once())
             ->method('getAllowedMethods')
             ->willReturn(['HEAD', 'OPTIONS', 'GET']);
 
@@ -138,7 +136,6 @@ final class RouteResultTest extends TestCase
         $response = $this->createMock(ResponseInterface::class);
         $handler  = $this->createMock(RequestHandlerInterface::class);
         $handler
-            ->expects(self::once())
             ->method('handle')
             ->with($request)
             ->willReturn($response);
@@ -159,7 +156,6 @@ final class RouteResultTest extends TestCase
 
         $route = $this->createMock(Route::class);
         $route
-            ->expects(self::once())
             ->method('process')
             ->with($request, $handler)
             ->willReturn($response);

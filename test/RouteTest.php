@@ -261,7 +261,6 @@ final class RouteTest extends TestCase
         $response   = $this->createMock(ResponseInterface::class);
         $middleware = $this->createMock(MiddlewareInterface::class);
         $middleware
-            ->expects(self::once())
             ->method('process')
             ->with($request, $handler)
             ->willReturn($response);

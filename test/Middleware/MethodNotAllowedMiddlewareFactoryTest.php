@@ -75,7 +75,6 @@ final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
     public function testFactoryRaisesExceptionIfResponseFactoryServiceIsMissing(): void
     {
         $this->container
-            ->expects(self::exactly(2))
             ->method('has')
             ->withConsecutive([ResponseFactoryInterface::class], [ResponseInterface::class])
             ->willReturn(false);

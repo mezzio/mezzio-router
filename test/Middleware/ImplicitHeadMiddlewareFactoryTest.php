@@ -32,7 +32,6 @@ final class ImplicitHeadMiddlewareFactoryTest extends TestCase
     public function testFactoryRaisesExceptionIfRouterInterfaceServiceIsMissing(): void
     {
         $this->container
-            ->expects(self::exactly(2))
             ->method('has')
             ->withConsecutive([RouterInterface::class], [ZendExpressiveRouterInterface::class])
             ->willReturn(false);
@@ -45,7 +44,6 @@ final class ImplicitHeadMiddlewareFactoryTest extends TestCase
     public function testFactoryRaisesExceptionIfStreamFactoryServiceIsMissing(): void
     {
         $this->container
-            ->expects(self::exactly(2))
             ->method('has')
             ->withConsecutive([RouterInterface::class], [StreamInterface::class])
             ->willReturnOnConsecutiveCalls(true, false);

@@ -41,7 +41,6 @@ final class ImplicitOptionsMiddlewareFactoryTest extends TestCase
         };
 
         $this->container
-            ->expects(self::exactly(2))
             ->method('has')
             ->withConsecutive([ResponseFactoryInterface::class], [ResponseInterface::class])
             ->willReturnOnConsecutiveCalls(false, true);

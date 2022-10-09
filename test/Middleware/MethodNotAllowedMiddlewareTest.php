@@ -43,13 +43,11 @@ final class MethodNotAllowedMiddlewareTest extends TestCase
     public function testDelegatesToHandlerIfNoRouteResultPresentInRequest(): void
     {
         $this->request
-            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn(null);
 
         $this->handler
-            ->expects(self::once())
             ->method('handle')
             ->with($this->request)
             ->willReturn($this->response);
@@ -73,13 +71,11 @@ final class MethodNotAllowedMiddlewareTest extends TestCase
         $result = RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
 
         $this->request
-            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn($result);
 
         $this->handler
-            ->expects(self::once())
             ->method('handle')
             ->with($this->request)
             ->willReturn($this->response);
@@ -103,7 +99,6 @@ final class MethodNotAllowedMiddlewareTest extends TestCase
         $result = RouteResult::fromRouteFailure(['GET', 'POST']);
 
         $this->request
-            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class)
             ->willReturn($result);

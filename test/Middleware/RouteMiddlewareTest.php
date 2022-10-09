@@ -50,13 +50,11 @@ final class RouteMiddlewareTest extends TestCase
         $result = RouteResult::fromRouteFailure(['GET', 'POST']);
 
         $this->router
-            ->expects(self::once())
             ->method('match')
             ->with($this->request)
             ->willReturn($result);
 
         $this->handler
-            ->expects(self::once())
             ->method('handle')
             ->with($this->request)
             ->willReturn($this->response);
@@ -85,13 +83,11 @@ final class RouteMiddlewareTest extends TestCase
         $result = RouteResult::fromRouteFailure(null);
 
         $this->router
-            ->expects(self::once())
             ->method('match')
             ->with($this->request)
             ->willReturn($result);
 
         $this->handler
-            ->expects(self::once())
             ->method('handle')
             ->with($this->request)
             ->willReturn($this->response);

@@ -40,13 +40,11 @@ final class DispatchMiddlewareTest extends TestCase
     public function testInvokesHandlerIfRequestDoesNotContainRouteResult(): void
     {
         $this->request
-            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class, false)
             ->willReturnArgument(1);
 
         $this->handler
-            ->expects(self::once())
             ->method('handle')
             ->with($this->request)
             ->willReturn($this->response);
@@ -64,13 +62,11 @@ final class DispatchMiddlewareTest extends TestCase
 
         $routeResult = $this->createMock(RouteResult::class);
         $routeResult
-            ->expects(self::once())
             ->method('process')
             ->with($this->request, $this->handler)
             ->willReturn($this->response);
 
         $this->request
-            ->expects(self::once())
             ->method('getAttribute')
             ->with(RouteResult::class, false)
             ->willReturn($routeResult);
