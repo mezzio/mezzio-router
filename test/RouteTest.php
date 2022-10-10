@@ -13,9 +13,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TypeError;
-
-use function sprintf;
 
 /** @covers \Mezzio\Router\Route */
 final class RouteTest extends TestCase
@@ -128,54 +125,6 @@ final class RouteTest extends TestCase
         self::assertSame('/test^GET' . Route::HTTP_METHOD_SEPARATOR . RequestMethod::METHOD_POST, $route->getName());
     }
 
-    /**
-     * @requires PHP < 7.3
-     */
-    public function testThrowsExceptionDuringConstructionIfPathIsNotStringPhpPriorTo73(): void
-    {
-        $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('must be of the type string, integer given');
-
-        new Route(12345, $this->noopMiddleware);
-    }
-
-    /**
-     * @requires PHP 7.3
-     * @requires PHP < 8.0
-     */
-    public function testThrowsExceptionDuringConstructionIfPathIsNotString(): void
-    {
-        $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('must be of the type string, int given');
-
-        new Route(12345, $this->noopMiddleware);
-    }
-
-    /**
-     * @requires PHP < 8.0
-     */
-    public function testThrowsExceptionDuringConstructionOnInvalidMiddleware(): void
-    {
-        $this->expectException(TypeError::class);
-        $this->expectExceptionMessage(sprintf(
-            'must implement interface %s',
-            MiddlewareInterface::class
-        ));
-
-        new Route('/foo', 12345);
-    }
-
-    /**
-     * @requires PHP < 8.0
-     */
-    public function testThrowsExceptionDuringConstructionOnInvalidHttpMethod(): void
-    {
-        $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('must be of the type array or null, string given');
-
-        new Route('/foo', $this->noopMiddleware, 'FOO');
-    }
-
     public function testRouteNameIsMutable(): void
     {
         $route = new Route('/foo', $this->noopMiddleware, [RequestMethod::METHOD_GET], 'foo');
@@ -214,44 +163,6 @@ final class RouteTest extends TestCase
         $route      = new Route('/test', $middleware, Route::HTTP_METHOD_ANY);
 
         self::assertSame($middleware, $route->getMiddleware());
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function invalidMiddleware(): array
-    {
-        // Strings are allowed, because they could be service names.
-        return [
-            'null'                => [null],
-            'true'                => [true],
-            'false'               => [false],
-            'zero'                => [0],
-            'int'                 => [1],
-            'non-callable-object' => [(object) ['handler' => 'foo']],
-            'callback'            => [
-                function () {
-                },
-            ],
-            'array'               => [['Class', 'method']],
-            'string'              => ['Application\Middleware\HelloWorld'],
-        ];
-    }
-
-    /**
-     * @requires PHP < 8.0
-     * @dataProvider invalidMiddleware
-     * @param mixed $middleware
-     */
-    public function testConstructorRaisesExceptionForInvalidMiddleware($middleware): void
-    {
-        $this->expectException(TypeError::class);
-        $this->expectExceptionMessage(sprintf(
-            'must implement interface %s',
-            MiddlewareInterface::class
-        ));
-
-        new Route('/test', $middleware);
     }
 
     public function testRouteIsMiddlewareAndProxiesToComposedMiddleware(): void
