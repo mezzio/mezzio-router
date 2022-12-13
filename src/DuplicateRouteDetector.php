@@ -32,7 +32,7 @@ final class DuplicateRouteDetector
      *      '/path/bar' => [ 'any' => $route3 ],
      *  ]
      *
-     * @var array
+     * @var array<string, array{methods?: array<string, Route>, any?: Route}>
      */
     private $routePaths = [];
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.27.0@faf106e717c37b8c81721845dba9de3d8deed8ff">
+<files psalm-version="5.1.0@4defa177c89397c5e14737a80fe4896584130674">
   <file src="src/ConfigProvider.php">
     <MixedArrayOffset occurrences="1"/>
     <UndefinedClass occurrences="6">
@@ -10,12 +10,6 @@
       <code>\Zend\Expressive\Router\Middleware\RouteMiddleware</code>
       <code>\Zend\Expressive\Router\RouteCollector</code>
     </UndefinedClass>
-  </file>
-  <file src="src/DuplicateRouteDetector.php">
-    <MixedArrayAssignment occurrences="2">
-      <code>$this-&gt;routePaths[$route-&gt;getPath()][self::ROUTE_SEARCH_ANY]</code>
-      <code>$this-&gt;routePaths[$route-&gt;getPath()][self::ROUTE_SEARCH_METHODS]</code>
-    </MixedArrayAssignment>
   </file>
   <file src="src/Middleware/DispatchMiddleware.php">
     <MixedAssignment occurrences="1">
@@ -154,14 +148,16 @@
       <code>$route</code>
       <code>$success</code>
     </PropertyNotSetInConstructor>
-    <RedundantConditionGivenDocblockType occurrences="4">
+    <RedundantConditionGivenDocblockType occurrences="3">
       <code>! $this-&gt;matchedRouteName &amp;&amp; $this-&gt;route</code>
-      <code>$this-&gt;route</code>
       <code>$this-&gt;route</code>
       <code>$this-&gt;route</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="src/Test/AbstractImplicitMethodsIntegrationTest.php">
+    <InvalidReturnType occurrences="1">
+      <code>ResponseInterface</code>
+    </InvalidReturnType>
     <MixedAssignment occurrences="1">
       <code>$value</code>
     </MixedAssignment>
@@ -226,21 +222,9 @@
     </MixedInferredReturnType>
   </file>
   <file src="test/RouteTest.php">
-    <InvalidArgument occurrences="4">
-      <code>'FOO'</code>
-      <code>12345</code>
-      <code>12345</code>
-      <code>12345</code>
-    </InvalidArgument>
-    <MixedArgument occurrences="1">
-      <code>$middleware</code>
-    </MixedArgument>
     <MixedArgumentTypeCoercion occurrences="1">
       <code>$invalidHttpMethods</code>
     </MixedArgumentTypeCoercion>
-    <MixedInferredReturnType occurrences="1">
-      <code>mixed[]</code>
-    </MixedInferredReturnType>
     <PossiblyInvalidArgument occurrences="1">
       <code>testThrowsExceptionIfInvalidHttpMethodsAreProvided</code>
     </PossiblyInvalidArgument>
