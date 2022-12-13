@@ -53,7 +53,7 @@
         "laminas/laminas-stratigility": "^3.9.0",
         "phpunit/phpunit": "^9.5.26",
         "psalm/plugin-phpunit": "^0.18.0",
-        "vimeo/psalm": "^4.29.0"
+        "vimeo/psalm": "^5.0.0"
     },
     "suggest": {
         "mezzio/mezzio-aurarouter": "^3.0 to use the Aura.Router routing adapter",
