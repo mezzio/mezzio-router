@@ -61,7 +61,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     }
 
     /**
-     * @return callable(): ResponseInterface
+     * @return callable(): never
      */
     public function createInvalidResponseFactory(): callable
     {
