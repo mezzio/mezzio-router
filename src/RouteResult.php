@@ -44,7 +44,7 @@ class RouteResult implements MiddlewareInterface
      * Route matched during routing
      *
      * @since 1.3.0
-     * @var Route
+     * @var Route|null
      */
     private $route;
 
