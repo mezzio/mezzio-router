@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="4.28.0@52e96bea381e6cb07a672aefec791a5817694a26">
-  <file src="src/ConfigProvider.php">
-    <MixedArrayOffset occurrences="1"/>
-    <UndefinedClass occurrences="6">
-      <code>\Zend\Expressive\Router\Middleware\DispatchMiddleware</code>
-      <code>\Zend\Expressive\Router\Middleware\ImplicitHeadMiddleware</code>
-      <code>\Zend\Expressive\Router\Middleware\ImplicitOptionsMiddleware</code>
-      <code>\Zend\Expressive\Router\Middleware\MethodNotAllowedMiddleware</code>
-      <code>\Zend\Expressive\Router\Middleware\RouteMiddleware</code>
-      <code>\Zend\Expressive\Router\RouteCollector</code>
-    </UndefinedClass>
-  </file>
   <file src="src/Middleware/DispatchMiddleware.php">
     <MixedAssignment occurrences="1">
       <code>$routeResult</code>
@@ -131,6 +120,9 @@
     </UndefinedClass>
   </file>
   <file src="src/RouteResult.php">
+    <DocblockTypeContradiction occurrences="1">
+      <code>[]</code>
+    </DocblockTypeContradiction>
     <MixedPropertyTypeCoercion occurrences="1">
       <code>$methods</code>
     </MixedPropertyTypeCoercion>
@@ -140,10 +132,16 @@
     <PossiblyNullReference occurrences="1">
       <code>process</code>
     </PossiblyNullReference>
-    <PropertyNotSetInConstructor occurrences="2">
+    <PropertyNotSetInConstructor occurrences="3">
       <code>$matchedRouteName</code>
+      <code>$route</code>
       <code>$success</code>
     </PropertyNotSetInConstructor>
+    <RedundantConditionGivenDocblockType occurrences="3">
+      <code>! $this-&gt;matchedRouteName &amp;&amp; $this-&gt;route</code>
+      <code>$this-&gt;route</code>
+      <code>$this-&gt;route</code>
+    </RedundantConditionGivenDocblockType>
   </file>
   <file src="src/Test/AbstractImplicitMethodsIntegrationTest.php">
     <MixedAssignment occurrences="1">
