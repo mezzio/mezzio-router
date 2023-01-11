@@ -30,6 +30,8 @@ use function assert;
  *
  * RouteResult instances are consumed by the Application in the routing
  * middleware.
+ *
+ * @final
  */
 class RouteResult implements MiddlewareInterface
 {

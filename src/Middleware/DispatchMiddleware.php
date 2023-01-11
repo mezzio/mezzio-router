@@ -17,6 +17,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  * delegates request processing to the handler.
  *
  * Otherwise, it delegates processing to the route result.
+ *
+ * @final
  */
 class DispatchMiddleware implements MiddlewareInterface
 {

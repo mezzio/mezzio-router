@@ -18,6 +18,8 @@ use Psr\Http\Message\StreamInterface;
  *   instance of that interface.
  * - Psr\Http\Message\StreamInterface, which should resolve to a callable
  *   that will produce an empty Psr\Http\Message\StreamInterface instance.
+ *
+ * @final
  */
 class ImplicitHeadMiddlewareFactory
 {

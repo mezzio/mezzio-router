@@ -20,6 +20,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * If routing succeeds, injects the request passed to the handler with any
  * matched parameters as well.
+ *
+ * @final
  */
 class RouteMiddleware implements MiddlewareInterface
 {
