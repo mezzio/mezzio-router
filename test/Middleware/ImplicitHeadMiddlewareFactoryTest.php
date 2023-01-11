@@ -11,7 +11,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\StreamInterface;
-use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 /** @covers \Mezzio\Router\Middleware\ImplicitHeadMiddlewareFactory */
 final class ImplicitHeadMiddlewareFactoryTest extends TestCase
@@ -33,7 +32,7 @@ final class ImplicitHeadMiddlewareFactoryTest extends TestCase
     {
         $this->container
             ->method('has')
-            ->withConsecutive([RouterInterface::class], [ZendExpressiveRouterInterface::class])
+            ->withConsecutive([RouterInterface::class], ['Zend\Expressive\Router\RouterInterface'])
             ->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);

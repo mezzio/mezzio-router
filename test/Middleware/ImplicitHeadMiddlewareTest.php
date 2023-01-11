@@ -15,7 +15,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 /** @covers \Mezzio\Router\Middleware\ImplicitHeadMiddleware */
 final class ImplicitHeadMiddlewareTest extends TestCase
@@ -187,7 +186,7 @@ final class ImplicitHeadMiddlewareTest extends TestCase
                     $result,
                 ],
                 [
-                    ZendExpressiveRouteResult::class,
+                    'Zend\Expressive\Router\RouteResult',
                     $result,
                 ],
                 [
@@ -254,7 +253,7 @@ final class ImplicitHeadMiddlewareTest extends TestCase
                     $resultForRequestMethodGet,
                 ],
                 [
-                    ZendExpressiveRouteResult::class,
+                    'Zend\Expressive\Router\RouteResult',
                     $resultForRequestMethodGet,
                 ],
                 [

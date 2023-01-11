@@ -12,7 +12,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 /**
  * Handle implicit HEAD requests.
@@ -43,21 +42,16 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
 {
     public const FORWARDED_HTTP_METHOD_ATTRIBUTE = 'forwarded_http_method';
 
-    /** @var RouterInterface */
-    private $router;
-
-    /** @var callable */
+    /** @var callable(): StreamInterface */
     private $streamFactory;
 
     /**
-     * @param callable $streamFactory A factory capable of returning an empty
+     * @param callable(): StreamInterface $streamFactory A factory capable of returning an empty
      *     StreamInterface instance to inject in a response.
      */
-    public function __construct(RouterInterface $router, callable $streamFactory)
+    public function __construct(private RouterInterface $router, callable $streamFactory)
     {
-        $this->router = $router;
-
-        // Factory is wrapped in closur in order to enforce return type safety.
+        // Factory is wrapped in closure in order to enforce return type safety.
         $this->streamFactory = function () use ($streamFactory): StreamInterface {
             return $streamFactory();
         };
@@ -77,7 +71,7 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
         }
 
         $result = $request->getAttribute(RouteResult::class);
-        if (! $result) {
+        if (! $result instanceof RouteResult) {
             return $handler->handle($request);
         }
 
@@ -91,6 +85,7 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
         }
 
         // Copy matched parameters like RouteMiddleware does
+        /** @var mixed $value */
         foreach ($routeResult->getMatchedParams() as $param => $value) {
             $request = $request->withAttribute($param, $value);
         }
@@ -98,12 +93,11 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
         $response = $handler->handle(
             $request
                 ->withAttribute(RouteResult::class, $routeResult)
-                ->withAttribute(ZendExpressiveRouteResult::class, $routeResult)
+                ->withAttribute('Zend\Expressive\Router\RouteResult', $routeResult)
                 ->withAttribute(self::FORWARDED_HTTP_METHOD_ATTRIBUTE, RequestMethod::METHOD_HEAD)
                 ->withMethod(RequestMethod::METHOD_GET)
         );
 
-        /** @var StreamInterface $body */
         $body = ($this->streamFactory)();
         return $response->withBody($body);
     }

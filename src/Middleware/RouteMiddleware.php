@@ -10,7 +10,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 /**
  * Default routing middleware.
@@ -39,9 +38,10 @@ class RouteMiddleware implements MiddlewareInterface
         // Inject the actual route result, as well as individual matched parameters.
         $request = $request
             ->withAttribute(RouteResult::class, $result)
-            ->withAttribute(ZendExpressiveRouteResult::class, $result);
+            ->withAttribute('Zend\Expressive\Router\RouteResult', $result);
 
         if ($result->isSuccess()) {
+            /** @var mixed $value */
             foreach ($result->getMatchedParams() as $param => $value) {
                 $request = $request->withAttribute($param, $value);
             }

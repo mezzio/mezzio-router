@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MezzioTest\Router\Middleware;
 
 use Generator;
-use Mezzio\Container\ResponseFactoryFactory;
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\Middleware\MethodNotAllowedMiddlewareFactory;
 use Mezzio\Router\Response\CallableResponseFactoryDecorator;
@@ -111,7 +110,7 @@ final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
         $container->set('config', [
             'dependencies' => [
                 'factories' => [
-                    ResponseInterface::class => ResponseFactoryFactory::class,
+                    ResponseInterface::class => 'Mezzio\Container\ResponseFactoryFactory',
                 ],
             ],
         ]);

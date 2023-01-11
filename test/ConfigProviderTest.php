@@ -21,12 +21,12 @@ final class ConfigProviderTest extends TestCase
             'dependencies' => [
                 'aliases'   => [
                     // @codingStandardsIgnoreStart
-                    \Zend\Expressive\Router\Middleware\DispatchMiddleware::class => Middleware\DispatchMiddleware::class,
-                    \Zend\Expressive\Router\Middleware\ImplicitHeadMiddleware::class => Middleware\ImplicitHeadMiddleware::class,
-                    \Zend\Expressive\Router\Middleware\ImplicitOptionsMiddleware::class => Middleware\ImplicitOptionsMiddleware::class,
-                    \Zend\Expressive\Router\Middleware\MethodNotAllowedMiddleware::class => Middleware\MethodNotAllowedMiddleware::class,
-                    \Zend\Expressive\Router\Middleware\RouteMiddleware::class => Middleware\RouteMiddleware::class,
-                    \Zend\Expressive\Router\RouteCollector::class => RouteCollector::class,
+                    'Zend\Expressive\Router\Middleware\DispatchMiddleware' => Middleware\DispatchMiddleware::class,
+                    'Zend\Expressive\Router\Middleware\ImplicitHeadMiddleware' => Middleware\ImplicitHeadMiddleware::class,
+                    'Zend\Expressive\Router\Middleware\ImplicitOptionsMiddleware' => Middleware\ImplicitOptionsMiddleware::class,
+                    'Zend\Expressive\Router\Middleware\MethodNotAllowedMiddleware' => Middleware\MethodNotAllowedMiddleware::class,
+                    'Zend\Expressive\Router\Middleware\RouteMiddleware' => Middleware\RouteMiddleware::class,
+                    'Zend\Expressive\Router\RouteCollector' => RouteCollector::class,
                     // @codingStandardsIgnoreEnd
                 ],
                 'factories' => [

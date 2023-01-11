@@ -14,7 +14,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 /** @covers \Mezzio\Router\Middleware\RouteMiddleware */
 final class RouteMiddlewareTest extends TestCase
@@ -68,7 +67,7 @@ final class RouteMiddlewareTest extends TestCase
                     $result,
                 ],
                 [
-                    ZendExpressiveRouteResult::class,
+                    'Zend\Expressive\Router\RouteResult',
                     $result,
                 ]
             )->willReturnSelf();
@@ -101,7 +100,7 @@ final class RouteMiddlewareTest extends TestCase
                     $result,
                 ],
                 [
-                    ZendExpressiveRouteResult::class,
+                    'Zend\Expressive\Router\RouteResult',
                     $result,
                 ]
             )->willReturnSelf();
@@ -134,7 +133,7 @@ final class RouteMiddlewareTest extends TestCase
                     $result,
                 ],
                 [
-                    ZendExpressiveRouteResult::class,
+                    'Zend\Expressive\Router\RouteResult',
                     $result,
                 ],
                 [

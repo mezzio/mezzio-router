@@ -65,8 +65,7 @@ final class RouteCollectorTest extends TestCase
     }
 
     /**
-     * @return string[][]
-     * @psalm-return array<array-key, array{0:string}>
+     * @return array<non-empty-string, array{0:non-empty-string}>
      */
     public function commonHttpMethods(): array
     {
@@ -155,7 +154,7 @@ final class RouteCollectorTest extends TestCase
     }
 
     /**
-     * @return mixed[]
+     * @return array<string, array{0: mixed}>
      */
     public function invalidPathTypes(): array
     {
@@ -174,20 +173,20 @@ final class RouteCollectorTest extends TestCase
 
     /**
      * @dataProvider invalidPathTypes
-     * @param mixed $path
      */
-    public function testCallingRouteWithAnInvalidPathTypeRaisesAnException($path): void
+    public function testCallingRouteWithAnInvalidPathTypeRaisesAnException(mixed $path): void
     {
         $this->expectException(TypeError::class);
 
+        /** @psalm-suppress MixedArgument */
         $this->collector->route($path, $this->createNoopMiddleware());
     }
 
     /**
      * @dataProvider commonHttpMethods
-     * @param mixed $method
+     * @param non-empty-string $method
      */
-    public function testCommonHttpMethodsAreExposedAsClassMethodsAndReturnRoutes($method): void
+    public function testCommonHttpMethodsAreExposedAsClassMethodsAndReturnRoutes(string $method): void
     {
         $route = $this->collector->{$method}('/foo', $this->noopMiddleware);
 

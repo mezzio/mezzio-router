@@ -134,7 +134,7 @@ final class RouteTest extends TestCase
     }
 
     /**
-     * @return mixed[][]
+     * @return array<array-key, array{0: list<mixed>}>
      */
     public function invalidHttpMethodsProvider(): array
     {
@@ -147,6 +147,7 @@ final class RouteTest extends TestCase
     }
 
     /**
+     * @param list<mixed> $invalidHttpMethods
      * @dataProvider invalidHttpMethodsProvider
      */
     public function testThrowsExceptionIfInvalidHttpMethodsAreProvided(array $invalidHttpMethods): void
@@ -154,6 +155,7 @@ final class RouteTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('One or more HTTP methods were invalid');
 
+        /** @psalm-suppress MixedArgumentTypeCoercion */
         new Route('/test', $this->noopMiddleware, $invalidHttpMethods);
     }
 

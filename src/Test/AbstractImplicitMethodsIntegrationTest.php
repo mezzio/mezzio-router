@@ -26,6 +26,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use function assert;
 use function implode;
 
 /**
@@ -143,7 +144,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         $pipeline->pipe(
             $method === RequestMethod::METHOD_HEAD
                 ? $this->getImplicitHeadMiddleware($router)
-                : $this->getImplicitOptionsMiddleware()
+                : $this->getImplicitOptionsMiddleware(),
         );
         $pipeline->pipe(new MethodNotAllowedMiddleware($this->createInvalidResponseFactory()));
 
@@ -160,15 +161,15 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
                     Assert::assertNull($request->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE));
 
                     $routeResult = $request->getAttribute(RouteResult::class);
-                    Assert::assertInstanceOf(RouteResult::class, $routeResult);
+                    assert($routeResult instanceof RouteResult);
                     Assert::assertTrue($routeResult->isSuccess());
 
                     $matchedRoute = $routeResult->getMatchedRoute();
-                    Assert::assertNotNull($matchedRoute);
+                    Assert::assertInstanceOf(Route::class, $matchedRoute);
                     Assert::assertSame($implicitRoute, $matchedRoute);
 
                     return true;
-                }
+                },
             ))
             ->willReturn($finalResponse);
 
@@ -183,10 +184,9 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     }
 
     /**
-     * @return iterable
-     * @psalm-return iterable<non-empty-string,array{0:RequestMethod::*,1:non-empty-list<RequestMethod::*>}>
+     * @return Generator<non-empty-string,array{0:RequestMethod::*,1:non-empty-list<RequestMethod::*>}>
      */
-    public function withoutImplicitMiddleware()
+    public function withoutImplicitMiddleware(): Generator
     {
         // request method, array of allowed methods for a route.
         yield 'HEAD: get'          => [RequestMethod::METHOD_HEAD, [RequestMethod::METHOD_GET]];
@@ -265,7 +265,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
      * - array params (expected route par ameters matched)
      *
      * @psalm-return Generator<array-key,array{
-     *     0: string,
+     *     0: non-empty-string,
      *     1: array<string,mixed>,
      *     2: string,
      *     3: array<string,mixed>
@@ -274,6 +274,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     abstract public function implicitRoutesAndRequests(): Generator;
 
     /**
+     * @param non-empty-string $routePath
      * @psalm-param array<string,mixed> $routeOptions
      * @psalm-param array<string,mixed> $expectedParams
      * @dataProvider implicitRoutesAndRequests
@@ -303,7 +304,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
                         Assert::assertSame(RequestMethod::METHOD_GET, $request->getMethod());
                         Assert::assertSame(
                             RequestMethod::METHOD_HEAD,
-                            $request->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE)
+                            $request->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE),
                         );
 
                         $routeResult = $request->getAttribute(RouteResult::class);
@@ -313,18 +314,19 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
                     // Some implementations include more in the matched params than what we expect;
                     // e.g., laminas-router will include the middleware as well.
                         $matchedParams = $routeResult->getMatchedParams();
+                        /** @var mixed $value */
                         foreach ($expectedParams as $key => $value) {
                             Assert::assertArrayHasKey($key, $matchedParams);
                             Assert::assertSame($value, $matchedParams[$key]);
                         }
 
                         $matchedRoute = $routeResult->getMatchedRoute();
-                        Assert::assertNotNull($matchedRoute);
+                        Assert::assertInstanceOf(Route::class, $matchedRoute);
                         Assert::assertSame($route1, $matchedRoute);
 
                         return true;
-                    }
-                )
+                    },
+                ),
             )
             ->willReturn($finalResponse);
 
@@ -362,6 +364,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     }
 
     /**
+     * @param non-empty-string $routePath
      * @psalm-param array<string,mixed> $routeOptions
      * @dataProvider implicitRoutesAndRequests
      */
@@ -442,7 +445,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
                 Assert::assertSame(RequestMethod::METHOD_OPTIONS, $request->getMethod());
 
                 $routeResult = $request->getAttribute(RouteResult::class);
-                Assert::assertInstanceOf(RouteResult::class, $routeResult);
+                assert($routeResult instanceof RouteResult);
                 Assert::assertTrue($routeResult->isFailure());
                 Assert::assertFalse($routeResult->isSuccess());
                 Assert::assertFalse($routeResult->isMethodFailure());

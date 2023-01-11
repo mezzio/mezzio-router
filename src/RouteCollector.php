@@ -37,12 +37,11 @@ class RouteCollector implements RouteCollectorInterface
     /**
      * List of all routes registered directly with the application.
      *
-     * @var Route[]
+     * @var list<Route>
      */
-    private $routes = [];
+    private array $routes = [];
 
-    /** @var null|DuplicateRouteDetector */
-    private $duplicateRouteDetector;
+    private ?DuplicateRouteDetector $duplicateRouteDetector = null;
 
     public function __construct(RouterInterface $router, bool $detectDuplicates = true)
     {
@@ -50,15 +49,7 @@ class RouteCollector implements RouteCollectorInterface
         $this->detectDuplicates = $detectDuplicates;
     }
 
-    /**
-     * Add a route for the route middleware to match.
-     *
-     * Accepts a combination of a path and middleware, and optionally the HTTP methods allowed.
-     *
-     * @param null|array  $methods HTTP method to accept; null indicates any.
-     * @param null|string $name The name of the route.
-     * @throws Exception\DuplicateRouteException If specification represents an existing route.
-     */
+    /** @inheritDoc */
     public function route(
         string $path,
         MiddlewareInterface $middleware,
@@ -74,59 +65,43 @@ class RouteCollector implements RouteCollectorInterface
         return $route;
     }
 
-    /**
-     * @param null|string $name The name of the route.
-     */
+    /** @inheritDoc */
     public function get(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, ['GET'], $name);
     }
 
-    /**
-     * @param null|string $name The name of the route.
-     */
+    /** @inheritDoc */
     public function post(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, ['POST'], $name);
     }
 
-    /**
-     * @param null|string $name The name of the route.
-     */
+    /** @inheritDoc */
     public function put(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, ['PUT'], $name);
     }
 
-    /**
-     * @param null|string $name The name of the route.
-     */
+    /** @inheritDoc */
     public function patch(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, ['PATCH'], $name);
     }
 
-    /**
-     * @param null|string $name The name of the route.
-     */
+    /** @inheritDoc */
     public function delete(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, ['DELETE'], $name);
     }
 
-    /**
-     * @param null|string $name The name of the route.
-     */
+    /** @inheritDoc */
     public function any(string $path, MiddlewareInterface $middleware, ?string $name = null): Route
     {
         return $this->route($path, $middleware, null, $name);
     }
 
-    /**
-     * Retrieve all directly registered routes with the application.
-     *
-     * @return Route[]
-     */
+    /** @inheritDoc */
     public function getRoutes(): array
     {
         return $this->routes;
