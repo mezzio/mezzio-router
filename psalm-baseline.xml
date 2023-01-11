@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.28.0@52e96bea381e6cb07a672aefec791a5817694a26">
+<files psalm-version="5.4.0@62db5d4f6a7ae0a20f7cc5a4952d730272fc0863">
   <file src="src/Middleware/ImplicitHeadMiddlewareFactory.php">
     <InvalidArgument occurrences="1">
       <code>$container-&gt;get(StreamInterface::class)</code>
     </InvalidArgument>
-    <MixedArgument occurrences="1"/>
-  </file>
-  <file src="src/RouteCollectorFactory.php">
-    <MixedArgument occurrences="1"/>
   </file>
   <file src="test/InMemoryContainer.php">
     <MixedReturnStatement occurrences="1">

@@ -36,9 +36,9 @@ final class RouteCollectorFactoryTest extends TestCase
     public function testFactoryRaisesExceptionIfRouterServiceIsMissing(): void
     {
         $this->container
-            ->expects(self::exactly(2))
+            ->expects(self::once())
             ->method('has')
-            ->withConsecutive([RouterInterface::class], ['Zend\Expressive\Router\RouterInterface'])
+            ->with(RouterInterface::class)
             ->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);

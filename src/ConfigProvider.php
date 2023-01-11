@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Mezzio\Router;
 
+/**
+ * @psalm-type DependencyConfig = array{factories: array<class-string, class-string>}
+ */
 class ConfigProvider
 {
+    /** @return array{dependencies: DependencyConfig} */
     public function __invoke(): array
     {
         return [
@@ -13,19 +17,10 @@ class ConfigProvider
         ];
     }
 
+    /** @return DependencyConfig */
     public function getDependencies(): array
     {
-        // @codingStandardsIgnoreStart
         return [
-            // Legacy Zend Framework aliases
-            'aliases' => [
-                'Zend\Expressive\Router\Middleware\DispatchMiddleware' => Middleware\DispatchMiddleware::class,
-                'Zend\Expressive\Router\Middleware\ImplicitHeadMiddleware' => Middleware\ImplicitHeadMiddleware::class,
-                'Zend\Expressive\Router\Middleware\ImplicitOptionsMiddleware' => Middleware\ImplicitOptionsMiddleware::class,
-                'Zend\Expressive\Router\Middleware\MethodNotAllowedMiddleware' => Middleware\MethodNotAllowedMiddleware::class,
-                'Zend\Expressive\Router\Middleware\RouteMiddleware' => Middleware\RouteMiddleware::class,
-                'Zend\Expressive\Router\RouteCollector' => RouteCollector::class,
-            ],
             'factories' => [
                 Middleware\DispatchMiddleware::class         => Middleware\DispatchMiddlewareFactory::class,
                 Middleware\ImplicitHeadMiddleware::class     => Middleware\ImplicitHeadMiddlewareFactory::class,
@@ -35,6 +30,5 @@ class ConfigProvider
                 RouteCollector::class                        => RouteCollectorFactory::class,
             ]
         ];
-        // @codingStandardsIgnoreEnd
     }
 }

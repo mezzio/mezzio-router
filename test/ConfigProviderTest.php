@@ -19,16 +19,6 @@ final class ConfigProviderTest extends TestCase
 
         self::assertSame([
             'dependencies' => [
-                'aliases'   => [
-                    // @codingStandardsIgnoreStart
-                    'Zend\Expressive\Router\Middleware\DispatchMiddleware' => Middleware\DispatchMiddleware::class,
-                    'Zend\Expressive\Router\Middleware\ImplicitHeadMiddleware' => Middleware\ImplicitHeadMiddleware::class,
-                    'Zend\Expressive\Router\Middleware\ImplicitOptionsMiddleware' => Middleware\ImplicitOptionsMiddleware::class,
-                    'Zend\Expressive\Router\Middleware\MethodNotAllowedMiddleware' => Middleware\MethodNotAllowedMiddleware::class,
-                    'Zend\Expressive\Router\Middleware\RouteMiddleware' => Middleware\RouteMiddleware::class,
-                    'Zend\Expressive\Router\RouteCollector' => RouteCollector::class,
-                    // @codingStandardsIgnoreEnd
-                ],
                 'factories' => [
                     Middleware\DispatchMiddleware::class         => Middleware\DispatchMiddlewareFactory::class,
                     Middleware\ImplicitHeadMiddleware::class     => Middleware\ImplicitHeadMiddlewareFactory::class,

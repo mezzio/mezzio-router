@@ -59,15 +59,11 @@ final class RouteMiddlewareTest extends TestCase
             ->willReturn($this->response);
 
         $this->request
-            ->expects(self::exactly(2))
+            ->expects(self::once())
             ->method('withAttribute')
             ->withConsecutive(
                 [
                     RouteResult::class,
-                    $result,
-                ],
-                [
-                    'Zend\Expressive\Router\RouteResult',
                     $result,
                 ]
             )->willReturnSelf();
@@ -92,15 +88,11 @@ final class RouteMiddlewareTest extends TestCase
             ->willReturn($this->response);
 
         $this->request
-            ->expects(self::exactly(2))
+            ->expects(self::exactly(1))
             ->method('withAttribute')
             ->withConsecutive(
                 [
                     RouteResult::class,
-                    $result,
-                ],
-                [
-                    'Zend\Expressive\Router\RouteResult',
                     $result,
                 ]
             )->willReturnSelf();
@@ -125,15 +117,11 @@ final class RouteMiddlewareTest extends TestCase
             ->willReturn($result);
 
         $this->request
-            ->expects(self::exactly(4))
+            ->expects(self::exactly(3))
             ->method('withAttribute')
             ->withConsecutive(
                 [
                     RouteResult::class,
-                    $result,
-                ],
-                [
-                    'Zend\Expressive\Router\RouteResult',
                     $result,
                 ],
                 [

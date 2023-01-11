@@ -178,15 +178,11 @@ final class ImplicitHeadMiddlewareTest extends TestCase
         $result = RouteResult::fromRoute($route);
 
         $request
-            ->expects(self::exactly(3))
+            ->expects(self::exactly(2))
             ->method('withAttribute')
             ->withConsecutive(
                 [
                     RouteResult::class,
-                    $result,
-                ],
-                [
-                    'Zend\Expressive\Router\RouteResult',
                     $result,
                 ],
                 [
@@ -237,7 +233,7 @@ final class ImplicitHeadMiddlewareTest extends TestCase
         $resultForRequestMethodGet = RouteResult::fromRoute($route, ['foo' => 'bar', 'baz' => 'bat']);
 
         $request
-            ->expects(self::exactly(5))
+            ->expects(self::exactly(4))
             ->method('withAttribute')
             ->withConsecutive(
                 [
@@ -250,10 +246,6 @@ final class ImplicitHeadMiddlewareTest extends TestCase
                 ],
                 [
                     RouteResult::class,
-                    $resultForRequestMethodGet,
-                ],
-                [
-                    'Zend\Expressive\Router\RouteResult',
                     $resultForRequestMethodGet,
                 ],
                 [

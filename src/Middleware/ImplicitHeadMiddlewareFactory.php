@@ -27,17 +27,7 @@ class ImplicitHeadMiddlewareFactory
      */
     public function __invoke(ContainerInterface $container): ImplicitHeadMiddleware
     {
-        $hasRouter           = $container->has(RouterInterface::class);
-        $hasDeprecatedRouter = false;
-
-        if (! $hasRouter) {
-            $hasDeprecatedRouter = $container->has('Zend\Expressive\Router\RouterInterface');
-        }
-
-        if (
-            ! $hasRouter
-            && ! $hasDeprecatedRouter
-        ) {
+        if (! $container->has(RouterInterface::class)) {
             throw MissingDependencyException::dependencyForService(
                 RouterInterface::class,
                 ImplicitHeadMiddleware::class
@@ -52,9 +42,7 @@ class ImplicitHeadMiddlewareFactory
         }
 
         return new ImplicitHeadMiddleware(
-            $hasRouter
-                ? $container->get(RouterInterface::class)
-                : $container->get('Zend\Expressive\Router\RouterInterface'),
+            $container->get(RouterInterface::class),
             $container->get(StreamInterface::class)
         );
     }

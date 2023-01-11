@@ -31,8 +31,9 @@ final class ImplicitHeadMiddlewareFactoryTest extends TestCase
     public function testFactoryRaisesExceptionIfRouterInterfaceServiceIsMissing(): void
     {
         $this->container
+            ->expects(self::once())
             ->method('has')
-            ->withConsecutive([RouterInterface::class], ['Zend\Expressive\Router\RouterInterface'])
+            ->with(RouterInterface::class)
             ->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);

@@ -93,7 +93,6 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
         $response = $handler->handle(
             $request
                 ->withAttribute(RouteResult::class, $routeResult)
-                ->withAttribute('Zend\Expressive\Router\RouteResult', $routeResult)
                 ->withAttribute(self::FORWARDED_HTTP_METHOD_ATTRIBUTE, RequestMethod::METHOD_HEAD)
                 ->withMethod(RequestMethod::METHOD_GET)
         );
