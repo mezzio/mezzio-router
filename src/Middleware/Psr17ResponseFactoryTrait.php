@@ -75,6 +75,7 @@ trait Psr17ResponseFactoryTrait
         /** @psalm-suppress MixedAssignment */
         $deprecatedResponseFactory = $dependencies['factories'][ResponseInterface::class] ?? null;
 
-        return $deprecatedResponseFactory !== null && $deprecatedResponseFactory !== 'Mezzio\Container\ResponseFactoryFactory';
+        return $deprecatedResponseFactory !== null
+            && $deprecatedResponseFactory !== 'Mezzio\Container\ResponseFactoryFactory';
     }
 }

@@ -59,7 +59,7 @@ class Route implements MiddlewareInterface
         ?array $methods = self::HTTP_METHOD_ANY,
         ?string $name = null
     ) {
-        $this->methods    = is_array($methods) ? $this->validateHttpMethods($methods) : $methods;
+        $this->methods = is_array($methods) ? $this->validateHttpMethods($methods) : $methods;
 
         if ($name === null || $name === '') {
             $name = $this->methods === self::HTTP_METHOD_ANY
