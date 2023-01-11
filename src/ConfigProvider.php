@@ -28,7 +28,7 @@ class ConfigProvider
                 Middleware\MethodNotAllowedMiddleware::class => Middleware\MethodNotAllowedMiddlewareFactory::class,
                 Middleware\RouteMiddleware::class            => Middleware\RouteMiddlewareFactory::class,
                 RouteCollector::class                        => RouteCollectorFactory::class,
-            ]
+            ],
         ];
     }
 }
