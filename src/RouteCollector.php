@@ -28,12 +28,6 @@ use Psr\Http\Server\MiddlewareInterface;
  */
 class RouteCollector implements RouteCollectorInterface
 {
-    /** @var RouterInterface */
-    protected $router;
-
-    /** @var bool */
-    protected $detectDuplicates = true;
-
     /**
      * List of all routes registered directly with the application.
      *
@@ -43,10 +37,10 @@ class RouteCollector implements RouteCollectorInterface
 
     private ?DuplicateRouteDetector $duplicateRouteDetector = null;
 
-    public function __construct(RouterInterface $router, bool $detectDuplicates = true)
-    {
-        $this->router           = $router;
-        $this->detectDuplicates = $detectDuplicates;
+    public function __construct(
+        protected RouterInterface $router,
+        protected bool $detectDuplicates = true
+    ) {
     }
 
     /** @inheritDoc */
