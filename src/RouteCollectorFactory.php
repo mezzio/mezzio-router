@@ -68,10 +68,10 @@ class RouteCollectorFactory
 
         $collectorOptions = $config[RouteCollector::class] ?? [];
 
-        if (!is_array($collectorOptions)  || ! isset($config['detect_duplicates'])) {
+        if (! is_array($collectorOptions) || ! isset($collectorOptions['detect_duplicates'])) {
             return true;
         }
 
-        return (bool) $config['detect_duplicates'];
+        return (bool) $collectorOptions['detect_duplicates'];
     }
 }
