@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Mezzio\Router;
 
 use ArrayAccess;
-use ArrayObject;
 use LogicException;
 use Psr\Container\ContainerInterface;
-use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 use function is_array;
 use function sprintf;
@@ -24,22 +22,11 @@ use function sprintf;
 class RouteCollectorFactory
 {
     /**
-     * @throws Exception\MissingDependencyException If the RouterInterface service is
-     *     missing.
+     * @throws Exception\MissingDependencyException If the RouterInterface service is missing.
      */
     public function __invoke(ContainerInterface $container): RouteCollector
     {
-        $hasRouter           = $container->has(RouterInterface::class);
-        $hasDeprecatedRouter = false;
-
-        if (! $hasRouter) {
-            $hasDeprecatedRouter = $container->has(ZendExpressiveRouterInterface::class);
-        }
-
-        if (
-            ! $hasRouter
-            && ! $hasDeprecatedRouter
-        ) {
+        if (! $container->has(RouterInterface::class)) {
             throw Exception\MissingDependencyException::dependencyForService(
                 RouterInterface::class,
                 RouteCollector::class
@@ -47,9 +34,7 @@ class RouteCollectorFactory
         }
 
         return new RouteCollector(
-            $hasRouter
-                ? $container->get(RouterInterface::class)
-                : $container->get(ZendExpressiveRouterInterface::class),
+            $container->get(RouterInterface::class),
             $this->getDetectDuplicatesFlag($container)
         );
     }
@@ -61,24 +46,20 @@ class RouteCollectorFactory
         }
 
         $config = $container->get('config');
-
-        $config = is_array($config) ? new ArrayObject($config) : $config;
-
-        if (! $config instanceof ArrayAccess) {
+        if (! is_array($config) && ! $config instanceof ArrayAccess) {
             throw new LogicException(sprintf('Config must be an array or implement %s.', ArrayAccess::class));
         }
 
-        if (! $config->offsetExists(RouteCollector::class)) {
+        if (! isset($config[RouteCollector::class])) {
             return true;
         }
 
-        /** @var array $config */
-        $config = $config->offsetGet(RouteCollector::class);
+        $collectorOptions = $config[RouteCollector::class] ?? [];
 
-        if (! isset($config['detect_duplicates'])) {
+        if (! is_array($collectorOptions) || ! isset($collectorOptions['detect_duplicates'])) {
             return true;
         }
 
-        return (bool) $config['detect_duplicates'];
+        return (bool) $collectorOptions['detect_duplicates'];
     }
 }

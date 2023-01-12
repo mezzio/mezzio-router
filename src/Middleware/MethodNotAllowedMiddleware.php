@@ -13,7 +13,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use function assert;
 use function implode;
+use function is_array;
 use function is_callable;
 
 /**
@@ -38,7 +40,7 @@ class MethodNotAllowedMiddleware implements MiddlewareInterface
     public function __construct($responseFactory)
     {
         if (is_callable($responseFactory)) {
-            // Factories is wrapped in a closure in order to enforce return type safety.
+            // Factories are wrapped in a closure in order to enforce return type safety.
             $responseFactory = new CallableResponseFactoryDecorator(
                 function () use ($responseFactory): ResponseInterface {
                     return $responseFactory();
@@ -52,12 +54,15 @@ class MethodNotAllowedMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $routeResult = $request->getAttribute(RouteResult::class);
-        if (! $routeResult || ! $routeResult->isMethodFailure()) {
+        if (! $routeResult instanceof RouteResult || ! $routeResult->isMethodFailure()) {
             return $handler->handle($request);
         }
 
+        $allowedMethods = $routeResult->getAllowedMethods();
+        assert(is_array($allowedMethods));
+
         return $this->responseFactory->createResponse(StatusCode::STATUS_METHOD_NOT_ALLOWED)
-            ->withHeader('Allow', implode(',', $routeResult->getAllowedMethods()));
+            ->withHeader('Allow', implode(',', $allowedMethods));
     }
 
     /**

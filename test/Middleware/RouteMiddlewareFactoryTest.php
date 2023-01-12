@@ -66,16 +66,16 @@ final class RouteMiddlewareFactoryTest extends TestCase
         $this->container
             ->expects(self::once())
             ->method('has')
-            ->with(Router::class)
+            ->with('AnyServiceName')
             ->willReturn(true);
 
         $this->container
             ->expects(self::once())
             ->method('get')
-            ->with(Router::class)
+            ->with('AnyServiceName')
             ->willReturn($router);
 
-        $factory = new RouteMiddlewareFactory(Router::class);
+        $factory = new RouteMiddlewareFactory('AnyServiceName');
 
         $middleware = $factory($this->container);
 
@@ -85,9 +85,9 @@ final class RouteMiddlewareFactoryTest extends TestCase
     public function testFactoryIsSerializable(): void
     {
         $factory = RouteMiddlewareFactory::__set_state([
-            'routerServiceName' => Router::class,
+            'routerServiceName' => 'AnyServiceName',
         ]);
 
-        self::assertSame(Router::class, $factory->getRouterServiceName());
+        self::assertSame('AnyServiceName', $factory->getRouterServiceName());
     }
 }

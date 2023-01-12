@@ -14,7 +14,6 @@ use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use Zend\Expressive\Router\RouterInterface as ZendExpressiveRouterInterface;
 
 use function sprintf;
 
@@ -37,9 +36,9 @@ final class RouteCollectorFactoryTest extends TestCase
     public function testFactoryRaisesExceptionIfRouterServiceIsMissing(): void
     {
         $this->container
-            ->expects(self::exactly(2))
+            ->expects(self::once())
             ->method('has')
-            ->withConsecutive([RouterInterface::class], [ZendExpressiveRouterInterface::class])
+            ->with(RouterInterface::class)
             ->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);
@@ -105,10 +104,7 @@ final class RouteCollectorFactoryTest extends TestCase
         });
     }
 
-    /**
-     * @param mixed $config
-     */
-    private function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig($config): void
+    private function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig(mixed $config): void
     {
         $router = $this->createMock(RouterInterface::class);
 

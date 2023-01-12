@@ -14,7 +14,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Expressive\Router\RouteResult as ZendExpressiveRouteResult;
 
 /** @covers \Mezzio\Router\Middleware\RouteMiddleware */
 final class RouteMiddlewareTest extends TestCase
@@ -60,15 +59,11 @@ final class RouteMiddlewareTest extends TestCase
             ->willReturn($this->response);
 
         $this->request
-            ->expects(self::exactly(2))
+            ->expects(self::once())
             ->method('withAttribute')
             ->withConsecutive(
                 [
                     RouteResult::class,
-                    $result,
-                ],
-                [
-                    ZendExpressiveRouteResult::class,
                     $result,
                 ]
             )->willReturnSelf();
@@ -93,15 +88,11 @@ final class RouteMiddlewareTest extends TestCase
             ->willReturn($this->response);
 
         $this->request
-            ->expects(self::exactly(2))
+            ->expects(self::exactly(1))
             ->method('withAttribute')
             ->withConsecutive(
                 [
                     RouteResult::class,
-                    $result,
-                ],
-                [
-                    ZendExpressiveRouteResult::class,
                     $result,
                 ]
             )->willReturnSelf();
@@ -126,15 +117,11 @@ final class RouteMiddlewareTest extends TestCase
             ->willReturn($result);
 
         $this->request
-            ->expects(self::exactly(4))
+            ->expects(self::exactly(3))
             ->method('withAttribute')
             ->withConsecutive(
                 [
                     RouteResult::class,
-                    $result,
-                ],
-                [
-                    ZendExpressiveRouteResult::class,
                     $result,
                 ],
                 [

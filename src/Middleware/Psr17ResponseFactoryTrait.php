@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mezzio\Router\Middleware;
 
-use Mezzio\Container\ResponseFactoryFactory;
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\Response\CallableResponseFactoryDecorator;
 use Psr\Container\ContainerInterface;
@@ -76,6 +75,7 @@ trait Psr17ResponseFactoryTrait
         /** @psalm-suppress MixedAssignment */
         $deprecatedResponseFactory = $dependencies['factories'][ResponseInterface::class] ?? null;
 
-        return $deprecatedResponseFactory !== null && $deprecatedResponseFactory !== ResponseFactoryFactory::class;
+        return $deprecatedResponseFactory !== null
+            && $deprecatedResponseFactory !== 'Mezzio\Container\ResponseFactoryFactory';
     }
 }

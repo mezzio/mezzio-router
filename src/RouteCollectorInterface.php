@@ -33,8 +33,9 @@ interface RouteCollectorInterface
      *
      * Accepts a combination of a path and middleware, and optionally the HTTP methods allowed.
      *
-     * @param null|array  $methods HTTP method to accept; null indicates any.
-     * @param null|string $name    The name of the route.
+     * @param non-empty-string $path
+     * @param null|list<string> $methods HTTP method to accept; null indicates any.
+     * @param null|non-empty-string $name The name of the route.
      * @throws Exception\DuplicateRouteException If specification represents an existing route.
      */
     public function route(
@@ -45,39 +46,45 @@ interface RouteCollectorInterface
     ): Route;
 
     /**
-     * @param null|string $name The name of the route.
+     * @param non-empty-string $path
+     * @param null|non-empty-string $name The name of the route.
      */
     public function get(string $path, MiddlewareInterface $middleware, ?string $name = null): Route;
 
     /**
-     * @param null|string $name The name of the route.
+     * @param non-empty-string $path
+     * @param null|non-empty-string $name The name of the route.
      */
     public function post(string $path, MiddlewareInterface $middleware, ?string $name = null): Route;
 
     /**
-     * @param null|string $name The name of the route.
+     * @param non-empty-string $path
+     * @param null|non-empty-string $name The name of the route.
      */
     public function put(string $path, MiddlewareInterface $middleware, ?string $name = null): Route;
 
     /**
-     * @param null|string $name The name of the route.
+     * @param non-empty-string $path
+     * @param null|non-empty-string $name The name of the route.
      */
     public function patch(string $path, MiddlewareInterface $middleware, ?string $name = null): Route;
 
     /**
-     * @param null|string $name The name of the route.
+     * @param non-empty-string $path
+     * @param null|non-empty-string $name The name of the route.
      */
     public function delete(string $path, MiddlewareInterface $middleware, ?string $name = null): Route;
 
     /**
-     * @param null|string $name The name of the route.
+     * @param non-empty-string $path
+     * @param null|non-empty-string $name The name of the route.
      */
     public function any(string $path, MiddlewareInterface $middleware, ?string $name = null): Route;
 
     /**
      * Retrieve all directly registered routes with the application.
      *
-     * @return Route[]
+     * @return list<Route>
      */
     public function getRoutes(): array;
 }

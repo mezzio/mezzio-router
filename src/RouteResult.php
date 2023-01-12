@@ -9,6 +9,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use function assert;
+
 /**
  * Value object representing the results of routing.
  *
@@ -31,13 +33,13 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class RouteResult implements MiddlewareInterface
 {
-    /** @var null|string[] */
+    /** @var list<string>|null */
     private $allowedMethods = [];
 
-    /** @var array */
+    /** @var array<string, mixed> */
     private $matchedParams = [];
 
-    /** @var string */
+    /** @var string|null */
     private $matchedRouteName;
 
     /**
@@ -48,33 +50,38 @@ class RouteResult implements MiddlewareInterface
      */
     private $route;
 
-    /** @var bool Success state of routing. */
-    private $success;
+    /**
+     * Only allow instantiation via factory methods.
+     *
+     * @param bool $success Success state of routing.
+     */
+    private function __construct(private bool $success)
+    {
+    }
 
     /**
      * Create an instance representing a route succes from the matching route.
      *
-     * @param array $params Parameters associated with the matched route, if any.
+     * @param array<string, mixed> $params Parameters associated with the matched route, if any.
      */
     public static function fromRoute(Route $route, array $params = []): self
     {
-        $result                = new self();
-        $result->success       = true;
+        $result                = new self(true);
         $result->route         = $route;
         $result->matchedParams = $params;
+
         return $result;
     }
 
     /**
      * Create an instance representing a route failure.
      *
-     * @param null|array $methods HTTP methods allowed for the current URI, if any.
+     * @param null|list<string> $methods HTTP methods allowed for the current URI, if any.
      *     null is equivalent to allowing any HTTP method; empty array means none.
      */
     public static function fromRouteFailure(?array $methods): self
     {
-        $result                 = new self();
-        $result->success        = false;
+        $result                 = new self(false);
         $result->allowedMethods = $methods;
 
         return $result;
@@ -94,7 +101,10 @@ class RouteResult implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        return $this->getMatchedRoute()->process($request, $handler);
+        $route = $this->getMatchedRoute();
+        assert($route instanceof MiddlewareInterface);
+
+        return $route->process($request, $handler);
     }
 
     /**
@@ -108,12 +118,11 @@ class RouteResult implements MiddlewareInterface
     /**
      * Retrieve the route that resulted in the route match.
      *
-     * @return false|null|Route false if representing a routing failure;
-     *     null if not created via fromRoute(); Route instance otherwise.
+     * @return false|Route false if representing a routing failure; Route instance otherwise.
      */
     public function getMatchedRoute()
     {
-        return $this->isFailure() ? false : $this->route;
+        return $this->route ?? false;
     }
 
     /**
@@ -130,7 +139,8 @@ class RouteResult implements MiddlewareInterface
             return false;
         }
 
-        if (! $this->matchedRouteName && $this->route) {
+        if (! $this->matchedRouteName) {
+            assert($this->route !== null);
             $this->matchedRouteName = $this->route->getName();
         }
 
@@ -140,7 +150,9 @@ class RouteResult implements MiddlewareInterface
     /**
      * Returns the matched params.
      *
-     * Guaranted to return an array, even if it is simply empty.
+     * Guaranteed to return an array, even if it is simply empty.
+     *
+     * @return array<string, mixed>
      */
     public function getMatchedParams(): array
     {
@@ -170,23 +182,15 @@ class RouteResult implements MiddlewareInterface
     /**
      * Retrieve the allowed methods for the route failure.
      *
-     * @return null|string[] HTTP methods allowed
+     * @return null|list<string> HTTP methods allowed
      */
     public function getAllowedMethods(): ?array
     {
         if ($this->isSuccess()) {
-            return $this->route
-                ? $this->route->getAllowedMethods()
-                : [];
+            assert($this->route !== null);
+            return $this->route->getAllowedMethods();
         }
 
         return $this->allowedMethods;
-    }
-
-    /**
-     * Only allow instantiation via factory methods.
-     */
-    private function __construct()
-    {
     }
 }
