@@ -37,6 +37,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  * If the route instance supports GET requests, the middleware dispatches
  * the next layer, but alters the request passed to use the GET method;
  * it then provides an empty response body to the returned response.
+ *
+ * @final
  */
 class ImplicitHeadMiddleware implements MiddlewareInterface
 {

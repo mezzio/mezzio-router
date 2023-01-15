@@ -17,6 +17,8 @@ use function assert;
  *
  * - Mezzio\Router\RouterInterface, which should resolve to
  *   a class implementing that interface.
+ *
+ * @final
  */
 class RouteMiddlewareFactory
 {
