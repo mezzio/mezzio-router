@@ -9,6 +9,8 @@ use Mezzio\Router\Exception;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteCollector;
 use Mezzio\Router\RouterInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -22,7 +24,7 @@ use function microtime;
 use function range;
 use function sprintf;
 
-/** @covers \Mezzio\Router\RouteCollector */
+#[CoversClass(RouteCollector::class)]
 final class RouteCollectorTest extends TestCase
 {
     /** @var RouterInterface&MockObject */
@@ -67,7 +69,7 @@ final class RouteCollectorTest extends TestCase
     /**
      * @return array<non-empty-string, array{0:non-empty-string}>
      */
-    public function commonHttpMethods(): array
+    public static function commonHttpMethods(): array
     {
         return [
             RequestMethod::METHOD_GET    => [RequestMethod::METHOD_GET],
@@ -105,11 +107,9 @@ final class RouteCollectorTest extends TestCase
         self::assertSame(Route::HTTP_METHOD_ANY, $route->getAllowedMethods());
     }
 
-    /**
-     * @dataProvider commonHttpMethods
-     * @param string $method
-     */
-    public function testCanCallRouteWithHttpMethods($method): void
+    /** @param string $method */
+    #[DataProvider('commonHttpMethods')]
+    public function testCanCallRouteWithHttpMethods(string $method): void
     {
         $this->router
             ->expects(self::once())
@@ -156,7 +156,7 @@ final class RouteCollectorTest extends TestCase
     /**
      * @return array<string, array{0: mixed}>
      */
-    public function invalidPathTypes(): array
+    public static function invalidPathTypes(): array
     {
         return [
             'null'       => [null],
@@ -171,9 +171,7 @@ final class RouteCollectorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider invalidPathTypes
-     */
+    #[DataProvider('invalidPathTypes')]
     public function testCallingRouteWithAnInvalidPathTypeRaisesAnException(mixed $path): void
     {
         $this->expectException(TypeError::class);
@@ -182,10 +180,8 @@ final class RouteCollectorTest extends TestCase
         $this->collector->route($path, $this->createNoopMiddleware());
     }
 
-    /**
-     * @dataProvider commonHttpMethods
-     * @param non-empty-string $method
-     */
+    /** @param non-empty-string $method */
+    #[DataProvider('commonHttpMethods')]
     public function testCommonHttpMethodsAreExposedAsClassMethodsAndReturnRoutes(string $method): void
     {
         $route = $this->collector->{$method}('/foo', $this->noopMiddleware);
