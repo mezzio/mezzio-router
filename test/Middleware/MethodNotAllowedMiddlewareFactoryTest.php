@@ -9,18 +9,20 @@ use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\Middleware\MethodNotAllowedMiddlewareFactory;
 use Mezzio\Router\Response\CallableResponseFactoryDecorator;
 use MezzioTest\Router\InMemoryContainer;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 
-/** @covers \Mezzio\Router\Middleware\MethodNotAllowedMiddlewareFactory */
+#[CoversClass(MethodNotAllowedMiddlewareFactory::class)]
 final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
 {
-    /** @var ContainerInterface&MockObject */
-    private ContainerInterface $container;
-
+    private static ResponseFactoryInterface&MockObject $responseFactoryMock;
+    private static ResponseInterface&MockObject $responseMock;
+    private ContainerInterface&MockObject $container;
     private MethodNotAllowedMiddlewareFactory $factory;
 
     protected function setUp(): void
@@ -29,12 +31,15 @@ final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
 
         $this->container = $this->createMock(ContainerInterface::class);
         $this->factory   = new MethodNotAllowedMiddlewareFactory();
+
+        self::$responseFactoryMock = $this->createMock(ResponseFactoryInterface::class);
+        self::$responseMock        = $this->createMock(ResponseInterface::class);
     }
 
     /**
      * @psalm-return Generator<non-empty-string,array{0:array<string,mixed>}>
      */
-    public function configurationsWithOverriddenResponseInterfaceFactory(): Generator
+    public static function configurationsWithOverriddenResponseInterfaceFactory(): Generator
     {
         yield 'default' => [
             [
@@ -75,8 +80,12 @@ final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
     {
         $this->container
             ->method('has')
-            ->withConsecutive([ResponseFactoryInterface::class], [ResponseInterface::class])
-            ->willReturn(false);
+            ->with(self::callback(static function ($arg): bool {
+                return in_array($arg, [
+                    ResponseFactoryInterface::class,
+                    ResponseInterface::class,
+                ], true);
+            }))->willReturn(false);
 
         $this->expectException(MissingDependencyException::class);
 
@@ -91,7 +100,12 @@ final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
         $this->container
             ->expects(self::exactly(2))
             ->method('has')
-            ->withConsecutive([ResponseFactoryInterface::class], [ResponseInterface::class])
+            ->with(self::callback(static function ($arg): bool {
+                return in_array($arg, [
+                    ResponseFactoryInterface::class,
+                    ResponseInterface::class,
+                ], true);
+            }))
             ->willReturn(false, true);
 
         $this->container
@@ -120,25 +134,21 @@ final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
         self::assertSame($responseFactory, $middleware->getResponseFactory());
     }
 
-    /**
-     * @param array<string,mixed> $config
-     * @dataProvider configurationsWithOverriddenResponseInterfaceFactory
-     */
+    /** @param array<string,mixed> $config */
+    #[DataProvider('configurationsWithOverriddenResponseInterfaceFactory')]
     public function testWontUseResponseFactoryInterfaceFromContainerWhenApplicationFactoryIsOverriden(
         array $config
     ): void {
-        $responseFactory = $this->createMock(ResponseFactoryInterface::class);
-        $container       = new InMemoryContainer();
+        $container = new InMemoryContainer();
         $container->set('config', $config);
-        $container->set(ResponseFactoryInterface::class, $responseFactory);
-        $response = $this->createMock(ResponseInterface::class);
-        $container->set(ResponseInterface::class, static fn (): ResponseInterface => $response);
+        $container->set(ResponseFactoryInterface::class, self::$responseFactoryMock);
+        $container->set(ResponseInterface::class, static fn (): ResponseInterface => self::$responseMock);
 
         $middleware                   = ($this->factory)($container);
         $responseFactoryFromGenerator = $middleware->getResponseFactory();
 
-        self::assertNotSame($responseFactory, $responseFactoryFromGenerator);
+        self::assertNotSame(self::$responseFactoryMock, $responseFactoryFromGenerator);
         self::assertInstanceOf(CallableResponseFactoryDecorator::class, $responseFactoryFromGenerator);
-        self::assertSame($response, $responseFactoryFromGenerator->getResponseFromCallable());
+        self::assertSame(self::$responseMock, $responseFactoryFromGenerator->getResponseFromCallable());
     }
 }
