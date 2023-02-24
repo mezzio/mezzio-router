@@ -17,6 +17,8 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 
+use function in_array;
+
 #[CoversClass(MethodNotAllowedMiddlewareFactory::class)]
 final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
 {
@@ -46,7 +48,7 @@ final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
                 'dependencies' => [
                     'factories' => [
                         ResponseInterface::class => function (): ResponseInterface {
-                            return $this->createMock(ResponseInterface::class);
+                            return self::$responseMock;
                         },
                     ],
                 ],
@@ -68,7 +70,7 @@ final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
                 'dependencies' => [
                     'delegators' => [
                         ResponseInterface::class => [
-                            fn (): ResponseInterface => $this->createMock(ResponseInterface::class),
+                            fn (): ResponseInterface => self::$responseMock,
                         ],
                     ],
                 ],
@@ -119,8 +121,7 @@ final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
 
     public function testWillUseResponseFactoryInterfaceFromContainerWhenApplicationFactoryIsNotOverridden(): void
     {
-        $responseFactory = $this->createMock(ResponseFactoryInterface::class);
-        $container       = new InMemoryContainer();
+        $container = new InMemoryContainer();
         $container->set('config', [
             'dependencies' => [
                 'factories' => [
@@ -128,10 +129,10 @@ final class MethodNotAllowedMiddlewareFactoryTest extends TestCase
                 ],
             ],
         ]);
-        $container->set(ResponseFactoryInterface::class, $responseFactory);
+        $container->set(ResponseFactoryInterface::class, self::$responseFactoryMock);
         $middleware = ($this->factory)($container);
 
-        self::assertSame($responseFactory, $middleware->getResponseFactory());
+        self::assertSame(self::$responseFactoryMock, $middleware->getResponseFactory());
     }
 
     /** @param array<string,mixed> $config */
