@@ -81,7 +81,12 @@ final class ImplicitHeadMiddlewareTest extends TestCase
 
     public function testReturnsResultOfHandlerWhenTheRouteResultMatchesARouteThatSupportsHeadRequests(): void
     {
-        $route   = new Route('/foo', $this->createMock(MiddlewareInterface::class), [RequestMethod::METHOD_HEAD], 'route-name');
+        $route   = new Route(
+            '/foo',
+            $this->createMock(MiddlewareInterface::class),
+            [RequestMethod::METHOD_HEAD],
+            'route-name',
+        );
         $request = (new ServerRequest())
             ->withMethod(RequestMethod::METHOD_HEAD)
             ->withAttribute(RouteResult::class, RouteResult::fromRoute($route));
@@ -142,7 +147,12 @@ final class ImplicitHeadMiddlewareTest extends TestCase
     public function testInvokesHandlerWhenRouteImplicitlySupportsHeadAndSupportsGet(): void
     {
         $matchFailure = RouteResult::fromRouteFailure([]);
-        $matchedRoute = new Route('/foo', $this->createMock(MiddlewareInterface::class), [RequestMethod::METHOD_GET], 'route-name');
+        $matchedRoute = new Route(
+            '/foo',
+            $this->createMock(MiddlewareInterface::class),
+            [RequestMethod::METHOD_GET],
+            'route-name',
+        );
         $matchSuccess = RouteResult::fromRoute($matchedRoute);
 
         $request = (new ServerRequest())
@@ -171,14 +181,22 @@ final class ImplicitHeadMiddlewareTest extends TestCase
 
         $received = $handler->receivedRequest();
         self::assertSame($matchSuccess, $received->getAttribute(RouteResult::class));
-        self::assertSame(RequestMethod::METHOD_HEAD, $received->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE));
+        self::assertSame(
+            RequestMethod::METHOD_HEAD,
+            $received->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE),
+        );
         self::assertSame(RequestMethod::METHOD_GET, $received->getMethod());
     }
 
     public function testInvokesHandlerWithRequestComposingRouteResultAndAttributes(): void
     {
         $matchFailure = RouteResult::fromRouteFailure([]);
-        $matchedRoute = new Route('/foo', $this->createMock(MiddlewareInterface::class), [RequestMethod::METHOD_GET], 'route-name');
+        $matchedRoute = new Route(
+            '/foo',
+            $this->createMock(MiddlewareInterface::class),
+            [RequestMethod::METHOD_GET],
+            'route-name',
+        );
         $matchSuccess = RouteResult::fromRoute($matchedRoute, ['foo' => 'bar', 'baz' => 'bat']);
 
         $request = (new ServerRequest())
@@ -207,7 +225,10 @@ final class ImplicitHeadMiddlewareTest extends TestCase
 
         $received = $handler->receivedRequest();
         self::assertSame($matchSuccess, $received->getAttribute(RouteResult::class));
-        self::assertSame(RequestMethod::METHOD_HEAD, $received->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE));
+        self::assertSame(
+            RequestMethod::METHOD_HEAD,
+            $received->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE),
+        );
         self::assertSame(RequestMethod::METHOD_GET, $received->getMethod());
         self::assertSame('bar', $received->getAttribute('foo'));
         self::assertSame('bat', $received->getAttribute('baz'));

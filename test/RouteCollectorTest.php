@@ -107,7 +107,6 @@ final class RouteCollectorTest extends TestCase
         self::assertSame(Route::HTTP_METHOD_ANY, $route->getAllowedMethods());
     }
 
-    /** @param string $method */
     #[DataProvider('commonHttpMethods')]
     public function testCanCallRouteWithHttpMethods(string $method): void
     {
