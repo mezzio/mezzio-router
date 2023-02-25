@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.4.0@62db5d4f6a7ae0a20f7cc5a4952d730272fc0863">
+<files psalm-version="5.6.0@e784128902dfe01d489c4123d69918a9f3c1eac5">
   <file src="src/Middleware/ImplicitHeadMiddlewareFactory.php">
-    <InvalidArgument occurrences="1">
+    <InvalidArgument>
       <code>$container-&gt;get(StreamInterface::class)</code>
     </InvalidArgument>
   </file>
   <file src="test/InMemoryContainer.php">
-    <MixedReturnStatement occurrences="1">
+    <MixedReturnStatement>
       <code>$this-&gt;services[$id]</code>
     </MixedReturnStatement>
   </file>
   <file src="test/Response/CallableResponseFactoryDecoratorTest.php">
-    <InternalMethod occurrences="1">
+    <InternalMethod>
       <code>new CallableResponseFactoryDecorator(fn (): ResponseInterface =&gt; $this-&gt;response)</code>
     </InternalMethod>
   </file>
