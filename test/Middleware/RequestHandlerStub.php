@@ -18,6 +18,7 @@ final class RequestHandlerStub implements RequestHandlerInterface
     public function __construct(ResponseInterface|null $response = null)
     {
         $this->response = $response ?: new TextResponse('Default Response');
+        $this->received = null;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

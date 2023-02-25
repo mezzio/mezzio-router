@@ -13,12 +13,12 @@ use function array_key_exists;
 final class InMemoryContainer implements ContainerInterface
 {
     /** @var array<string,mixed> */
-    private $services = [];
+    private array $services = [];
 
     /** {@inheritDoc} */
-    public function get($id)
+    public function get($id): mixed
     {
-        if (! $this->has($id)) {
+        if (! array_key_exists($id, $this->services)) {
             throw new class ($id . ' was not found') extends RuntimeException implements NotFoundExceptionInterface {
             };
         }
@@ -32,8 +32,7 @@ final class InMemoryContainer implements ContainerInterface
         return array_key_exists($id, $this->services);
     }
 
-    /** @param mixed $item */
-    public function set(string $id, $item): void
+    public function set(string $id, mixed $item): void
     {
         $this->services[$id] = $item;
     }
