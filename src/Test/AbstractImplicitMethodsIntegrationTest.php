@@ -20,6 +20,7 @@ use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -74,7 +75,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     /**
      * @psalm-return Generator<non-empty-string,array{0:RequestMethod::*,1:non-empty-list<RequestMethod::*>}>
      */
-    public function method(): Generator
+    public static function method(): Generator
     {
         yield 'HEAD: head, post' => [
             RequestMethod::METHOD_HEAD,
@@ -120,8 +121,8 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     /**
      * @psalm-param RequestMethod::* $method
      * @psalm-param non-empty-list<RequestMethod::*> $routes
-     * @dataProvider method
      */
+    #[DataProvider('method')]
     public function testExplicitRequest(string $method, array $routes): void
     {
         $implicitRoute = null;
@@ -186,7 +187,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     /**
      * @return Generator<non-empty-string,array{0:RequestMethod::*,1:non-empty-list<RequestMethod::*>}>
      */
-    public function withoutImplicitMiddleware(): Generator
+    public static function withoutImplicitMiddleware(): Generator
     {
         // request method, array of allowed methods for a route.
         yield 'HEAD: get'          => [RequestMethod::METHOD_HEAD, [RequestMethod::METHOD_GET]];
@@ -210,8 +211,8 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
      *
      * @psalm-param RequestMethod::* $requestMethod
      * @psalm-param non-empty-list<RequestMethod::*> $allowedMethods
-     * @dataProvider withoutImplicitMiddleware
      */
+    #[DataProvider('withoutImplicitMiddleware')]
     public function testWithoutImplicitMiddleware(string $requestMethod, array $allowedMethods): void
     {
         $router = $this->getRouter();
@@ -271,14 +272,14 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
      *     3: array<string,mixed>
      * }>
      */
-    abstract public function implicitRoutesAndRequests(): Generator;
+    abstract public static function implicitRoutesAndRequests(): Generator;
 
     /**
      * @param non-empty-string $routePath
      * @psalm-param array<string,mixed> $routeOptions
      * @psalm-param array<string,mixed> $expectedParams
-     * @dataProvider implicitRoutesAndRequests
      */
+    #[DataProvider('implicitRoutesAndRequests')]
     public function testImplicitHeadRequest(
         string $routePath,
         array $routeOptions,
@@ -366,8 +367,8 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     /**
      * @param non-empty-string $routePath
      * @psalm-param array<string,mixed> $routeOptions
-     * @dataProvider implicitRoutesAndRequests
      */
+    #[DataProvider('implicitRoutesAndRequests')]
     public function testImplicitOptionsRequest(
         string $routePath,
         array $routeOptions,

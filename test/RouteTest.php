@@ -7,6 +7,8 @@ namespace MezzioTest\Router;
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Mezzio\Router\Exception\InvalidArgumentException;
 use Mezzio\Router\Route;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -14,7 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-/** @covers \Mezzio\Router\Route */
+#[CoversClass(Route::class)]
 final class RouteTest extends TestCase
 {
     /** @var MiddlewareInterface&MockObject */
@@ -136,7 +138,7 @@ final class RouteTest extends TestCase
     /**
      * @return array<array-key, array{0: list<mixed>}>
      */
-    public function invalidHttpMethodsProvider(): array
+    public static function invalidHttpMethodsProvider(): array
     {
         return [
             [[123]],
@@ -146,10 +148,8 @@ final class RouteTest extends TestCase
         ];
     }
 
-    /**
-     * @param list<mixed> $invalidHttpMethods
-     * @dataProvider invalidHttpMethodsProvider
-     */
+    /** @param list<mixed> $invalidHttpMethods */
+    #[DataProvider('invalidHttpMethodsProvider')]
     public function testThrowsExceptionIfInvalidHttpMethodsAreProvided(array $invalidHttpMethods): void
     {
         $this->expectException(InvalidArgumentException::class);

@@ -5,28 +5,24 @@ declare(strict_types=1);
 namespace MezzioTest\Router\Middleware;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
+use Laminas\Diactoros\Response\TextResponse;
+use Laminas\Diactoros\ServerRequest;
 use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Server\MiddlewareInterface;
 
 /** @covers \Mezzio\Router\Middleware\ImplicitHeadMiddleware */
 final class ImplicitHeadMiddlewareTest extends TestCase
 {
-    /** @var ResponseInterface&MockObject */
-    private ResponseInterface $response;
-
     /** @var RouterInterface&MockObject */
     private RouterInterface $router;
-
-    /** @var StreamInterface&MockObject */
-    private StreamInterface $stream;
 
     private ImplicitHeadMiddleware $middleware;
 
@@ -34,249 +30,207 @@ final class ImplicitHeadMiddlewareTest extends TestCase
     {
         parent::setUp();
 
-        $this->router = $this->createMock(RouterInterface::class);
-        $this->stream = $this->createMock(StreamInterface::class);
-
-        $streamFactory = fn (): StreamInterface => $this->stream;
-
-        $this->middleware = new ImplicitHeadMiddleware($this->router, $streamFactory);
-        $this->response   = $this->createMock(ResponseInterface::class);
+        $this->router     = $this->createMock(RouterInterface::class);
+        $this->middleware = new ImplicitHeadMiddleware(
+            $this->router,
+            fn (): StreamInterface => $this->createMock(StreamInterface::class),
+        );
     }
 
-    public function testReturnsResultOfHandlerOnNonHeadRequests(): void
+    /** @return array<non-empty-string, array{0: non-empty-string}> */
+    public static function nonHeadMethods(): array
     {
-        $request = $this->createMock(ServerRequestInterface::class);
-        $request
-            ->method('getMethod')
-            ->willReturn(RequestMethod::METHOD_GET);
+        return [
+            RequestMethod::METHOD_GET     => [RequestMethod::METHOD_GET],
+            RequestMethod::METHOD_POST    => [RequestMethod::METHOD_POST],
+            RequestMethod::METHOD_PATCH   => [RequestMethod::METHOD_PATCH],
+            RequestMethod::METHOD_PUT     => [RequestMethod::METHOD_PUT],
+            RequestMethod::METHOD_DELETE  => [RequestMethod::METHOD_DELETE],
+            RequestMethod::METHOD_OPTIONS => [RequestMethod::METHOD_OPTIONS],
+            RequestMethod::METHOD_TRACE   => [RequestMethod::METHOD_TRACE],
+            RequestMethod::METHOD_CONNECT => [RequestMethod::METHOD_CONNECT],
+        ];
+    }
 
-        $handler = $this->createMock(RequestHandlerInterface::class);
-        $handler
-            ->method('handle')
-            ->with($request)
-            ->willReturn($this->response);
+    #[DataProvider('nonHeadMethods')]
+    public function testReturnsResultOfHandlerForNonHeadRequests(string $method): void
+    {
+        $request  = (new ServerRequest())->withMethod($method);
+        $response = new TextResponse('Whatever');
+        $handler  = new RequestHandlerStub($response);
 
         $result = $this->middleware->process($request, $handler);
 
-        self::assertSame($this->response, $result);
+        self::assertTrue($handler->didExecute());
+        self::assertSame($request, $handler->receivedRequest());
+        self::assertSame($response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenNoRouteResultPresentInRequest(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
-        $request
-            ->method('getMethod')
-            ->willReturn(RequestMethod::METHOD_HEAD);
-
-        $request
-            ->method('getAttribute')
-            ->with(RouteResult::class)
-            ->willReturn(null);
-
-        $handler = $this->createMock(RequestHandlerInterface::class);
-        $handler
-            ->method('handle')
-            ->with($request)
-            ->willReturn($this->response);
+        $request  = (new ServerRequest())->withMethod(RequestMethod::METHOD_HEAD);
+        $response = new TextResponse('Whatever');
+        $handler  = new RequestHandlerStub($response);
 
         $result = $this->middleware->process($request, $handler);
 
-        self::assertSame($this->response, $result);
+        self::assertTrue($handler->didExecute());
+        self::assertSame($request, $handler->receivedRequest());
+        self::assertSame($response, $result);
+    }
+
+    public function testReturnsResultOfHandlerWhenTheRouteResultMatchesARouteThatSupportsHeadRequests(): void
+    {
+        $route   = new Route(
+            '/foo',
+            $this->createMock(MiddlewareInterface::class),
+            [RequestMethod::METHOD_HEAD],
+            'route-name',
+        );
+        $request = (new ServerRequest())
+            ->withMethod(RequestMethod::METHOD_HEAD)
+            ->withAttribute(RouteResult::class, RouteResult::fromRoute($route));
+
+        $response = new TextResponse('Whatever');
+        $handler  = new RequestHandlerStub($response);
+
+        $result = $this->middleware->process($request, $handler);
+
+        self::assertTrue($handler->didExecute());
+        self::assertSame($request, $handler->receivedRequest());
+        self::assertSame($response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteSupportsHeadExplicitly(): void
     {
-        $route  = $this->createMock(Route::class);
-        $result = RouteResult::fromRoute($route);
+        $route   = $this->createMock(Route::class);
+        $result  = RouteResult::fromRoute($route);
+        $request = (new ServerRequest())
+            ->withMethod(RequestMethod::METHOD_HEAD)
+            ->withAttribute(RouteResult::class, $result);
 
-        $request = $this->createMock(ServerRequestInterface::class);
-        $request
-            ->method('getMethod')
-            ->willReturn(RequestMethod::METHOD_HEAD);
-
-        $request
-            ->method('getAttribute')
-            ->with(RouteResult::class)
-            ->willReturn($result);
-
-        $handler = $this->createMock(RequestHandlerInterface::class);
-        $handler
-            ->method('handle')
-            ->with($request)
-            ->willReturn($this->response);
+        $response = new TextResponse('Whatever');
+        $handler  = new RequestHandlerStub($response);
 
         $result = $this->middleware->process($request, $handler);
 
-        self::assertSame($this->response, $result);
+        self::assertTrue($handler->didExecute());
+        self::assertSame($request, $handler->receivedRequest());
+        self::assertSame($response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteDoesNotExplicitlySupportHeadAndDoesNotSupportGet(): void
     {
-        $result = RouteResult::fromRouteFailure([]);
+        $request = (new ServerRequest())
+            ->withMethod(RequestMethod::METHOD_HEAD)
+            ->withAttribute(RouteResult::class, RouteResult::fromRouteFailure([]));
 
-        $request = $this->createMock(ServerRequestInterface::class);
-        $request
-            ->method('getMethod')
-            ->willReturn(RequestMethod::METHOD_HEAD);
-
-        $request
-            ->method('getAttribute')
-            ->with(RouteResult::class)
-            ->willReturn($result);
-
-        $request
-            ->expects(self::once())
-            ->method('withMethod')
-            ->with(RequestMethod::METHOD_GET)
-            ->willReturnSelf();
-
-        $this->router
-            ->expects(self::once())
+        $this->router->expects(self::once())
             ->method('match')
-            ->with($request)
-            ->willReturn($result);
+            ->with(self::callback(static function (ServerRequestInterface $matchInput) use ($request): bool {
+                self::assertNotSame($request, $matchInput);
+                self::assertSame(RequestMethod::METHOD_GET, $matchInput->getMethod());
 
-        $handler = $this->createMock(RequestHandlerInterface::class);
-        $handler
-            ->method('handle')
-            ->with($request)
-            ->willReturn($this->response);
+                return true;
+            }))->willReturn(RouteResult::fromRouteFailure([]));
 
-        $response = $this->middleware->process($request, $handler);
+        $response = new TextResponse('Whatever');
+        $handler  = new RequestHandlerStub($response);
 
-        self::assertSame($this->response, $response);
+        $result = $this->middleware->process($request, $handler);
+
+        self::assertTrue($handler->didExecute());
+        self::assertSame($request, $handler->receivedRequest());
+        self::assertSame($response, $result);
     }
 
     public function testInvokesHandlerWhenRouteImplicitlySupportsHeadAndSupportsGet(): void
     {
-        $result = RouteResult::fromRouteFailure([]);
+        $matchFailure = RouteResult::fromRouteFailure([]);
+        $matchedRoute = new Route(
+            '/foo',
+            $this->createMock(MiddlewareInterface::class),
+            [RequestMethod::METHOD_GET],
+            'route-name',
+        );
+        $matchSuccess = RouteResult::fromRoute($matchedRoute);
 
-        $request = $this->createMock(ServerRequestInterface::class);
-        $request
-            ->method('getMethod')
-            ->willReturn(RequestMethod::METHOD_HEAD);
+        $request = (new ServerRequest())
+            ->withMethod(RequestMethod::METHOD_HEAD)
+            ->withAttribute(RouteResult::class, $matchFailure);
 
-        $request
-            ->method('getAttribute')
-            ->with(RouteResult::class)
-            ->willReturn($result);
-
-        $request
-            ->expects(self::exactly(2))
-            ->method('withMethod')
-            ->with(RequestMethod::METHOD_GET)
-            ->willReturnSelf();
-
-        $response = $this->createMock(ResponseInterface::class);
-        $response
-            ->expects(self::once())
-            ->method('withBody')
-            ->with($this->stream)
-            ->willReturnSelf();
-
-        $route  = $this->createMock(Route::class);
-        $result = RouteResult::fromRoute($route);
-
-        $request
-            ->expects(self::exactly(2))
-            ->method('withAttribute')
-            ->withConsecutive(
-                [
-                    RouteResult::class,
-                    $result,
-                ],
-                [
-                    ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE,
-                    RequestMethod::METHOD_HEAD,
-                ]
-            )
-            ->willReturnSelf();
-
-        $this->router
-            ->expects(self::once())
+        $this->router->expects(self::once())
             ->method('match')
-            ->with($request)
-            ->willReturn($result);
+            ->with(self::callback(static function (ServerRequestInterface $matchInput) use ($request): bool {
+                self::assertNotSame($request, $matchInput);
+                self::assertSame(RequestMethod::METHOD_GET, $matchInput->getMethod());
 
-        $handler = $this->createMock(RequestHandlerInterface::class);
-        $handler
-            ->method('handle')
-            ->with($request)
-            ->willReturn($response);
+                return true;
+            }))->willReturn($matchSuccess);
+
+        $response = new TextResponse('Whatever');
+        $handler  = new RequestHandlerStub($response);
 
         $result = $this->middleware->process($request, $handler);
 
-        self::assertSame($response, $result);
+        self::assertTrue($handler->didExecute());
+        self::assertNotSame($request, $handler->receivedRequest());
+        self::assertNotSame($response, $result);
+
+        self::assertEmpty((string) $result->getBody());
+
+        $received = $handler->receivedRequest();
+        self::assertSame($matchSuccess, $received->getAttribute(RouteResult::class));
+        self::assertSame(
+            RequestMethod::METHOD_HEAD,
+            $received->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE),
+        );
+        self::assertSame(RequestMethod::METHOD_GET, $received->getMethod());
     }
 
     public function testInvokesHandlerWithRequestComposingRouteResultAndAttributes(): void
     {
-        $result = RouteResult::fromRouteFailure([]);
+        $matchFailure = RouteResult::fromRouteFailure([]);
+        $matchedRoute = new Route(
+            '/foo',
+            $this->createMock(MiddlewareInterface::class),
+            [RequestMethod::METHOD_GET],
+            'route-name',
+        );
+        $matchSuccess = RouteResult::fromRoute($matchedRoute, ['foo' => 'bar', 'baz' => 'bat']);
 
-        $request = $this->createMock(ServerRequestInterface::class);
-        $request
-            ->method('getMethod')
-            ->willReturn(RequestMethod::METHOD_HEAD);
+        $request = (new ServerRequest())
+            ->withMethod(RequestMethod::METHOD_HEAD)
+            ->withAttribute(RouteResult::class, $matchFailure);
 
-        $request
-            ->method('getAttribute')
-            ->with(RouteResult::class)
-            ->willReturn($result);
-
-        $request
-            ->expects(self::exactly(2))
-            ->method('withMethod')
-            ->with(RequestMethod::METHOD_GET)
-            ->willReturnSelf();
-
-        $route                     = $this->createMock(Route::class);
-        $resultForRequestMethodGet = RouteResult::fromRoute($route, ['foo' => 'bar', 'baz' => 'bat']);
-
-        $request
-            ->expects(self::exactly(4))
-            ->method('withAttribute')
-            ->withConsecutive(
-                [
-                    'foo',
-                    'bar',
-                ],
-                [
-                    'baz',
-                    'bat',
-                ],
-                [
-                    RouteResult::class,
-                    $resultForRequestMethodGet,
-                ],
-                [
-                    ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE,
-                    RequestMethod::METHOD_HEAD,
-                ]
-            )
-            ->willReturnSelf();
-
-        $response = $this->createMock(ResponseInterface::class);
-        $response
-            ->expects(self::once())
-            ->method('withBody')
-            ->with($this->stream)
-            ->willReturnSelf();
-
-        $this->router
-            ->expects(self::once())
+        $this->router->expects(self::once())
             ->method('match')
-            ->with($request)
-            ->willReturn($resultForRequestMethodGet);
+            ->with(self::callback(static function (ServerRequestInterface $matchInput) use ($request): bool {
+                self::assertNotSame($request, $matchInput);
+                self::assertSame(RequestMethod::METHOD_GET, $matchInput->getMethod());
 
-        $handler = $this->createMock(RequestHandlerInterface::class);
-        $handler
-            ->expects(self::once())
-            ->method('handle')
-            ->with($request)
-            ->willReturn($response);
+                return true;
+            }))->willReturn($matchSuccess);
+
+        $response = new TextResponse('Whatever');
+        $handler  = new RequestHandlerStub($response);
 
         $result = $this->middleware->process($request, $handler);
 
-        self::assertSame($response, $result);
+        self::assertTrue($handler->didExecute());
+        self::assertNotSame($request, $handler->receivedRequest());
+        self::assertNotSame($response, $result);
+
+        self::assertEmpty((string) $result->getBody());
+
+        $received = $handler->receivedRequest();
+        self::assertSame($matchSuccess, $received->getAttribute(RouteResult::class));
+        self::assertSame(
+            RequestMethod::METHOD_HEAD,
+            $received->getAttribute(ImplicitHeadMiddleware::FORWARDED_HTTP_METHOD_ATTRIBUTE),
+        );
+        self::assertSame(RequestMethod::METHOD_GET, $received->getMethod());
+        self::assertSame('bar', $received->getAttribute('foo'));
+        self::assertSame('bat', $received->getAttribute('baz'));
     }
 }
