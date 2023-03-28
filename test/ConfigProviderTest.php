@@ -8,6 +8,7 @@ use Mezzio\Router\ConfigProvider;
 use Mezzio\Router\Middleware;
 use Mezzio\Router\RouteCollector;
 use Mezzio\Router\RouteCollectorFactory;
+use Mezzio\Router\RouteCollectorInterface;
 use PHPUnit\Framework\TestCase;
 
 /** @covers \Mezzio\Router\ConfigProvider */
@@ -26,6 +27,9 @@ final class ConfigProviderTest extends TestCase
                     Middleware\MethodNotAllowedMiddleware::class => Middleware\MethodNotAllowedMiddlewareFactory::class,
                     Middleware\RouteMiddleware::class            => Middleware\RouteMiddlewareFactory::class,
                     RouteCollector::class                        => RouteCollectorFactory::class,
+                ],
+                'aliases'   => [
+                    RouteCollectorInterface::class => RouteCollector::class,
                 ],
             ],
         ], $provider());
