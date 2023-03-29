@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mezzio\Router\Middleware;
 
 use Fig\Http\Message\StatusCodeInterface as StatusCode;
+use Mezzio\Router\Response\CallableResponseFactoryDecorator;
 use Mezzio\Router\RouteResult;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -15,6 +16,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use function assert;
 use function implode;
 use function is_array;
+use function is_callable;
 
 /**
  * Emit a 405 Method Not Allowed response
@@ -31,8 +33,24 @@ use function is_array;
  */
 class MethodNotAllowedMiddleware implements MiddlewareInterface
 {
-    public function __construct(private readonly ResponseFactoryInterface $responseFactory)
+    /** @var ResponseFactoryInterface */
+    private $responseFactory;
+
+    /**
+     * @param (callable():ResponseInterface)|ResponseFactoryInterface $responseFactory
+     */
+    public function __construct($responseFactory)
     {
+        if (is_callable($responseFactory)) {
+            // Factories are wrapped in a closure in order to enforce return type safety.
+            $responseFactory = new CallableResponseFactoryDecorator(
+                function () use ($responseFactory): ResponseInterface {
+                    return $responseFactory();
+                }
+            );
+        }
+
+        $this->responseFactory = $responseFactory;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

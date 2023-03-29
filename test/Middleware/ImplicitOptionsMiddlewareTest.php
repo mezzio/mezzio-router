@@ -5,29 +5,33 @@ declare(strict_types=1);
 namespace MezzioTest\Router\Middleware;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
-use Laminas\Diactoros\Response;
-use Laminas\Diactoros\ServerRequest;
 use Mezzio\Router\Middleware\ImplicitOptionsMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
-use Mezzio\Router\Test\ResponseFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use function implode;
+
 /** @covers \Mezzio\Router\Middleware\ImplicitOptionsMiddleware */
 final class ImplicitOptionsMiddlewareTest extends TestCase
 {
+    /** @var ResponseInterface&MockObject */
     private ResponseInterface $response;
+
     private ImplicitOptionsMiddleware $middleware;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->response   = new Response();
-        $this->middleware = new ImplicitOptionsMiddleware(new ResponseFactory($this->response));
+        $this->response  = $this->createMock(ResponseInterface::class);
+        $responseFactory = fn (): ResponseInterface => $this->response;
+
+        $this->middleware = new ImplicitOptionsMiddleware($responseFactory);
     }
 
     public function testNonOptionsRequestInvokesHandler(): void
@@ -113,21 +117,34 @@ final class ImplicitOptionsMiddlewareTest extends TestCase
 
         $result = RouteResult::fromRouteFailure($allowedMethods);
 
-        $request = (new ServerRequest())
-            ->withMethod(RequestMethod::METHOD_OPTIONS)
-            ->withAttribute(RouteResult::class, $result);
+        $request = $this->createMock(ServerRequestInterface::class);
+        $request
+            ->method('getMethod')
+            ->willReturn(RequestMethod::METHOD_OPTIONS);
+
+        $request
+            ->method('getAttribute')
+            ->with(RouteResult::class)
+            ->willReturn($result);
 
         $handler = $this->createMock(RequestHandlerInterface::class);
         $handler
             ->expects(self::never())
             ->method('handle');
 
-        self::assertFalse($this->response->hasHeader('Allow'));
+        $this->response
+            ->method('withStatus')
+            ->willReturnSelf();
 
-        $response = $this->middleware->process($request, $handler);
+        $this->response
+            ->expects(self::once())
+            ->method('withHeader')
+            ->with('Allow', implode(',', $allowedMethods))
+            ->willReturnSelf();
 
-        self::assertNotSame($this->response, $response);
-        self::assertTrue($response->hasHeader('Allow'));
+        $result = $this->middleware->process($request, $handler);
+
+        self::assertSame($this->response, $result);
     }
 
     public function testReturnsResultOfHandlerWhenRouteNotFound(): void

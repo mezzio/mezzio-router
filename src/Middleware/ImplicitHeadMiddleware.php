@@ -9,7 +9,7 @@ use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -44,10 +44,19 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
 {
     public const FORWARDED_HTTP_METHOD_ATTRIBUTE = 'forwarded_http_method';
 
-    public function __construct(
-        private readonly RouterInterface $router,
-        private readonly StreamFactoryInterface $streamFactory,
-    ) {
+    /** @var callable(): StreamInterface */
+    private $streamFactory;
+
+    /**
+     * @param callable(): StreamInterface $streamFactory A factory capable of returning an empty
+     *     StreamInterface instance to inject in a response.
+     */
+    public function __construct(private RouterInterface $router, callable $streamFactory)
+    {
+        // Factory is wrapped in closure in order to enforce return type safety.
+        $this->streamFactory = function () use ($streamFactory): StreamInterface {
+            return $streamFactory();
+        };
     }
 
     /**
@@ -90,6 +99,7 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
                 ->withMethod(RequestMethod::METHOD_GET)
         );
 
-        return $response->withBody($this->streamFactory->createStream());
+        $body = ($this->streamFactory)();
+        return $response->withBody($body);
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MezzioTest\Router\Middleware;
 
-use Laminas\Diactoros\StreamFactory;
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\Middleware\ImplicitHeadMiddlewareFactory;
 use Mezzio\Router\RouterInterface;
@@ -12,7 +11,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
 
 use function in_array;
 
@@ -51,7 +50,7 @@ final class ImplicitHeadMiddlewareFactoryTest extends TestCase
             ->expects(self::exactly(2))
             ->method('has')
             ->with(self::callback(function (string $arg): bool {
-                self::assertTrue(in_array($arg, [RouterInterface::class, StreamFactoryInterface::class]));
+                self::assertTrue(in_array($arg, [RouterInterface::class, StreamInterface::class]));
                 return true;
             }))
             ->willReturnOnConsecutiveCalls(true, false);
@@ -64,13 +63,14 @@ final class ImplicitHeadMiddlewareFactoryTest extends TestCase
     public function testFactoryProducesImplicitHeadMiddlewareWhenAllDependenciesPresent(): void
     {
         $router        = $this->createMock(RouterInterface::class);
-        $streamFactory = new StreamFactory();
+        $streamFactory = static function (): void {
+        };
 
         $this->container
             ->expects(self::exactly(2))
             ->method('has')
             ->with(self::callback(function (string $arg): bool {
-                self::assertTrue(in_array($arg, [RouterInterface::class, StreamFactoryInterface::class]));
+                self::assertTrue(in_array($arg, [RouterInterface::class, StreamInterface::class]));
                 return true;
             }))
             ->willReturn(true);
@@ -79,7 +79,7 @@ final class ImplicitHeadMiddlewareFactoryTest extends TestCase
             ->expects(self::exactly(2))
             ->method('get')
             ->with(self::callback(function (string $arg): bool {
-                self::assertTrue(in_array($arg, [RouterInterface::class, StreamFactoryInterface::class]));
+                self::assertTrue(in_array($arg, [RouterInterface::class, StreamInterface::class]));
                 return true;
             }))
             ->willReturnOnConsecutiveCalls($router, $streamFactory);

@@ -7,7 +7,6 @@ namespace MezzioTest\Router\Middleware;
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Laminas\Diactoros\Response\TextResponse;
 use Laminas\Diactoros\ServerRequest;
-use Laminas\Diactoros\StreamFactory;
 use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
@@ -16,6 +15,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 /** @covers \Mezzio\Router\Middleware\ImplicitHeadMiddleware */
@@ -33,7 +33,7 @@ final class ImplicitHeadMiddlewareTest extends TestCase
         $this->router     = $this->createMock(RouterInterface::class);
         $this->middleware = new ImplicitHeadMiddleware(
             $this->router,
-            new StreamFactory(),
+            fn (): StreamInterface => $this->createMock(StreamInterface::class),
         );
     }
 
