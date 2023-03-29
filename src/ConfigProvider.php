@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Mezzio\Router;
 
 /**
- * @psalm-type DependencyConfig = array{factories: array<class-string, class-string>}
+ * @psalm-type DependencyConfig = array{
+ *     factories: array<class-string, class-string>,
+ *     aliases?: array<class-string, class-string>,
+ * }
  */
 class ConfigProvider
 {
@@ -28,6 +31,9 @@ class ConfigProvider
                 Middleware\MethodNotAllowedMiddleware::class => Middleware\MethodNotAllowedMiddlewareFactory::class,
                 Middleware\RouteMiddleware::class            => Middleware\RouteMiddlewareFactory::class,
                 RouteCollector::class                        => RouteCollectorFactory::class,
+            ],
+            'aliases'   => [
+                RouteCollectorInterface::class => RouteCollector::class,
             ],
         ];
     }
