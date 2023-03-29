@@ -9,9 +9,12 @@ use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
+use function is_callable;
 
 /**
  * Handle implicit HEAD requests.
@@ -44,19 +47,25 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
 {
     public const FORWARDED_HTTP_METHOD_ATTRIBUTE = 'forwarded_http_method';
 
-    /** @var callable(): StreamInterface */
+    /** @var callable(): StreamInterface|StreamFactoryInterface */
     private $streamFactory;
 
     /**
-     * @param callable(): StreamInterface $streamFactory A factory capable of returning an empty
+     * @param callable(): StreamInterface|StreamFactoryInterface $streamFactory A factory capable of returning an empty
      *     StreamInterface instance to inject in a response.
      */
-    public function __construct(private RouterInterface $router, callable $streamFactory)
+    public function __construct(private RouterInterface $router, callable|StreamFactoryInterface $streamFactory)
     {
-        // Factory is wrapped in closure in order to enforce return type safety.
-        $this->streamFactory = function () use ($streamFactory): StreamInterface {
-            return $streamFactory();
-        };
+        if (is_callable($streamFactory)) {
+            // Factory is wrapped in closure in order to enforce return type safety.
+            $this->streamFactory = function () use ($streamFactory): StreamInterface {
+                return $streamFactory();
+            };
+
+            return;
+        }
+
+        $this->streamFactory = $streamFactory;
     }
 
     /**
@@ -99,7 +108,10 @@ class ImplicitHeadMiddleware implements MiddlewareInterface
                 ->withMethod(RequestMethod::METHOD_GET)
         );
 
-        $body = ($this->streamFactory)();
+        $body = $this->streamFactory instanceof StreamFactoryInterface
+            ? $this->streamFactory->createStream()
+            : ($this->streamFactory)();
+
         return $response->withBody($body);
     }
 }

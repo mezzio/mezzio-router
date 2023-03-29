@@ -33,13 +33,12 @@ use function is_callable;
  */
 class MethodNotAllowedMiddleware implements MiddlewareInterface
 {
-    /** @var ResponseFactoryInterface */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     /**
      * @param (callable():ResponseInterface)|ResponseFactoryInterface $responseFactory
      */
-    public function __construct($responseFactory)
+    public function __construct(callable|ResponseFactoryInterface $responseFactory)
     {
         if (is_callable($responseFactory)) {
             // Factories are wrapped in a closure in order to enforce return type safety.

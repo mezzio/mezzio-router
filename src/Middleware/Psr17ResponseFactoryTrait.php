@@ -13,7 +13,7 @@ use Webmozart\Assert\Assert;
 
 /**
  * @internal
- * @deprecated Will be removed with v4.0.0
+ * @deprecated Will be removed with v5.0.0
  */
 trait Psr17ResponseFactoryTrait
 {

@@ -7,6 +7,7 @@ namespace Mezzio\Router\Middleware;
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\RouterInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -14,10 +15,9 @@ use Psr\Http\Message\StreamInterface;
  *
  * This factory depends on two other services:
  *
- * - Mezzio\Router\RouterInterface, which should resolve to an
- *   instance of that interface.
- * - Psr\Http\Message\StreamInterface, which should resolve to a callable
- *   that will produce an empty Psr\Http\Message\StreamInterface instance.
+ * - Mezzio\Router\RouterInterface, which should resolve to an instance of that interface.
+ * - Either Psr\Http\Message\StreamFactoryInterface or Psr\Http\Message\StreamInterface, which should resolve to a
+ *   callable that will produce an empty Psr\Http\Message\StreamInterface instance.
  *
  * @final
  */
@@ -33,6 +33,14 @@ class ImplicitHeadMiddlewareFactory
             throw MissingDependencyException::dependencyForService(
                 RouterInterface::class,
                 ImplicitHeadMiddleware::class
+            );
+        }
+
+        // Prefer StreamFactoryInterface if present over StreamInterface callable
+        if ($container->has(StreamFactoryInterface::class)) {
+            return new ImplicitHeadMiddleware(
+                $container->get(RouterInterface::class),
+                $container->get(StreamFactoryInterface::class)
             );
         }
 
