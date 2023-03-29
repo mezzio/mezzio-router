@@ -6,12 +6,12 @@ namespace MezzioTest\Router\Middleware;
 
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\Middleware\ImplicitOptionsMiddlewareFactory;
+use Mezzio\Router\Test\ResponseFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
 
 #[CoversClass(ImplicitOptionsMiddlewareFactory::class)]
 final class ImplicitOptionsMiddlewareFactoryTest extends TestCase
@@ -38,25 +38,17 @@ final class ImplicitOptionsMiddlewareFactoryTest extends TestCase
 
     public function testFactoryProducesImplicitOptionsMiddlewareWhenAllDependenciesPresent(): void
     {
-        $factory = static function (): void {
-        };
-
         $this->container
+            ->expects(self::once())
             ->method('has')
-            ->with(self::callback(static function ($arg): bool {
-                self::assertContains($arg, [
-                    ResponseFactoryInterface::class,
-                    ResponseInterface::class,
-                ]);
-
-                return true;
-            }))->willReturnOnConsecutiveCalls(false, true);
+            ->with(ResponseFactoryInterface::class)
+            ->willReturn(true);
 
         $this->container
             ->expects(self::once())
             ->method('get')
-            ->with(ResponseInterface::class)
-            ->willReturn($factory);
+            ->with(ResponseFactoryInterface::class)
+            ->willReturn(new ResponseFactory());
 
         ($this->factory)($this->container);
     }

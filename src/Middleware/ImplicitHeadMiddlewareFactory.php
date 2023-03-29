@@ -7,7 +7,7 @@ namespace Mezzio\Router\Middleware;
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\RouterInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
 /**
  * Create and return an ImplicitHeadMiddleware instance.
@@ -16,7 +16,7 @@ use Psr\Http\Message\StreamInterface;
  *
  * - Mezzio\Router\RouterInterface, which should resolve to an
  *   instance of that interface.
- * - Psr\Http\Message\StreamInterface, which should resolve to a callable
+ * - Psr\Http\Message\StreamFactoryInterface, which should resolve to a factory
  *   that will produce an empty Psr\Http\Message\StreamInterface instance.
  *
  * @final
@@ -24,8 +24,7 @@ use Psr\Http\Message\StreamInterface;
 class ImplicitHeadMiddlewareFactory
 {
     /**
-     * @throws MissingDependencyException If either the Mezzio\Router\RouterInterface
-     *     or Psr\Http\Message\StreamInterface services are missing.
+     * @throws MissingDependencyException If either the RouterInterface or StreamFactoryInterface services are missing.
      */
     public function __invoke(ContainerInterface $container): ImplicitHeadMiddleware
     {
@@ -36,16 +35,16 @@ class ImplicitHeadMiddlewareFactory
             );
         }
 
-        if (! $container->has(StreamInterface::class)) {
+        if (! $container->has(StreamFactoryInterface::class)) {
             throw MissingDependencyException::dependencyForService(
-                StreamInterface::class,
+                StreamFactoryInterface::class,
                 ImplicitHeadMiddleware::class
             );
         }
 
         return new ImplicitHeadMiddleware(
             $container->get(RouterInterface::class),
-            $container->get(StreamInterface::class)
+            $container->get(StreamFactoryInterface::class)
         );
     }
 }
