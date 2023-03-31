@@ -103,13 +103,17 @@ final class ImplicitHeadMiddlewareFactoryTest extends TestCase
         $streamFactory = new StreamFactory();
 
         $this->container
-            ->expects(self::exactly(2))
+            ->expects(self::exactly(3))
             ->method('has')
             ->with(self::callback(function (string $arg): bool {
-                self::assertTrue(in_array($arg, [RouterInterface::class, StreamFactoryInterface::class]));
+                self::assertTrue(in_array($arg, [
+                    RouterInterface::class,
+                    StreamFactoryInterface::class,
+                    StreamInterface::class,
+                ]));
                 return true;
             }))
-            ->willReturn(true);
+            ->willReturn(true, true, false);
 
         $this->container
             ->expects(self::exactly(2))

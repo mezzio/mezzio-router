@@ -6,6 +6,7 @@ namespace Mezzio\Router\Middleware;
 
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\RouterInterface;
+use Mezzio\Router\Stream\CallableStreamFactoryDecorator;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
@@ -36,24 +37,37 @@ class ImplicitHeadMiddlewareFactory
             );
         }
 
-        // Prefer StreamFactoryInterface if present over StreamInterface callable
-        if ($container->has(StreamFactoryInterface::class)) {
-            return new ImplicitHeadMiddleware(
-                $container->get(RouterInterface::class),
-                $container->get(StreamFactoryInterface::class)
-            );
-        }
+        return new ImplicitHeadMiddleware(
+            $container->get(RouterInterface::class),
+            $this->detectStreamFactory($container),
+        );
+    }
 
-        if (! $container->has(StreamInterface::class)) {
+    /**
+     * BC Preserving StreamFactoryInterface Retrieval
+     *
+     * Preserves existing behaviour in the 3.x series by fetching a `StreamInterface` callable and wrapping it in a
+     * decorator that implements StreamFactoryInterface. If `StreamInterface` callable is unavailable, attempt to
+     * fetch a `StreamFactoryInterface`, throwing a MissingDependencyException if neither are found.
+     *
+     * @deprecated Will be removed in version 4.0.0
+     */
+    private function detectStreamFactory(ContainerInterface $container): StreamFactoryInterface
+    {
+        $hasStreamFactory      = $container->has(StreamFactoryInterface::class);
+        $hasDeprecatedCallable = $container->has(StreamInterface::class);
+
+        if (! $hasStreamFactory && ! $hasDeprecatedCallable) {
             throw MissingDependencyException::dependencyForService(
                 StreamInterface::class,
                 ImplicitHeadMiddleware::class
             );
         }
 
-        return new ImplicitHeadMiddleware(
-            $container->get(RouterInterface::class),
-            $container->get(StreamInterface::class)
-        );
+        if ($hasDeprecatedCallable) {
+            return new CallableStreamFactoryDecorator($container->get(StreamInterface::class));
+        }
+
+        return $container->get(StreamFactoryInterface::class);
     }
 }

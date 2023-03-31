@@ -6,6 +6,12 @@
     </DeprecatedClass>
   </file>
   <file src="src/Middleware/ImplicitHeadMiddlewareFactory.php">
+    <DeprecatedClass>
+      <code><![CDATA[new CallableStreamFactoryDecorator($container->get(StreamInterface::class))]]></code>
+    </DeprecatedClass>
+    <DeprecatedMethod>
+      <code>detectStreamFactory</code>
+    </DeprecatedMethod>
     <InvalidArgument>
       <code><![CDATA[$container->get(StreamInterface::class)]]></code>
     </InvalidArgument>
