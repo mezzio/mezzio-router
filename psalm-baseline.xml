@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="5.8.0@9cf4f60a333f779ad3bc704a555920e81d4fdcda">
+  <file src="src/Middleware/ImplicitHeadMiddleware.php">
+    <DeprecatedClass>
+      <code>new CallableStreamFactoryDecorator($streamFactory)</code>
+    </DeprecatedClass>
+  </file>
   <file src="src/Middleware/ImplicitHeadMiddlewareFactory.php">
     <InvalidArgument>
       <code><![CDATA[$container->get(StreamInterface::class)]]></code>
