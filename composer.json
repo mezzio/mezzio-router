@@ -49,12 +49,12 @@
     },
     "require-dev": {
         "laminas/laminas-coding-standard": "~2.5.0",
-        "laminas/laminas-diactoros": "^2.24",
+        "laminas/laminas-diactoros": "^2.25.2",
         "laminas/laminas-servicemanager": "^3.20.0",
         "laminas/laminas-stratigility": "^3.9.0",
-        "phpunit/phpunit": "^10.0.19",
+        "phpunit/phpunit": "^10.1.2",
         "psalm/plugin-phpunit": "^0.18.4",
-        "vimeo/psalm": "^5.8"
+        "vimeo/psalm": "^5.9"
     },
     "suggest": {
         "mezzio/mezzio-aurarouter": "^3.0 to use the Aura.Router routing adapter",
