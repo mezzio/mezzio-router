@@ -15,12 +15,12 @@
             <directory>./test</directory>
         </testsuite>
     </testsuites>
-    <coverage>
+    <source>
         <include>
             <directory suffix=".php">src</directory>
         </include>
         <exclude>
             <directory>src/Test</directory>
         </exclude>
-    </coverage>
+    </source>
 </phpunit>
