@@ -155,7 +155,7 @@ final class RouteTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('One or more HTTP methods were invalid');
 
-        /** @psalm-suppress ArgumentTypeCoercion */
+        /** @psalm-suppress MixedArgumentTypeCoercion */
         new Route('/test', $this->noopMiddleware, $invalidHttpMethods);
     }
 
