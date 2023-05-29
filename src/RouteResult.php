@@ -94,7 +94,7 @@ class RouteResult implements MiddlewareInterface
      *
      * If the result represents a failure, it passes handling to the handler.
      *
-     * Otherwise, it processes the composed middleware using the provide request
+     * Otherwise, it processes the composed middleware using the provided request
      * and handler.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
