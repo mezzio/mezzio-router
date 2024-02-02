@@ -52,7 +52,7 @@
         "laminas/laminas-diactoros": "^3.3.0",
         "laminas/laminas-servicemanager": "^3.22.1",
         "laminas/laminas-stratigility": "^3.11.0",
-        "phpunit/phpunit": "^10.4.2",
+        "phpunit/phpunit": "^11.0.0",
         "psalm/plugin-phpunit": "^0.18.4",
         "vimeo/psalm": "^5.15"
     },
