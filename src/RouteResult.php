@@ -141,7 +141,7 @@ class RouteResult implements MiddlewareInterface
             return false;
         }
 
-        if (! $this->matchedRouteName) {
+        if ($this->matchedRouteName === null) {
             assert($this->route !== null);
             $this->matchedRouteName = $this->route->getName();
         }

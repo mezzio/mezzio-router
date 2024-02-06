@@ -93,7 +93,7 @@ final class DuplicateRouteDetector
 
     private function duplicateRouteDetected(Route $duplicate): void
     {
-        $allowedMethods = $duplicate->getAllowedMethods() ?: ['(any)'];
+        $allowedMethods = $duplicate->getAllowedMethods() ?? ['(any)'];
         $name           = $duplicate->getName();
         throw new Exception\DuplicateRouteException(
             sprintf(
