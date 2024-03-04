@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace MezzioTest\Router;
 
-use Laminas\ServiceManager\ConfigInterface;
 use Laminas\ServiceManager\ServiceManager;
 use Mezzio\Router;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -15,7 +14,7 @@ use Psr\Http\Message\StreamInterface;
 
 use function array_merge_recursive;
 
-/** @psalm-import-type ServiceManagerConfigurationType from ConfigInterface */
+/** @psalm-import-type ServiceManagerConfiguration from ServiceManager */
 final class ServiceManagerIntegrationTest extends TestCase
 {
     private ContainerInterface $container;
@@ -24,7 +23,7 @@ final class ServiceManagerIntegrationTest extends TestCase
     {
         parent::setUp();
 
-        /** @psalm-var ServiceManagerConfigurationType $config */
+        /** @psalm-var ServiceManagerConfiguration $config */
         $config          = array_merge_recursive(
             (new Router\ConfigProvider())->getDependencies(),
             [
