@@ -11,6 +11,7 @@ use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
+use MezzioTest\Router\Asset\NoOpMiddleware;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -103,8 +104,9 @@ final class ImplicitHeadMiddlewareTest extends TestCase
 
     public function testReturnsResultOfHandlerWhenRouteSupportsHeadExplicitly(): void
     {
-        $route   = $this->createMock(Route::class);
-        $result  = RouteResult::fromRoute($route);
+        $result  = RouteResult::fromRoute(
+            new Route('/', new NoOpMiddleware()),
+        );
         $request = (new ServerRequest())
             ->withMethod(RequestMethod::METHOD_HEAD)
             ->withAttribute(RouteResult::class, $result);
