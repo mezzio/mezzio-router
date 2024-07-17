@@ -25,10 +25,8 @@ use Psr\Http\Server\MiddlewareInterface;
  * Internally, the class performs some checks for duplicate routes when
  * attaching via one of the exposed methods, and will raise an exception when a
  * collision occurs.
- *
- * @final
  */
-class RouteCollector implements RouteCollectorInterface
+final class RouteCollector implements RouteCollectorInterface
 {
     /**
      * List of all routes registered directly with the application.

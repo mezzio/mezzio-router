@@ -10,7 +10,7 @@ namespace Mezzio\Router;
  *     aliases?: array<class-string, class-string>,
  * }
  */
-class ConfigProvider
+final class ConfigProvider
 {
     /** @return array{dependencies: DependencyConfig} */
     public function __invoke(): array

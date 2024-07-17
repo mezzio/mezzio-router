@@ -32,10 +32,8 @@ use function strtoupper;
  * for how segments of a route match, or even default values to use. These may
  * be provided after instantiation via the "options" property and related
  * setOptions() method.
- *
- * @final
  */
-class Route implements MiddlewareInterface
+final class Route implements MiddlewareInterface
 {
     public const HTTP_METHOD_ANY       = null;
     public const HTTP_METHOD_SEPARATOR = ':';

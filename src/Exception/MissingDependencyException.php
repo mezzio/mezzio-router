@@ -9,8 +9,7 @@ use RuntimeException;
 
 use function sprintf;
 
-/** @final */
-class MissingDependencyException extends RuntimeException implements
+final class MissingDependencyException extends RuntimeException implements
     ExceptionInterface,
     NotFoundExceptionInterface
 {

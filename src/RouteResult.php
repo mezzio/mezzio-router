@@ -30,10 +30,8 @@ use function assert;
  *
  * RouteResult instances are consumed by the Application in the routing
  * middleware.
- *
- * @final
  */
-class RouteResult implements MiddlewareInterface
+final class RouteResult implements MiddlewareInterface
 {
     /** @var list<string>|null */
     private $allowedMethods = [];

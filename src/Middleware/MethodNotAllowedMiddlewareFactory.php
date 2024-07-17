@@ -14,10 +14,8 @@ use Psr\Container\ContainerInterface;
  *
  * - Psr\Http\Message\ResponseInterface, which should resolve to a callable
  *   that will produce an empty Psr\Http\Message\ResponseInterface instance.
- *
- * @final
  */
-class MethodNotAllowedMiddlewareFactory
+final class MethodNotAllowedMiddlewareFactory
 {
     use Psr17ResponseFactoryTrait;
 
