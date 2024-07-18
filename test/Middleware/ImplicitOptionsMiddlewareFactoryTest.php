@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace MezzioTest\Router\Middleware;
 
+use Laminas\Diactoros\ResponseFactory;
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\Middleware\ImplicitOptionsMiddlewareFactory;
+use MezzioTest\Router\InMemoryContainer;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
 
 #[CoversClass(ImplicitOptionsMiddlewareFactory::class)]
 final class ImplicitOptionsMiddlewareFactoryTest extends TestCase
 {
-    /** @var ContainerInterface&MockObject */
-    private ContainerInterface $container;
+    private InMemoryContainer $container;
 
     private ImplicitOptionsMiddlewareFactory $factory;
 
@@ -25,39 +23,23 @@ final class ImplicitOptionsMiddlewareFactoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->container = $this->createMock(ContainerInterface::class);
+        $this->container = new InMemoryContainer();
         $this->factory   = new ImplicitOptionsMiddlewareFactory();
     }
 
     public function testFactoryRaisesExceptionIfResponseFactoryServiceIsMissing(): void
     {
         $this->expectException(MissingDependencyException::class);
+        $this->expectExceptionMessage(ResponseFactoryInterface::class);
 
         ($this->factory)($this->container);
     }
 
     public function testFactoryProducesImplicitOptionsMiddlewareWhenAllDependenciesPresent(): void
     {
-        $factory = static function (): void {
-        };
-
-        $this->container
-            ->method('has')
-            ->with(self::callback(static function ($arg): bool {
-                self::assertContains($arg, [
-                    ResponseFactoryInterface::class,
-                    ResponseInterface::class,
-                ]);
-
-                return true;
-            }))->willReturnOnConsecutiveCalls(false, true);
-
-        $this->container
-            ->expects(self::once())
-            ->method('get')
-            ->with(ResponseInterface::class)
-            ->willReturn($factory);
-
+        $this->container->set(ResponseFactoryInterface::class, new ResponseFactory());
         ($this->factory)($this->container);
+
+        $this->expectNotToPerformAssertions();
     }
 }
