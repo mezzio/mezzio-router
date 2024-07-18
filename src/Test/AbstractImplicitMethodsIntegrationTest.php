@@ -19,7 +19,6 @@ use Mezzio\Router\Middleware\RouteMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
-use MezzioTest\Router\Asset\FixedResponseFactory;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -40,6 +39,9 @@ use function implode;
  *
  * This test class tests that the router correctly marshals the allowed methods
  * for a match that matches the path, but not the request method.
+ *
+ * @psalm-internal \MezzioTest
+ * @psalm-internal \Mezzio
  */
 abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 {
