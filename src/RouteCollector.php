@@ -38,8 +38,8 @@ final class RouteCollector implements RouteCollectorInterface
     private ?DuplicateRouteDetector $duplicateRouteDetector = null;
 
     public function __construct(
-        protected RouterInterface $router,
-        protected bool $detectDuplicates = true
+        private readonly RouterInterface $router,
+        private readonly bool $detectDuplicates = true
     ) {
     }
 

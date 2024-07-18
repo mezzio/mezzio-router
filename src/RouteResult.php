@@ -33,44 +33,38 @@ use function assert;
  */
 final class RouteResult implements MiddlewareInterface
 {
-    /** @var list<string>|null */
-    private $allowedMethods = [];
-
-    /** @var array<string, mixed> */
-    private $matchedParams = [];
-
-    /** @var string|null */
-    private $matchedRouteName;
-
-    /**
-     * Route matched during routing
-     *
-     * @since 1.3.0
-     * @var Route|null
-     */
-    private $route;
-
     /**
      * Only allow instantiation via factory methods.
      *
      * @param bool $success Success state of routing.
+     * @param Route|null $route Route matched during routing.
+     * @param null|string $matchedRouteName The name of the matched route. Null if routing failed.
+     * @param null|list<string> $allowedMethods Methods allowed by the route, or null if all methods are allowed.
+     * @param array<string, mixed> $matchedParams Matched routing parameters for successful routes.
      */
-    private function __construct(private bool $success)
-    {
+    private function __construct(
+        private readonly bool $success,
+        private readonly ?Route $route,
+        private readonly ?string $matchedRouteName,
+        private readonly ?array $allowedMethods,
+        private readonly array $matchedParams = [],
+    ) {
     }
 
     /**
-     * Create an instance representing a route succes from the matching route.
+     * Create an instance representing a route success from the matching route.
      *
      * @param array<string, mixed> $params Parameters associated with the matched route, if any.
      */
     public static function fromRoute(Route $route, array $params = []): self
     {
-        $result                = new self(true);
-        $result->route         = $route;
-        $result->matchedParams = $params;
-
-        return $result;
+        return new self(
+            true,
+            $route,
+            $route->getName(),
+            $route->getAllowedMethods(),
+            $params,
+        );
     }
 
     /**
@@ -81,10 +75,13 @@ final class RouteResult implements MiddlewareInterface
      */
     public static function fromRouteFailure(?array $methods): self
     {
-        $result                 = new self(false);
-        $result->allowedMethods = $methods;
-
-        return $result;
+        return new self(
+            false,
+            null,
+            null,
+            $methods,
+            [],
+        );
     }
 
     /**
@@ -120,7 +117,7 @@ final class RouteResult implements MiddlewareInterface
      *
      * @return false|Route false if representing a routing failure; Route instance otherwise.
      */
-    public function getMatchedRoute()
+    public function getMatchedRoute(): Route|false
     {
         return $this->route ?? false;
     }
@@ -130,19 +127,14 @@ final class RouteResult implements MiddlewareInterface
      *
      * If this result represents a failure, return false; otherwise, return the
      * matched route name.
-     *
-     * @return false|string
      */
-    public function getMatchedRouteName()
+    public function getMatchedRouteName(): false|string
     {
         if ($this->isFailure()) {
             return false;
         }
 
-        if ($this->matchedRouteName === null) {
-            assert($this->route !== null);
-            $this->matchedRouteName = $this->route->getName();
-        }
+        assert($this->matchedRouteName !== null);
 
         return $this->matchedRouteName;
     }
