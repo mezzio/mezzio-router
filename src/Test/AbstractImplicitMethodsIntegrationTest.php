@@ -48,9 +48,9 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     public function getImplicitOptionsMiddleware(?ResponseInterface $response = null): ImplicitOptionsMiddleware
     {
         return new ImplicitOptionsMiddleware(
-            function () use ($response): ResponseInterface {
-                return $response ?? new Response();
-            }
+            new FixedResponseFactory(
+                $response ?? new Response(),
+            ),
         );
     }
 
