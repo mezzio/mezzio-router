@@ -23,12 +23,8 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 final class RouteMiddleware implements MiddlewareInterface
 {
-    /** @var RouterInterface */
-    protected $router;
-
-    public function __construct(RouterInterface $router)
+    public function __construct(private readonly RouterInterface $router)
     {
-        $this->router = $router;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

@@ -39,7 +39,7 @@ final class Route implements MiddlewareInterface
     public const HTTP_METHOD_SEPARATOR = ':';
 
     /** @var null|list<string> HTTP methods allowed with this route. */
-    private ?array $methods;
+    private readonly ?array $methods;
 
     /** @var array Options related to this route to pass to the routing implementation. */
     private array $options = [];
