@@ -6,8 +6,7 @@ namespace Mezzio\Router\Middleware;
 
 use Psr\Container\ContainerInterface;
 
-/** @final */
-class DispatchMiddlewareFactory
+final class DispatchMiddlewareFactory
 {
     public function __invoke(ContainerInterface $container): DispatchMiddleware
     {

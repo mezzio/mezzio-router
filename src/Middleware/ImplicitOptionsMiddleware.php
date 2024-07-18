@@ -40,10 +40,8 @@ use function is_callable;
  * - and the `Route` instance defines implicit OPTIONS.
  *
  * In all other circumstances, it will return the result of the delegate.
- *
- * @final
  */
-class ImplicitOptionsMiddleware implements MiddlewareInterface
+final class ImplicitOptionsMiddleware implements MiddlewareInterface
 {
     private ResponseFactoryInterface $responseFactory;
 

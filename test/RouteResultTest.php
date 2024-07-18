@@ -6,13 +6,14 @@ namespace MezzioTest\Router;
 
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
+use MezzioTest\Router\Asset\FixedResponseMiddleware;
+use MezzioTest\Router\Asset\NoOpMiddleware;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
-use function assert;
 
 /**
  * @see MockObject
@@ -45,7 +46,7 @@ final class RouteResultTest extends TestCase
     public function testRouteMatchedParams(): void
     {
         $params = ['foo' => 'bar'];
-        $route  = $this->createMock(Route::class);
+        $route  = new Route('/foo', new NoOpMiddleware());
         $result = RouteResult::fromRoute($route, $params);
 
         self::assertSame($params, $result->getMatchedParams());
@@ -61,45 +62,27 @@ final class RouteResultTest extends TestCase
     public function testRouteSuccessMethodFailure(): void
     {
         $params = ['foo' => 'bar'];
-        $route  = $this->createMock(Route::class);
+        $route  = new Route('/foo', new NoOpMiddleware());
         $result = RouteResult::fromRoute($route, $params);
 
         self::assertFalse($result->isMethodFailure());
     }
 
-    /**
-     * @psalm-return array{route: Route&MockObject, result: RouteResult}
-     */
-    public function testFromRouteShouldComposeRouteInResult(): array
+    public function testFromRouteShouldComposeRouteInResult(): RouteResult
     {
-        $route = $this->createMock(Route::class);
+        $route = new Route('/foo', new NoOpMiddleware(), ['HEAD', 'OPTIONS', 'GET'], 'route');
 
         $result = RouteResult::fromRoute($route, ['foo' => 'bar']);
 
         self::assertTrue($result->isSuccess());
         self::assertSame($route, $result->getMatchedRoute());
 
-        return ['route' => $route, 'result' => $result];
+        return $result;
     }
 
-    /**
-     * @psalm-param array{result:RouteResult,route:Route&MockObject} $data
-     * @depends testFromRouteShouldComposeRouteInResult
-     */
-    public function testAllAccessorsShouldReturnExpectedDataWhenResultCreatedViaFromRoute(array $data): void
+    #[Depends('testFromRouteShouldComposeRouteInResult')]
+    public function testAllAccessorsShouldReturnExpectedDataWhenResultCreatedViaFromRoute(RouteResult $result): void
     {
-        $result = $data['result'];
-        $route  = $data['route'];
-        assert($route instanceof MockObject);
-
-        $route
-            ->method('getName')
-            ->willReturn('route');
-
-        $route
-            ->method('getAllowedMethods')
-            ->willReturn(['HEAD', 'OPTIONS', 'GET']);
-
         self::assertSame('route', $result->getMatchedRouteName());
         self::assertSame(['HEAD', 'OPTIONS', 'GET'], $result->getAllowedMethods());
     }
@@ -121,9 +104,7 @@ final class RouteResultTest extends TestCase
         return $result;
     }
 
-    /**
-     * @depends testFailureResultDoesNotIndicateAMethodFailureIfAllMethodsAreAllowed
-     */
+    #[Depends('testFailureResultDoesNotIndicateAMethodFailureIfAllMethodsAreAllowed')]
     public function testAllowedMethodsIncludesASingleWildcardEntryWhenAllMethodsAllowedForFailureResult(
         RouteResult $result
     ): void {
@@ -154,11 +135,7 @@ final class RouteResultTest extends TestCase
             ->expects(self::never())
             ->method('handle');
 
-        $route = $this->createMock(Route::class);
-        $route
-            ->method('process')
-            ->with($request, $handler)
-            ->willReturn($response);
+        $route = new Route('/', new FixedResponseMiddleware($response));
 
         $result = RouteResult::fromRoute($route);
 

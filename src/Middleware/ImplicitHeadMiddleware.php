@@ -41,10 +41,8 @@ use function is_callable;
  * If the route instance supports GET requests, the middleware dispatches
  * the next layer, but alters the request passed to use the GET method;
  * it then provides an empty response body to the returned response.
- *
- * @final
  */
-class ImplicitHeadMiddleware implements MiddlewareInterface
+final class ImplicitHeadMiddleware implements MiddlewareInterface
 {
     public const FORWARDED_HTTP_METHOD_ATTRIBUTE = 'forwarded_http_method';
 

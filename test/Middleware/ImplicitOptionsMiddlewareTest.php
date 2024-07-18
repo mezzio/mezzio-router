@@ -8,6 +8,7 @@ use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Mezzio\Router\Middleware\ImplicitOptionsMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
+use MezzioTest\Router\Asset\NoOpMiddleware;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -84,9 +85,9 @@ final class ImplicitOptionsMiddlewareTest extends TestCase
 
     public function testReturnsResultOfHandlerWhenRouteSupportsOptionsExplicitly(): void
     {
-        $route = $this->createMock(Route::class);
-
-        $result = RouteResult::fromRoute($route);
+        $result = RouteResult::fromRoute(
+            new Route('/', new NoOpMiddleware()),
+        );
 
         $request = $this->createMock(ServerRequestInterface::class);
         $request

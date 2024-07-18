@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace MezzioTest\Router\Middleware;
 
 use Mezzio\Router\Middleware\DispatchMiddleware;
+use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
+use MezzioTest\Router\Asset\FixedResponseMiddleware;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -60,11 +62,9 @@ final class DispatchMiddlewareTest extends TestCase
             ->expects(self::never())
             ->method('handle');
 
-        $routeResult = $this->createMock(RouteResult::class);
-        $routeResult
-            ->method('process')
-            ->with($this->request, $this->handler)
-            ->willReturn($this->response);
+        $routeResult = RouteResult::fromRoute(
+            new Route('/', new FixedResponseMiddleware($this->response)),
+        );
 
         $this->request
             ->method('getAttribute')

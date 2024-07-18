@@ -19,10 +19,8 @@ use Psr\Http\Message\StreamInterface;
  * - Mezzio\Router\RouterInterface, which should resolve to an instance of that interface.
  * - Either Psr\Http\Message\StreamFactoryInterface or Psr\Http\Message\StreamInterface, which should resolve to a
  *   callable that will produce an empty Psr\Http\Message\StreamInterface instance.
- *
- * @final
  */
-class ImplicitHeadMiddlewareFactory
+final class ImplicitHeadMiddlewareFactory
 {
     /**
      * @throws MissingDependencyException If either the Mezzio\Router\RouterInterface

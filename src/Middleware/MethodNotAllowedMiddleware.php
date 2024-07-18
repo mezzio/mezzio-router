@@ -28,10 +28,8 @@ use function is_callable;
  *
  * If no route result is composed, and/or it's not the result of a method
  * failure, it passes handling to the provided handler.
- *
- * @final
  */
-class MethodNotAllowedMiddleware implements MiddlewareInterface
+final class MethodNotAllowedMiddleware implements MiddlewareInterface
 {
     private ResponseFactoryInterface $responseFactory;
 

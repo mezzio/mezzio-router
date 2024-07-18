@@ -18,10 +18,8 @@ use function sprintf;
  *
  * - Mezzio\Router\RouterInterface, which should resolve to
  *   a class implementing that interface.
- *
- * @final
  */
-class RouteCollectorFactory
+final class RouteCollectorFactory
 {
     /**
      * @throws Exception\MissingDependencyException If the RouterInterface service is missing.
