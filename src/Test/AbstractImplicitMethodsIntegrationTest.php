@@ -19,9 +19,11 @@ use Mezzio\Router\Middleware\RouteMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
+use MezzioTest\Router\Asset\FixedResponseFactory;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -60,13 +62,13 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
         );
     }
 
-    /**
-     * @return callable(): never
-     */
-    public function createInvalidResponseFactory(): callable
+    public function createInvalidResponseFactory(): ResponseFactoryInterface
     {
-        return static function (): ResponseInterface {
-            self::fail('Response generated when it should not have been');
+        return new class implements ResponseFactoryInterface {
+            public function createResponse(int $code = 200, string $reasonPhrase = ''): ResponseInterface
+            {
+                TestCase::fail('Response generated when it should not have been');
+            }
         };
     }
 
@@ -236,9 +238,9 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
 
         $pipeline = new MiddlewarePipe();
         $pipeline->pipe(new RouteMiddleware($router));
-        $pipeline->pipe(new MethodNotAllowedMiddleware(static function () use ($finalResponse): ResponseInterface {
-            return $finalResponse;
-        }));
+        $pipeline->pipe(new MethodNotAllowedMiddleware(
+            new FixedResponseFactory($finalResponse),
+        ));
 
         $finalHandler = $this->createMock(RequestHandlerInterface::class);
         $finalHandler
