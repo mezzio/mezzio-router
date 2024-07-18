@@ -7,15 +7,11 @@ namespace Mezzio\Router\Middleware;
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
-use Mezzio\Router\Stream\CallableStreamFactoryDecorator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
-use function is_callable;
 
 /**
  * Handle implicit HEAD requests.
@@ -46,20 +42,10 @@ final class ImplicitHeadMiddleware implements MiddlewareInterface
 {
     public const FORWARDED_HTTP_METHOD_ATTRIBUTE = 'forwarded_http_method';
 
-    private StreamFactoryInterface $streamFactory;
-
-    /**
-     * @param (callable(): StreamInterface)|StreamFactoryInterface $streamFactory A factory capable of returning
-     *                                                                            an empty StreamInterface instance to
-     *                                                                            inject in a response.
-     */
-    public function __construct(private RouterInterface $router, callable|StreamFactoryInterface $streamFactory)
-    {
-        if (is_callable($streamFactory)) {
-            $streamFactory = new CallableStreamFactoryDecorator($streamFactory);
-        }
-
-        $this->streamFactory = $streamFactory;
+    public function __construct(
+        private readonly RouterInterface $router,
+        private readonly StreamFactoryInterface $streamFactory,
+    ) {
     }
 
     /**

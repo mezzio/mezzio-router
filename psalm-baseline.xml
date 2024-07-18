@@ -1,21 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.8.0@9cf4f60a333f779ad3bc704a555920e81d4fdcda">
-  <file src="src/Middleware/ImplicitHeadMiddleware.php">
-    <DeprecatedClass>
-      <code>new CallableStreamFactoryDecorator($streamFactory)</code>
-    </DeprecatedClass>
-  </file>
-  <file src="src/Middleware/ImplicitHeadMiddlewareFactory.php">
-    <DeprecatedClass>
-      <code><![CDATA[new CallableStreamFactoryDecorator($container->get(StreamInterface::class))]]></code>
-    </DeprecatedClass>
-    <DeprecatedMethod>
-      <code>detectStreamFactory</code>
-    </DeprecatedMethod>
-    <InvalidArgument>
-      <code><![CDATA[$container->get(StreamInterface::class)]]></code>
-    </InvalidArgument>
-  </file>
+<files psalm-version="5.25.0@01a8eb06b9e9cc6cfb6a320bf9fb14331919d505">
   <file src="test/InMemoryContainer.php">
     <MixedReturnStatement>
       <code><![CDATA[$this->services[$id]]]></code>
