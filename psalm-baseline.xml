@@ -5,9 +5,4 @@
       <code><![CDATA[$this->services[$id]]]></code>
     </MixedReturnStatement>
   </file>
-  <file src="test/Response/CallableResponseFactoryDecoratorTest.php">
-    <InternalMethod>
-      <code><![CDATA[new CallableResponseFactoryDecorator(fn (): ResponseInterface => $this->response)]]></code>
-    </InternalMethod>
-  </file>
 </files>
