@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace MezzioTest\Router;
 
+use Laminas\Diactoros\StreamFactory;
 use Laminas\ServiceManager\ServiceManager;
 use Mezzio\Router;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
 use function array_merge_recursive;
 
@@ -34,8 +35,8 @@ final class ServiceManagerIntegrationTest extends TestCase
                     Router\RouterInterface::class   => function (): Router\RouterInterface {
                         return $this->createMock(Router\RouterInterface::class);
                     },
-                    StreamInterface::class          => function (): callable {
-                        return fn (): StreamInterface => $this->createMock(StreamInterface::class);
+                    StreamFactoryInterface::class   => function (): StreamFactoryInterface {
+                        return new StreamFactory();
                     },
                 ],
             ],

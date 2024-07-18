@@ -9,7 +9,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Generator;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
-use Laminas\Diactoros\Stream;
+use Laminas\Diactoros\StreamFactory;
 use Laminas\Stratigility\MiddlewarePipe;
 use Mezzio\Router\Middleware\DispatchMiddleware;
 use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
@@ -56,9 +56,7 @@ abstract class AbstractImplicitMethodsIntegrationTest extends TestCase
     {
         return new ImplicitHeadMiddleware(
             $router,
-            function () {
-                return new Stream('php://temp', 'rw');
-            }
+            new StreamFactory(),
         );
     }
 
