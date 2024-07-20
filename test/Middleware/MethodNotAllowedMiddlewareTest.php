@@ -8,7 +8,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Mezzio\Router\Middleware\MethodNotAllowedMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
-use MezzioTest\Router\Asset\FixedResponseFactory;
+use Mezzio\Router\Test\FixedResponseFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;

@@ -8,7 +8,7 @@ use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Mezzio\Router\Middleware\ImplicitOptionsMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
-use MezzioTest\Router\Asset\FixedResponseFactory;
+use Mezzio\Router\Test\FixedResponseFactory;
 use MezzioTest\Router\Asset\NoOpMiddleware;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
