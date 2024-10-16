@@ -48,7 +48,7 @@
         "zendframework/zend-expressive-router": "*"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "~2.5.0",
+        "laminas/laminas-coding-standard": "~3.0.0",
         "laminas/laminas-diactoros": "^3.3.1",
         "laminas/laminas-servicemanager": "^4.0.0",
         "laminas/laminas-stratigility": "^4.0.0",
