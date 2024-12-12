@@ -41,8 +41,6 @@ $ composer require mezzio/mezzio-router
 
 We currently support and provide the following routing integrations:
 
-- [Aura.Router](https://github.com/auraphp/Aura.Router):
-  `composer require mezzio/mezzio-aurarouter`
 - [FastRoute](https://github.com/nikic/FastRoute):
   `composer require mezzio/mezzio-fastroute`
 - [laminas-router](https://github.com/laminas/laminas-router):
