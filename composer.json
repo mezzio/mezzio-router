@@ -54,7 +54,7 @@
         "laminas/laminas-stratigility": "^4.1.0",
         "phpunit/phpunit": "^10.5.39",
         "psalm/plugin-phpunit": "^0.19.0",
-        "vimeo/psalm": "^5.26.1"
+        "vimeo/psalm": "^6.0.0"
     },
     "suggest": {
         "mezzio/mezzio-fastroute": "^3.0 to use the FastRoute routing adapter",
