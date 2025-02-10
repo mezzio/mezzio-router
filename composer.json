@@ -50,11 +50,11 @@
     "require-dev": {
         "laminas/laminas-coding-standard": "~3.0.1",
         "laminas/laminas-diactoros": "^3.5.0",
-        "laminas/laminas-servicemanager": "^4.3.0",
+        "laminas/laminas-servicemanager": "^4.4.0",
         "laminas/laminas-stratigility": "^4.1.0",
-        "phpunit/phpunit": "^10.5.39",
-        "psalm/plugin-phpunit": "^0.19.0",
-        "vimeo/psalm": "^6.0.0"
+        "phpunit/phpunit": "^10.5.45",
+        "psalm/plugin-phpunit": "^0.19.2",
+        "vimeo/psalm": "^6.5.1"
     },
     "suggest": {
         "mezzio/mezzio-fastroute": "^3.0 to use the FastRoute routing adapter",
