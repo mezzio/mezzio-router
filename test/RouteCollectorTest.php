@@ -248,8 +248,8 @@ final class RouteCollectorTest extends TestCase
         }
 
         $duration         = microtime(true) - $start;
-        $expectedDuration = $baseDuration * 1000;
-        $error            = 30 * $expectedDuration / 100;
+        $expectedDuration = $baseDuration * 1000.0;
+        $error            = 30.0 * $expectedDuration / 100.0;
         self::assertTrue(
             $expectedDuration + $error > $duration,
             sprintf(

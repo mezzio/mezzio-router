@@ -8,6 +8,7 @@
     findUnusedPsalmSuppress="true"
     findUnusedBaselineEntry="true"
     findUnusedCode="false"
+    findUnusedIssueHandlerSuppression="true"
 >
     <projectFiles>
         <directory name="src"/>
@@ -28,6 +29,12 @@
                 <referencedMethod name="Mezzio\Router\RouteCollector::willDetectDuplicates"/>
             </errorLevel>
         </InternalMethod>
+        <MissingOverrideAttribute>
+            <errorLevel type="suppress">
+                <directory name="src" />
+                <directory name="test" />
+            </errorLevel>
+        </MissingOverrideAttribute>
     </issueHandlers>
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
