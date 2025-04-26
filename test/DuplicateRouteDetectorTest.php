@@ -11,7 +11,7 @@ use MezzioTest\Router\Asset\NoOpMiddleware;
 use PHPUnit\Framework\TestCase;
 
 /** @psalm-suppress InternalClass,InternalMethod */
-class DuplicateRouteDetectorTest extends TestCase
+final class DuplicateRouteDetectorTest extends TestCase
 {
     private DuplicateRouteDetector $detector;
 

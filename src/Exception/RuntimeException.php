@@ -6,6 +6,6 @@ namespace Mezzio\Router\Exception;
 
 use RuntimeException as PhpRuntimeException;
 
-class RuntimeException extends PhpRuntimeException implements ExceptionInterface
+final class RuntimeException extends PhpRuntimeException implements ExceptionInterface
 {
 }
