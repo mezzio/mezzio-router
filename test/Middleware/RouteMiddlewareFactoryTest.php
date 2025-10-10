@@ -7,11 +7,12 @@ namespace MezzioTest\Router\Middleware;
 use Mezzio\Router\Exception\MissingDependencyException;
 use Mezzio\Router\Middleware\RouteMiddlewareFactory;
 use Mezzio\Router\RouterInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-/** @covers \Mezzio\Router\Middleware\RouteMiddlewareFactory */
+#[CoversClass(RouteMiddlewareFactory::class)]
 final class RouteMiddlewareFactoryTest extends TestCase
 {
     /** @var ContainerInterface&MockObject */

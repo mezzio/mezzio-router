@@ -9,9 +9,10 @@ use Mezzio\Router\Middleware;
 use Mezzio\Router\RouteCollector;
 use Mezzio\Router\RouteCollectorFactory;
 use Mezzio\Router\RouteCollectorInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/** @covers \Mezzio\Router\ConfigProvider */
+#[CoversClass(ConfigProvider::class)]
 final class ConfigProviderTest extends TestCase
 {
     public function testProviderProvidesFactoriesForAllMiddleware(): void

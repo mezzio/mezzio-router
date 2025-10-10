@@ -3,19 +3,19 @@
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
          colors="true"
-         displayDetailsOnTestsThatTriggerWarnings="true"
-         displayDetailsOnTestsThatTriggerNotices="true"
-         displayDetailsOnTestsThatTriggerErrors="true"
-         displayDetailsOnTestsThatTriggerDeprecations="true"
-         displayDetailsOnSkippedTests="true"
-         displayDetailsOnIncompleteTests="true"
-         cacheDirectory=".phpunit.cache">
+         displayDetailsOnAllIssues="true"
+         cacheDirectory=".phpunit.cache"
+         failOnPhpunitDeprecation="true"
+         failOnWarning="true"
+         failOnNotice="true"
+         failOnDeprecation="true"
+>
     <testsuites>
         <testsuite name="Mezzio Tests">
             <directory>./test</directory>
         </testsuite>
     </testsuites>
-    <source>
+    <source ignoreIndirectDeprecations="true">
         <include>
             <directory suffix=".php">src</directory>
         </include>

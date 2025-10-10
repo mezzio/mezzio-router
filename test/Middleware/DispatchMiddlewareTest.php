@@ -6,13 +6,14 @@ namespace MezzioTest\Router\Middleware;
 
 use Mezzio\Router\Middleware\DispatchMiddleware;
 use Mezzio\Router\RouteResult;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-/** @covers \Mezzio\Router\Middleware\DispatchMiddleware */
+#[CoversClass(DispatchMiddleware::class)]
 final class DispatchMiddlewareTest extends TestCase
 {
     /** @var RequestHandlerInterface&MockObject */
