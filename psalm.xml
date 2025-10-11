@@ -8,6 +8,7 @@
     findUnusedPsalmSuppress="true"
     findUnusedBaselineEntry="true"
     findUnusedCode="false"
+    findUnusedIssueHandlerSuppression="true"
 >
     <projectFiles>
         <directory name="src"/>
@@ -28,22 +29,6 @@
                 <referencedMethod name="Mezzio\Router\RouteCollector::willDetectDuplicates"/>
             </errorLevel>
         </InternalMethod>
-        <InternalClass>
-            <errorLevel type="suppress">
-                <referencedClass name="Mezzio\Router\Response\CallableResponseFactoryDecorator"/>
-            </errorLevel>
-        </InternalClass>
-        <DeprecatedClass>
-            <errorLevel type="suppress">
-                <referencedClass name="Mezzio\Router\Response\CallableResponseFactoryDecorator"/>
-            </errorLevel>
-        </DeprecatedClass>
-        <DeprecatedTrait>
-            <errorLevel type="suppress">
-                <file name="src/Middleware/MethodNotAllowedMiddlewareFactory.php"/>
-                <file name="src/Middleware/ImplicitOptionsMiddlewareFactory.php"/>
-            </errorLevel>
-        </DeprecatedTrait>
         <MissingOverrideAttribute>
             <errorLevel type="suppress">
                 <directory name="src" />

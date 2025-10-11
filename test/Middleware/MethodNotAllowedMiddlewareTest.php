@@ -8,6 +8,7 @@ use Fig\Http\Message\StatusCodeInterface as StatusCode;
 use Mezzio\Router\Middleware\MethodNotAllowedMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
+use Mezzio\Router\Test\FixedResponseFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -18,27 +19,20 @@ use Psr\Http\Server\RequestHandlerInterface;
 #[CoversClass(MethodNotAllowedMiddleware::class)]
 final class MethodNotAllowedMiddlewareTest extends TestCase
 {
-    /** @var RequestHandlerInterface&MockObject */
-    private RequestHandlerInterface $handler;
-
-    /** @var ServerRequestInterface&MockObject */
-    private ServerRequestInterface $request;
-
-    /** @var ResponseInterface&MockObject */
-    private ResponseInterface $response;
-
+    private RequestHandlerInterface&MockObject $handler;
+    private ServerRequestInterface&MockObject $request;
+    private ResponseInterface&MockObject $response;
     private MethodNotAllowedMiddleware $middleware;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->handler   = $this->createMock(RequestHandlerInterface::class);
-        $this->request   = $this->createMock(ServerRequestInterface::class);
-        $this->response  = $this->createMock(ResponseInterface::class);
-        $responseFactory = fn (): ResponseInterface => $this->response;
+        $this->handler  = $this->createMock(RequestHandlerInterface::class);
+        $this->request  = $this->createMock(ServerRequestInterface::class);
+        $this->response = $this->createMock(ResponseInterface::class);
 
-        $this->middleware = new MethodNotAllowedMiddleware($responseFactory);
+        $this->middleware = new MethodNotAllowedMiddleware(new FixedResponseFactory($this->response));
     }
 
     public function testDelegatesToHandlerIfNoRouteResultPresentInRequest(): void

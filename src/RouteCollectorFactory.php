@@ -9,6 +9,7 @@ use LogicException;
 use Psr\Container\ContainerInterface;
 
 use function is_array;
+use function is_bool;
 use function sprintf;
 
 /**
@@ -18,11 +19,11 @@ use function sprintf;
  *
  * - Mezzio\Router\RouterInterface, which should resolve to
  *   a class implementing that interface.
- *
- * @final
  */
-class RouteCollectorFactory
+final class RouteCollectorFactory
 {
+    private const DETECT_DUPLICATES_BY_DEFAULT = true;
+
     /**
      * @throws Exception\MissingDependencyException If the RouterInterface service is missing.
      */
@@ -44,7 +45,7 @@ class RouteCollectorFactory
     private function getDetectDuplicatesFlag(ContainerInterface $container): bool
     {
         if (! $container->has('config')) {
-            return true;
+            return self::DETECT_DUPLICATES_BY_DEFAULT;
         }
 
         $config = $container->get('config');
@@ -52,16 +53,18 @@ class RouteCollectorFactory
             throw new LogicException(sprintf('Config must be an array or implement %s.', ArrayAccess::class));
         }
 
-        if (! isset($config[RouteCollector::class])) {
-            return true;
+        $options = $config['router'] ?? [];
+
+        if (! is_array($options)) {
+            return self::DETECT_DUPLICATES_BY_DEFAULT;
         }
 
-        $collectorOptions = $config[RouteCollector::class] ?? [];
-
-        if (! is_array($collectorOptions) || ! isset($collectorOptions['detect_duplicates'])) {
-            return true;
+        if (! isset($options['detect_duplicates'])) {
+            return self::DETECT_DUPLICATES_BY_DEFAULT;
         }
 
-        return (bool) $collectorOptions['detect_duplicates'];
+        return is_bool($options['detect_duplicates'])
+            ? $options['detect_duplicates']
+            : self::DETECT_DUPLICATES_BY_DEFAULT;
     }
 }

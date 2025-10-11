@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mezzio\Router\Middleware;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
-use Mezzio\Router\Response\CallableResponseFactoryDecorator;
 use Mezzio\Router\RouteResult;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,7 +15,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use function assert;
 use function implode;
 use function is_array;
-use function is_callable;
 
 /**
  * Handle implicit OPTIONS requests.
@@ -40,30 +38,11 @@ use function is_callable;
  * - and the `Route` instance defines implicit OPTIONS.
  *
  * In all other circumstances, it will return the result of the delegate.
- *
- * @final
  */
-class ImplicitOptionsMiddleware implements MiddlewareInterface
+final class ImplicitOptionsMiddleware implements MiddlewareInterface
 {
-    private ResponseFactoryInterface $responseFactory;
-
-    /**
-     * @param (callable():ResponseInterface)|ResponseFactoryInterface $responseFactory A factory capable of returning an
-     *     empty ResponseInterface instance to return for implicit OPTIONS
-     *     requests.
-     */
-    public function __construct(callable|ResponseFactoryInterface $responseFactory)
+    public function __construct(private readonly ResponseFactoryInterface $responseFactory)
     {
-        if (is_callable($responseFactory)) {
-            // Factories are wrapped in a closure in order to enforce return type safety.
-            $responseFactory = new CallableResponseFactoryDecorator(
-                static function () use ($responseFactory): ResponseInterface {
-                    return $responseFactory();
-                }
-            );
-        }
-
-        $this->responseFactory = $responseFactory;
     }
 
     /**

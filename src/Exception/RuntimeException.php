@@ -6,7 +6,13 @@ namespace Mezzio\Router\Exception;
 
 use RuntimeException as PhpRuntimeException;
 
-/** @final */
+/**
+ * Generic RuntimeException
+ *
+ * This exception class is extended in router implementation packages.
+ *
+ * @psalm-suppress ClassMustBeFinal
+ */
 class RuntimeException extends PhpRuntimeException implements ExceptionInterface
 {
 }

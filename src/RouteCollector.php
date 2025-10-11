@@ -25,10 +25,8 @@ use Psr\Http\Server\MiddlewareInterface;
  * Internally, the class performs some checks for duplicate routes when
  * attaching via one of the exposed methods, and will raise an exception when a
  * collision occurs.
- *
- * @final
  */
-class RouteCollector implements RouteCollectorInterface
+final class RouteCollector implements RouteCollectorInterface
 {
     /**
      * List of all routes registered directly with the application.
@@ -40,8 +38,8 @@ class RouteCollector implements RouteCollectorInterface
     private ?DuplicateRouteDetector $duplicateRouteDetector = null;
 
     public function __construct(
-        protected RouterInterface $router,
-        protected bool $detectDuplicates = true
+        private readonly RouterInterface $router,
+        private readonly bool $detectDuplicates = true
     ) {
     }
 

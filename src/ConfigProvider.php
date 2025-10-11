@@ -11,7 +11,7 @@ namespace Mezzio\Router;
  * }
  * @final
  */
-class ConfigProvider
+final class ConfigProvider
 {
     /** @return array{dependencies: DependencyConfig} */
     public function __invoke(): array

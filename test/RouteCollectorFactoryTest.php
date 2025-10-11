@@ -50,7 +50,7 @@ final class RouteCollectorFactoryTest extends TestCase
     public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromArrayConfig(): void
     {
         $this->testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig([
-            RouteCollector::class => [
+            'router' => [
                 'detect_duplicates' => false,
             ],
         ]);
@@ -59,7 +59,7 @@ final class RouteCollectorFactoryTest extends TestCase
     public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromArrayObjectConfig(): void
     {
         $this->testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig(new ArrayObject([
-            RouteCollector::class => [
+            'router' => [
                 'detect_duplicates' => false,
             ],
         ]));
@@ -68,7 +68,7 @@ final class RouteCollectorFactoryTest extends TestCase
     public function testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromArrayIteratorConfig(): void
     {
         $this->testFactoryProducesRouteCollectorUsingDetectDuplicatesFlagFromConfig(new ArrayIterator([
-            RouteCollector::class => [
+            'router' => [
                 'detect_duplicates' => false,
             ],
         ]));

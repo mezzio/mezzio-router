@@ -20,17 +20,11 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * If routing succeeds, injects the request passed to the handler with any
  * matched parameters as well.
- *
- * @final
  */
-class RouteMiddleware implements MiddlewareInterface
+final class RouteMiddleware implements MiddlewareInterface
 {
-    /** @var RouterInterface */
-    protected $router;
-
-    public function __construct(RouterInterface $router)
+    public function __construct(private readonly RouterInterface $router)
     {
-        $this->router = $router;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

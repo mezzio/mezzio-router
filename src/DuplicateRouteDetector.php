@@ -7,7 +7,7 @@ namespace Mezzio\Router;
 use function implode;
 use function sprintf;
 
-/** @final */
+/** @internal */
 final class DuplicateRouteDetector
 {
     private const ROUTE_SEARCH_ANY     = 'any';
@@ -16,9 +16,9 @@ final class DuplicateRouteDetector
     /**
      * List of all routes indexed by name
      *
-     * @var Route[]
+     * @var array<string, Route>
      */
-    private $routeNames = [];
+    private array $routeNames = [];
 
     /**
      * Search structure for duplicate path-method detection
@@ -35,7 +35,7 @@ final class DuplicateRouteDetector
      *
      * @var array<string, array{methods?: array<string, Route>, any?: Route}>
      */
-    private $routePaths = [];
+    private array $routePaths = [];
 
     /**
      * Determine if the route is duplicated in the current list.

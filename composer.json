@@ -53,11 +53,10 @@
         "laminas/laminas-servicemanager": "^4.4.0",
         "laminas/laminas-stratigility": "^4.2.0",
         "phpunit/phpunit": "^11.5.42",
-        "psalm/plugin-phpunit": "^0.19.0",
+        "psalm/plugin-phpunit": "^0.19.5",
         "vimeo/psalm": "^6.13.1"
     },
     "suggest": {
-        "mezzio/mezzio-aurarouter": "^3.0 to use the Aura.Router routing adapter",
         "mezzio/mezzio-fastroute": "^3.0 to use the FastRoute routing adapter",
         "mezzio/mezzio-laminasrouter": "^3.0 to use the laminas-router routing adapter"
     },

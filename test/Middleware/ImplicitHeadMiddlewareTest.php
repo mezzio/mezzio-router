@@ -7,16 +7,17 @@ namespace MezzioTest\Router\Middleware;
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Laminas\Diactoros\Response\TextResponse;
 use Laminas\Diactoros\ServerRequest;
+use Laminas\Diactoros\StreamFactory;
 use Mezzio\Router\Middleware\ImplicitHeadMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
+use MezzioTest\Router\Asset\NoOpMiddleware;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 #[CoversClass(ImplicitHeadMiddleware::class)]
@@ -34,7 +35,7 @@ final class ImplicitHeadMiddlewareTest extends TestCase
         $this->router     = $this->createMock(RouterInterface::class);
         $this->middleware = new ImplicitHeadMiddleware(
             $this->router,
-            fn (): StreamInterface => $this->createMock(StreamInterface::class),
+            new StreamFactory(),
         );
     }
 
@@ -104,8 +105,9 @@ final class ImplicitHeadMiddlewareTest extends TestCase
 
     public function testReturnsResultOfHandlerWhenRouteSupportsHeadExplicitly(): void
     {
-        $route   = $this->createMock(Route::class);
-        $result  = RouteResult::fromRoute($route);
+        $result  = RouteResult::fromRoute(
+            new Route('/', new NoOpMiddleware()),
+        );
         $request = (new ServerRequest())
             ->withMethod(RequestMethod::METHOD_HEAD)
             ->withAttribute(RouteResult::class, $result);
