@@ -17,7 +17,7 @@ use function fopen;
  * @psalm-suppress InternalClass, InternalMethod, DeprecatedClass
  */
 #[CoversClass(CallableStreamFactoryDecorator::class)]
-class CallableStreamFactoryDecoratorTest extends TestCase
+final class CallableStreamFactoryDecoratorTest extends TestCase
 {
     private StreamInterface $stream;
     private CallableStreamFactoryDecorator $decorator;
@@ -56,6 +56,8 @@ class CallableStreamFactoryDecoratorTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('This method will not be implemented');
 
-        $this->decorator->createStreamFromResource(fopen(__FILE__, 'r'));
+        $resource = fopen(__FILE__, 'r');
+        self::assertIsResource($resource);
+        $this->decorator->createStreamFromResource($resource);
     }
 }

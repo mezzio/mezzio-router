@@ -6,6 +6,8 @@ namespace MezzioTest\Router;
 
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -14,11 +16,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 use function assert;
 
-/**
- * @see MockObject
- *
- * @covers \Mezzio\Router\RouteResult
- */
+#[CoversClass(RouteResult::class)]
 final class RouteResultTest extends TestCase
 {
     public function testRouteNameIsNotRetrievable(): void
@@ -84,8 +82,8 @@ final class RouteResultTest extends TestCase
 
     /**
      * @psalm-param array{result:RouteResult,route:Route&MockObject} $data
-     * @depends testFromRouteShouldComposeRouteInResult
      */
+    #[Depends('testFromRouteShouldComposeRouteInResult')]
     public function testAllAccessorsShouldReturnExpectedDataWhenResultCreatedViaFromRoute(array $data): void
     {
         $result = $data['result'];
@@ -121,9 +119,7 @@ final class RouteResultTest extends TestCase
         return $result;
     }
 
-    /**
-     * @depends testFailureResultDoesNotIndicateAMethodFailureIfAllMethodsAreAllowed
-     */
+    #[Depends('testFailureResultDoesNotIndicateAMethodFailureIfAllMethodsAreAllowed')]
     public function testAllowedMethodsIncludesASingleWildcardEntryWhenAllMethodsAllowedForFailureResult(
         RouteResult $result
     ): void {

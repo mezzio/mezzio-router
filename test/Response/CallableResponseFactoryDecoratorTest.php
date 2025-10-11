@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace MezzioTest\Router\Response;
 
 use Mezzio\Router\Response\CallableResponseFactoryDecorator;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
-/** @covers \Mezzio\Router\Response\CallableResponseFactoryDecorator */
+#[CoversClass(CallableResponseFactoryDecorator::class)]
 final class CallableResponseFactoryDecoratorTest extends TestCase
 {
     /** @var ResponseInterface&MockObject */

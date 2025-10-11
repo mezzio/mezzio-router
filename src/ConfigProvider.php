@@ -9,6 +9,7 @@ namespace Mezzio\Router;
  *     factories: array<class-string, class-string>,
  *     aliases?: array<class-string, class-string>,
  * }
+ * @final
  */
 class ConfigProvider
 {
