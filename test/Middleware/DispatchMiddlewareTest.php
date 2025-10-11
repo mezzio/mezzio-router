@@ -8,13 +8,14 @@ use Mezzio\Router\Middleware\DispatchMiddleware;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use MezzioTest\Router\Asset\FixedResponseMiddleware;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-/** @covers \Mezzio\Router\Middleware\DispatchMiddleware */
+#[CoversClass(DispatchMiddleware::class)]
 final class DispatchMiddlewareTest extends TestCase
 {
     /** @var RequestHandlerInterface&MockObject */

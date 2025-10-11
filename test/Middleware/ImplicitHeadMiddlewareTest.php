@@ -13,13 +13,14 @@ use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\RouterInterface;
 use MezzioTest\Router\Asset\NoOpMiddleware;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
-/** @covers \Mezzio\Router\Middleware\ImplicitHeadMiddleware */
+#[CoversClass(ImplicitHeadMiddleware::class)]
 final class ImplicitHeadMiddlewareTest extends TestCase
 {
     /** @var RouterInterface&MockObject */

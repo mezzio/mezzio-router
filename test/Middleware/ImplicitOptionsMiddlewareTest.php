@@ -10,6 +10,7 @@ use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use Mezzio\Router\Test\FixedResponseFactory;
 use MezzioTest\Router\Asset\NoOpMiddleware;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -18,7 +19,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 use function implode;
 
-/** @covers \Mezzio\Router\Middleware\ImplicitOptionsMiddleware */
+#[CoversClass(ImplicitOptionsMiddleware::class)]
 final class ImplicitOptionsMiddlewareTest extends TestCase
 {
     private ResponseInterface&MockObject $response;
