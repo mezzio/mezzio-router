@@ -53,7 +53,7 @@
         "laminas/laminas-servicemanager": "^4.4.0",
         "laminas/laminas-stratigility": "^4.2.0",
         "phpunit/phpunit": "^11.5.42",
-        "psalm/plugin-phpunit": "^0.19.5",
+        "psalm/plugin-phpunit": "^0.20.0",
         "vimeo/psalm": "^6.13.1"
     },
     "suggest": {
