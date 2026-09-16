@@ -159,7 +159,7 @@ final class Route implements MiddlewareInterface
         }
 
         if (
-            false === array_reduce($methods, function ($valid, $method) {
+            false === array_reduce($methods, static function ($valid, $method) {
                 if (false === $valid) {
                     return false;
                 }
