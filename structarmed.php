@@ -6,6 +6,7 @@ use Boundwize\StructArmed\Architecture;
 use Boundwize\StructArmed\Preset\Preset;
 
 return Architecture::define()
+    ->withPresets(Preset::PSR4(), Preset::CODEQUALITY())
     ->layer('Core', [
         'src/DuplicateRouteDetector.php',
         'src/Route.php',
@@ -19,7 +20,6 @@ return Architecture::define()
     ->layer('Exception', 'src/Exception')
     ->layer('Middleware', 'src/Middleware')
     ->layer('Test', 'src/Test')
-    ->withPresets(Preset::PSR4(), Preset::CODEQUALITY())
     ->ruleset([
         'Config'     => ['+Middleware'],
         'Exception'  => [],
