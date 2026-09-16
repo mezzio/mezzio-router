@@ -35,7 +35,7 @@ final class ServiceManagerIntegrationTest extends TestCase
                     Router\RouterInterface::class   => function (): Router\RouterInterface {
                         return $this->createMock(Router\RouterInterface::class);
                     },
-                    StreamFactoryInterface::class   => function (): StreamFactoryInterface {
+                    StreamFactoryInterface::class   => static function (): StreamFactoryInterface {
                         return new StreamFactory();
                     },
                 ],
