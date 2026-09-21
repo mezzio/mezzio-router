@@ -1292,16 +1292,16 @@
         },
         {
             "name": "boundwize/structarmed",
-            "version": "0.17.8",
+            "version": "0.17.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/boundwize/structarmed.git",
-                "reference": "052fdbef45a468950509245b985ed65b3987b096"
+                "reference": "05a625da831db09d581f37357682d6cbce4db603"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/boundwize/structarmed/zipball/052fdbef45a468950509245b985ed65b3987b096",
-                "reference": "052fdbef45a468950509245b985ed65b3987b096",
+                "url": "https://api.github.com/repos/boundwize/structarmed/zipball/05a625da831db09d581f37357682d6cbce4db603",
+                "reference": "05a625da831db09d581f37357682d6cbce4db603",
                 "shasum": ""
             },
             "require": {
@@ -1358,7 +1358,7 @@
             ],
             "support": {
                 "issues": "https://github.com/boundwize/structarmed/issues",
-                "source": "https://github.com/boundwize/structarmed/tree/0.17.8"
+                "source": "https://github.com/boundwize/structarmed/tree/0.17.12"
             },
             "funding": [
                 {
@@ -1366,7 +1366,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-15T15:04:03+00:00"
+            "time": "2026-09-20T13:16:10+00:00"
         },
         {
             "name": "brick/varexporter",
